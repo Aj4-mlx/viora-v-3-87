@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -8,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SignUpFormData {
   firstName: string;
@@ -39,13 +39,45 @@ const SignUp = () => {
     }
 
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Sign up attempt:", data);
-      toast.success("Account created successfully! Welcome to VIORA.");
+
+    // Check if email already exists
+    const { data: existing, error: fetchError } = await supabase
+      .from('customers')
+      .select('id')
+      .eq('email', data.email)
+      .single();
+    if (existing) {
+      toast.error("An account with this email already exists.");
       setIsLoading(false);
-    }, 1000);
+      return;
+    }
+
+    // Create new customer
+    const { data: newCustomer, error } = await supabase
+      .from('customers')
+      .insert({
+        email: data.email,
+        name: `${data.firstName} ${data.lastName}`,
+      })
+      .select()
+      .single();
+    if (error || !newCustomer) {
+      toast.error("Failed to create account. Please try again.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Store user info in localStorage (simulate login)
+    localStorage.setItem('user', JSON.stringify({
+      id: newCustomer.id,
+      email: newCustomer.email,
+      name: newCustomer.name,
+      password: data.password, // For demo only; do NOT do this in production
+    }));
+
+    toast.success("Account created successfully! Welcome to VIORA.");
+    setIsLoading(false);
+    // Optionally redirect to home or cart
   };
 
   return (
