@@ -13,6 +13,7 @@ import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
@@ -27,6 +28,9 @@ const Cart = () => {
   });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [guestPassword, setGuestPassword] = useState("");
+  const [pendingOrder, setPendingOrder] = useState<any>(null);
 
   const governorates = [
     "Cairo", "Alexandria", "Giza", "Qalyubia", "Port Said", "Suez",
@@ -50,13 +54,6 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
-    // Check if user is signed in (assume user info is stored in localStorage as 'user')
-    const user = localStorage.getItem('user');
-    if (!user) {
-      navigate('/sign-in?reason=auth-required');
-      return;
-    }
-
     // Validate fields
     if (!customerInfo.name.trim()) {
       toast.error('Please enter your full name.');
@@ -96,6 +93,19 @@ const Cart = () => {
       return;
     }
 
+    const user = localStorage.getItem('user');
+    if (!user) {
+      // Not signed in: prompt for password, then create account and proceed
+      setPendingOrder({
+        customerInfo: { ...customerInfo },
+        cartItems: [...cartItems],
+        total,
+        paymentMethod
+      });
+      setShowPasswordModal(true);
+      return;
+    }
+
     if (paymentMethod === "cod") {
       setIsLoading(true);
       const user = JSON.parse(localStorage.getItem('user')!);
@@ -130,6 +140,50 @@ const Cart = () => {
       toast.info("Redirecting to payment gateway...");
       // Here you would integrate with Stripe, PayMob, or other payment providers
     }
+  };
+
+  const handleGuestAccountAndOrder = async () => {
+    setIsLoading(true);
+    // Check if email already exists
+    const { data: existing } = await supabase
+      .from('customers')
+      .select('id')
+      .eq('email', pendingOrder.customerInfo.email)
+      .single();
+    if (existing) {
+      toast.error("An account with this email already exists. Please sign in.");
+      setIsLoading(false);
+      setShowPasswordModal(false);
+      navigate('/sign-in?reason=auth-required');
+      return;
+    }
+    // Create new customer
+    const { data: newCustomer, error } = await supabase
+      .from('customers')
+      .insert({
+        email: pendingOrder.customerInfo.email,
+        name: pendingOrder.customerInfo.name,
+      })
+      .select()
+      .single();
+    if (error || !newCustomer) {
+      toast.error("Failed to create account. Please try again.");
+      setIsLoading(false);
+      return;
+    }
+    // Store user info in localStorage (simulate login)
+    localStorage.setItem('user', JSON.stringify({
+      id: newCustomer.id,
+      email: newCustomer.email,
+      name: newCustomer.name,
+      phone: pendingOrder.customerInfo.phone,
+      password: guestPassword, // For demo only
+    }));
+    setShowPasswordModal(false);
+    setIsLoading(false);
+    setGuestPassword("");
+    // Proceed with order as signed in user
+    await handleCheckout();
   };
 
   const subtotal = getTotalPrice();
@@ -339,6 +393,29 @@ const Cart = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create an Account to Complete Your Order</DialogTitle>
+          </DialogHeader>
+          <div className="mb-2">Please set a password for your new account. You will use this to sign in and track your orders.</div>
+          <Input
+            type="password"
+            placeholder="Create password"
+            value={guestPassword}
+            onChange={e => setGuestPassword(e.target.value)}
+            disabled={isLoading}
+          />
+          <Button
+            className="w-full mt-4 bg-coral-peach hover:bg-coral-peach/80"
+            onClick={handleGuestAccountAndOrder}
+            disabled={isLoading || guestPassword.length < 6}
+          >
+            {isLoading ? 'Creating Account...' : 'Create Account & Continue'}
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

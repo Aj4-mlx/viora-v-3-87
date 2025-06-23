@@ -61,7 +61,7 @@ export const Header = () => {
     localStorage.removeItem('user');
     setIsSignedIn(false);
     setShowAccountMenu(false);
-    window.location.href = '/sign-in';
+    window.location.href = '/';
   };
 
   return (

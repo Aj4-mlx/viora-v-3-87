@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -25,13 +24,10 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
-    
-    // Simulate API call
+    // DEMO MODE: Password reset is not available
     setTimeout(() => {
-      console.log("Password reset request:", data);
-      setEmailSent(true);
-      toast.success("Password reset email sent! Check your inbox.");
       setIsLoading(false);
+      toast.error("Password reset is not available in demo mode. Please contact support.");
     }, 1000);
   };
 
@@ -43,30 +39,18 @@ const ForgotPassword = () => {
             <div className="mx-auto w-12 h-12 bg-coral-peach/10 rounded-full flex items-center justify-center mb-4">
               <Mail className="w-6 h-6 text-coral-peach" />
             </div>
-            <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
+            <CardTitle className="text-2xl font-bold">Password Reset Not Available</CardTitle>
             <CardDescription>
-              We've sent a password reset link to your email address.
+              Password reset is not available in demo mode. Please contact support for assistance.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-sm text-slate-600 mb-6">
-              Didn't receive the email? Check your spam folder or try again.
-            </p>
-            <div className="space-y-3">
-              <Button
-                onClick={() => setEmailSent(false)}
-                variant="outline"
-                className="w-full"
-              >
-                Try again
+            <Link to="/sign-in">
+              <Button variant="ghost" className="w-full">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to sign in
               </Button>
-              <Link to="/sign-in">
-                <Button variant="ghost" className="w-full">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to sign in
-                </Button>
-              </Link>
-            </div>
+            </Link>
           </CardContent>
         </Card>
       </div>
