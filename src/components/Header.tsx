@@ -71,9 +71,11 @@ export const Header = () => {
             </Button>
 
             {/* Account */}
-            <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
-              Sign In
-            </Button>
+            <Link to="/sign-in">
+              <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                Sign In
+              </Button>
+            </Link>
 
             {/* Mobile menu button */}
             <Button 
@@ -118,6 +120,13 @@ export const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
+              </Link>
+              <Link 
+                to="/sign-in" 
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign In
               </Link>
             </nav>
           </div>
