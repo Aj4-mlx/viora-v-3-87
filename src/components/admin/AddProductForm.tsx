@@ -164,11 +164,19 @@ const AddProductForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
           <label className="text-sm font-medium">Product Image <span className="text-red-500">*</span></label>
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${dragActive ? 'border-coral-peach bg-coral-peach/10' : 'border-gray-300'}`}
+          <label
+            htmlFor="image-upload"
+            tabIndex={0}
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer outline-none ${dragActive ? 'border-coral-peach bg-coral-peach/10' : 'border-gray-300'}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('image-upload')?.click();
+              }
+            }}
           >
             {imagePreview ? (
               <div className="relative inline-block">
@@ -191,25 +199,24 @@ const AddProductForm = () => {
               <>
                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
                 <div className="mt-4">
-                  <label htmlFor="image-upload" className="cursor-pointer">
-                    <span className="text-sm font-medium text-coral-peach hover:text-coral-peach/80">
-                      Click to upload or drag & drop
-                    </span>
-                    <input
-                      id="image-upload"
-                      type="file"
-                      className="sr-only"
-                      accept="image/*"
-                      onChange={handleImageSelect}
-                    />
-                  </label>
+                  <span className="text-sm font-medium text-coral-peach hover:text-coral-peach/80">
+                    Click to upload or drag & drop
+                  </span>
                 </div>
               </>
             )}
+            <input
+              id="image-upload"
+              type="file"
+              className="sr-only"
+              accept="image/*"
+              onChange={handleImageSelect}
+              tabIndex={-1}
+            />
             {imageError && (
               <div className="text-red-500 text-sm mt-2">{imageError}</div>
             )}
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
