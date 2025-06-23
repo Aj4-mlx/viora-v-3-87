@@ -124,8 +124,7 @@ const Cart = () => {
       }
       // TODO: Send email notification to user with order details
       clearCart();
-      toast.success("Order placed successfully! You will receive a confirmation email soon.");
-      navigate('/account');
+      navigate(`/order-confirmation/${data.id}`);
     } else {
       // For card payments, integrate with payment gateway
       toast.info("Redirecting to payment gateway...");
