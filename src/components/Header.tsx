@@ -12,6 +12,13 @@ export const Header = () => {
   const { searchQuery, setSearchQuery, setSearchResults, setIsSearching } = useSearch();
   const { cartCount } = useCart();
   const navigate = useNavigate();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    setIsSignedIn(!!localStorage.getItem('user'));
+    window.addEventListener('storage', () => setIsSignedIn(!!localStorage.getItem('user')));
+    return () => window.removeEventListener('storage', () => setIsSignedIn(!!localStorage.getItem('user')));
+  }, []);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -103,12 +110,20 @@ export const Header = () => {
               </Button>
             </Link>
 
-            {/* Account */}
-            <Link to="/sign-in">
-              <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
-                Sign In
-              </Button>
-            </Link>
+            {/* Account or Sign In */}
+            {isSignedIn ? (
+              <Link to="/account">
+                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                  Account
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/sign-in">
+                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                  Sign In
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <Button
@@ -172,13 +187,23 @@ export const Header = () => {
               >
                 Cart ({cartCount})
               </Link>
-              <Link
-                to="/sign-in"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign In
-              </Link>
+              {isSignedIn ? (
+                <Link
+                  to="/account"
+                  className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Account
+                </Link>
+              ) : (
+                <Link
+                  to="/sign-in"
+                  className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
             </nav>
           </div>
         )}
