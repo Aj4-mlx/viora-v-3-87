@@ -33,15 +33,15 @@ export const Header = () => {
             <Link to="/shop" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               Shop
             </Link>
+            <Link to="/collections" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
+              Collections
+            </Link>
             <Link to="/about" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               About
             </Link>
             <Link to="/contact" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               Contact
             </Link>
-            <a href="#collections" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
-              Collections
-            </a>
           </nav>
 
           {/* Right side actions */}
@@ -99,6 +99,13 @@ export const Header = () => {
                 Shop
               </Link>
               <Link 
+                to="/collections" 
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Collections
+              </Link>
+              <Link 
                 to="/about" 
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
@@ -112,13 +119,6 @@ export const Header = () => {
               >
                 Contact
               </Link>
-              <a 
-                href="#collections" 
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Collections
-              </a>
             </nav>
           </div>
         )}
