@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
@@ -25,6 +26,7 @@ const Cart = () => {
     governorate: ""
   });
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const governorates = [
     "Cairo", "Alexandria", "Giza", "Qalyubia", "Port Said", "Suez",
@@ -47,7 +49,7 @@ const Cart = () => {
     return /^01[0-9]{9}$/.test(phone);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     // Check if user is signed in (assume user info is stored in localStorage as 'user')
     const user = localStorage.getItem('user');
     if (!user) {
@@ -95,38 +97,35 @@ const Cart = () => {
     }
 
     if (paymentMethod === "cod") {
-      // Send automatic message for Cash on Delivery
-      const orderDetails = `
-Order Confirmation - Cash on Delivery
-
-Dear ${customerInfo.name},
-
-Thank you for your order! Here are your order details:
-
-Products:
-${cartItems.map(item => `- ${item.name} x${item.quantity} - ${item.price}`).join('\n')}
-
-Total: ${getTotalPrice().toFixed(2)} EGP
-
-Delivery Address:
-${customerInfo.address}
-${customerInfo.city}, ${customerInfo.governorate}
-
-Payment Method: Cash on Delivery
-
-We will contact you at ${customerInfo.phone} to confirm delivery details.
-Expected delivery: 2-5 business days.
-
-Best regards,
-VIORA Team
-      `;
-
-      // In a real app, this would send an SMS/email
-      toast.success("Order placed successfully! Check your messages for confirmation details.");
-      console.log("COD Order Details:", orderDetails);
-
-      // Clear cart after successful order
+      setIsLoading(true);
+      const user = JSON.parse(localStorage.getItem('user')!);
+      // Prepare order data
+      const orderData = {
+        customer_id: user.id,
+        product_ids: cartItems.map(item => item.id),
+        total: total,
+        status: "pending",
+        // Store delivery info as JSON string in a note field (or add a JSONB field in DB for production)
+        note: JSON.stringify({
+          name: customerInfo.name,
+          email: customerInfo.email,
+          phone: customerInfo.phone,
+          address: customerInfo.address,
+          city: customerInfo.city,
+          governorate: customerInfo.governorate,
+          paymentMethod: "Cash on Delivery"
+        })
+      };
+      const { data, error } = await supabase.from('orders').insert(orderData).select().single();
+      setIsLoading(false);
+      if (error || !data) {
+        toast.error("Failed to place order. Please try again.");
+        return;
+      }
+      // TODO: Send email notification to user with order details
       clearCart();
+      toast.success("Order placed successfully! You will receive a confirmation email soon.");
+      navigate('/account');
     } else {
       // For card payments, integrate with payment gateway
       toast.info("Redirecting to payment gateway...");
@@ -332,8 +331,9 @@ VIORA Team
                 <Button
                   className="w-full bg-coral-peach hover:bg-coral-peach/80 mt-6"
                   onClick={handleCheckout}
+                  disabled={isLoading}
                 >
-                  {paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment'}
+                  {isLoading ? 'Placing Order...' : (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
                 </Button>
               </CardContent>
             </Card>
