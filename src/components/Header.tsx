@@ -129,42 +129,32 @@ export const Header = () => {
               </Button>
             </Link>
 
-            {/* Account */}
+            {/* Account and Sign Out (desktop) */}
             {isSignedIn && (
-              <div className="relative" ref={accountMenuRef}>
+              <>
+                <Link to="/account">
+                  <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                    Account
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"
                   className="border-slate-200 hover:border-coral-peach hover:text-coral-peach"
-                  onClick={() => setShowAccountMenu((v) => !v)}
+                  onClick={handleSignOut}
                 >
-                  Account
+                  Sign Out
                 </Button>
-                {showAccountMenu && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded shadow-lg z-50">
-                    <Link
-                      to="/account"
-                      className="block px-4 py-2 text-slate-700 hover:bg-slate-100"
-                      onClick={() => setShowAccountMenu(false)}
-                    >
-                      My Account
-                    </Link>
-                    <button
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-slate-100"
-                      onClick={handleSignOut}
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
+              </>
             )}
-            {/* Sign In always visible */}
-            <Link to="/sign-in">
-              <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
-                Sign In
-              </Button>
-            </Link>
+            {/* Sign In (desktop, only if not signed in) */}
+            {!isSignedIn && (
+              <Link to="/sign-in">
+                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                  Sign In
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <Button
