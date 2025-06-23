@@ -1,9 +1,15 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export const NewArrivals = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [wishlistItems, setWishlistItems] = useState<number[]>([]);
+
   const products = [
     {
       id: 1,
@@ -43,6 +49,28 @@ export const NewArrivals = () => {
     }
   ];
 
+  const handleWishlistToggle = (productId: number, productName: string) => {
+    const isInWishlist = wishlistItems.includes(productId);
+    
+    if (isInWishlist) {
+      setWishlistItems(prev => prev.filter(id => id !== productId));
+      toast({
+        title: "Removed from wishlist",
+        description: `${productName} has been removed from your wishlist.`,
+      });
+    } else {
+      setWishlistItems(prev => [...prev, productId]);
+      toast({
+        title: "Added to wishlist",
+        description: `${productName} has been added to your wishlist.`,
+      });
+    }
+  };
+
+  const handleViewAllProducts = () => {
+    navigate('/shop');
+  };
+
   return (
     <section className="py-16 bg-pale-peach/30">
       <div className="container mx-auto px-4">
@@ -74,9 +102,12 @@ export const NewArrivals = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="absolute top-3 right-3 text-slate-600 hover:text-coral-peach opacity-0 group-hover:opacity-100 transition-opacity"
+                    className={`absolute top-3 right-3 hover:text-coral-peach opacity-0 group-hover:opacity-100 transition-opacity ${
+                      wishlistItems.includes(product.id) ? 'text-coral-peach' : 'text-slate-600'
+                    }`}
+                    onClick={() => handleWishlistToggle(product.id, product.name)}
                   >
-                    <Star className="w-4 h-4" />
+                    <Star className={`w-4 h-4 ${wishlistItems.includes(product.id) ? 'fill-current' : ''}`} />
                   </Button>
                 </div>
                 <div className="p-4">
@@ -114,6 +145,7 @@ export const NewArrivals = () => {
             size="lg"
             variant="outline"
             className="border-slate-300 text-slate-700 hover:border-coral-peach hover:text-coral-peach px-8"
+            onClick={handleViewAllProducts}
           >
             View All Products
           </Button>

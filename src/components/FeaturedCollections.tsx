@@ -1,8 +1,12 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 export const FeaturedCollections = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const collections = [
     {
       id: 1,
@@ -26,6 +30,14 @@ export const FeaturedCollections = () => {
       itemCount: 12
     }
   ];
+
+  const handleExploreCollection = (collectionName: string) => {
+    toast({
+      title: `Exploring ${collectionName}`,
+      description: "Redirecting to collection page...",
+    });
+    navigate('/shop');
+  };
 
   return (
     <section className="py-16 bg-cream-beige">
@@ -66,6 +78,7 @@ export const FeaturedCollections = () => {
                       variant="outline" 
                       size="sm"
                       className="border-coral-peach text-coral-peach hover:bg-coral-peach hover:text-white"
+                      onClick={() => handleExploreCollection(collection.name)}
                     >
                       Explore
                     </Button>

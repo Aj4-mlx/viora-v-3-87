@@ -1,7 +1,17 @@
-
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+
+  const handleShopCollection = () => {
+    navigate('/shop');
+  };
+
+  const handleOurStory = () => {
+    navigate('/about');
+  };
+
   return (
     <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
       <div className="absolute inset-0 bg-black/20"></div>
@@ -22,6 +32,7 @@ export const Hero = () => {
             <Button 
               size="lg" 
               className="bg-coral-peach hover:bg-coral-peach/80 text-white px-8 py-3 text-lg font-medium"
+              onClick={handleShopCollection}
             >
               Shop Collection
             </Button>
@@ -29,6 +40,7 @@ export const Hero = () => {
               variant="outline" 
               size="lg" 
               className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3 text-lg"
+              onClick={handleOurStory}
             >
               Our Story
             </Button>
