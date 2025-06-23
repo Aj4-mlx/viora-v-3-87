@@ -9,7 +9,116 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      admins: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          password_hash: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          password_hash?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          password_hash?: string | null
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          product_ids: string[]
+          status: string
+          total: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          product_ids: string[]
+          status?: string
+          total: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          product_ids?: string[]
+          status?: string
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          stock: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          stock?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          stock?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
