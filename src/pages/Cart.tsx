@@ -38,6 +38,15 @@ const Cart = () => {
     updateQuantity(id, newQuantity);
   };
 
+  const validateEmail = (email: string) => {
+    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email);
+  };
+
+  // Egyptian phone: starts with 01, 11 digits total
+  const validatePhone = (phone: string) => {
+    return /^01[0-9]{9}$/.test(phone);
+  };
+
   const handleCheckout = () => {
     // Check if user is signed in (assume user info is stored in localStorage as 'user')
     const user = localStorage.getItem('user');
@@ -46,13 +55,42 @@ const Cart = () => {
       return;
     }
 
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty!");
+    // Validate fields
+    if (!customerInfo.name.trim()) {
+      toast.error('Please enter your full name.');
+      return;
+    }
+    if (!customerInfo.email.trim()) {
+      toast.error('Please enter your email.');
+      return;
+    }
+    if (!validateEmail(customerInfo.email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    if (!customerInfo.phone.trim()) {
+      toast.error('Please enter your phone number.');
+      return;
+    }
+    if (!validatePhone(customerInfo.phone)) {
+      toast.error('Please enter a valid Egyptian phone number (e.g. 01XXXXXXXXX).');
+      return;
+    }
+    if (!customerInfo.governorate.trim()) {
+      toast.error('Please select your governorate.');
+      return;
+    }
+    if (!customerInfo.city.trim()) {
+      toast.error('Please enter your city.');
+      return;
+    }
+    if (!customerInfo.address.trim()) {
+      toast.error('Please enter your full address.');
       return;
     }
 
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.address) {
-      toast.error("Please fill in all required fields!");
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty!");
       return;
     }
 
