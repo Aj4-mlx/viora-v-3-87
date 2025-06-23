@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -31,6 +30,8 @@ const AddProductForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
 
   const form = useForm<ProductFormData>({
     defaultValues: {
@@ -46,6 +47,35 @@ const AddProductForm = () => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedImage(file);
+      setImageError(null);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setImageError(null);
       const reader = new FileReader();
       reader.onload = () => {
         setImagePreview(reader.result as string);
@@ -57,12 +87,13 @@ const AddProductForm = () => {
   const removeImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
+    setImageError(null);
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-    
+
     const { error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(fileName, file);
@@ -83,10 +114,15 @@ const AddProductForm = () => {
   const onSubmit = async (data: ProductFormData) => {
     setIsLoading(true);
 
+    if (!selectedImage) {
+      setImageError("Product image is required");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       let imageUrl = null;
 
-      // Upload image if selected
       if (selectedImage) {
         imageUrl = await uploadImage(selectedImage);
         if (!imageUrl) {
@@ -95,7 +131,6 @@ const AddProductForm = () => {
         }
       }
 
-      // Insert product into database
       const { error } = await supabase
         .from('products')
         .insert({
@@ -127,45 +162,54 @@ const AddProductForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Image Upload */}
         <div className="space-y-4">
-          <label className="text-sm font-medium">Product Image</label>
-          {imagePreview ? (
-            <div className="relative inline-block">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-32 h-32 object-cover rounded-lg border"
-              />
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                onClick={removeImage}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="mt-4">
-                <label htmlFor="image-upload" className="cursor-pointer">
-                  <span className="text-sm font-medium text-coral-peach hover:text-coral-peach/80">
-                    Upload an image
-                  </span>
-                  <input
-                    id="image-upload"
-                    type="file"
-                    className="sr-only"
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                  />
-                </label>
+          <label className="text-sm font-medium">Product Image <span className="text-red-500">*</span></label>
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${dragActive ? 'border-coral-peach bg-coral-peach/10' : 'border-gray-300'}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            {imagePreview ? (
+              <div className="relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded-lg border"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                  onClick={removeImage}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
               </div>
-            </div>
-          )}
+            ) : (
+              <>
+                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-4">
+                  <label htmlFor="image-upload" className="cursor-pointer">
+                    <span className="text-sm font-medium text-coral-peach hover:text-coral-peach/80">
+                      Click to upload or drag & drop
+                    </span>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                    />
+                  </label>
+                </div>
+              </>
+            )}
+            {imageError && (
+              <div className="text-red-500 text-sm mt-2">{imageError}</div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -213,7 +257,7 @@ const AddProductForm = () => {
           <FormField
             control={form.control}
             name="price"
-            rules={{ 
+            rules={{
               required: "Price is required",
               min: { value: 0.01, message: "Price must be greater than 0" }
             }}
@@ -237,7 +281,7 @@ const AddProductForm = () => {
           <FormField
             control={form.control}
             name="stock"
-            rules={{ 
+            rules={{
               required: "Stock is required",
               min: { value: 0, message: "Stock cannot be negative" }
             }}
