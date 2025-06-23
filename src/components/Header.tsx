@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,11 +13,23 @@ export const Header = () => {
   const { cartCount } = useCart();
   const navigate = useNavigate();
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsSignedIn(!!localStorage.getItem('user'));
     window.addEventListener('storage', () => setIsSignedIn(!!localStorage.getItem('user')));
     return () => window.removeEventListener('storage', () => setIsSignedIn(!!localStorage.getItem('user')));
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setShowAccountMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSearch = async (query: string) => {
@@ -43,6 +55,13 @@ export const Header = () => {
     if (searchQuery.trim()) {
       await handleSearch(searchQuery);
     }
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('user');
+    setIsSignedIn(false);
+    setShowAccountMenu(false);
+    window.location.href = '/sign-in';
   };
 
   return (
@@ -110,20 +129,42 @@ export const Header = () => {
               </Button>
             </Link>
 
-            {/* Account or Sign In */}
-            {isSignedIn ? (
-              <Link to="/account">
-                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+            {/* Account */}
+            {isSignedIn && (
+              <div className="relative" ref={accountMenuRef}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-200 hover:border-coral-peach hover:text-coral-peach"
+                  onClick={() => setShowAccountMenu((v) => !v)}
+                >
                   Account
                 </Button>
-              </Link>
-            ) : (
-              <Link to="/sign-in">
-                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
-                  Sign In
-                </Button>
-              </Link>
+                {showAccountMenu && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded shadow-lg z-50">
+                    <Link
+                      to="/account"
+                      className="block px-4 py-2 text-slate-700 hover:bg-slate-100"
+                      onClick={() => setShowAccountMenu(false)}
+                    >
+                      My Account
+                    </Link>
+                    <button
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-slate-100"
+                      onClick={handleSignOut}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
+            {/* Sign In always visible */}
+            <Link to="/sign-in">
+              <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                Sign In
+              </Button>
+            </Link>
 
             {/* Mobile menu button */}
             <Button
@@ -187,22 +228,27 @@ export const Header = () => {
               >
                 Cart ({cartCount})
               </Link>
-              {isSignedIn ? (
-                <Link
-                  to="/account"
-                  className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+              <Link
+                to="/account"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Account
+              </Link>
+              <Link
+                to="/sign-in"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              {isSignedIn && (
+                <button
+                  className="text-red-600 text-left px-4 py-2 hover:bg-slate-100 rounded transition-colors font-medium"
+                  onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                 >
-                  Account
-                </Link>
-              ) : (
-                <Link
-                  to="/sign-in"
-                  className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign In
-                </Link>
+                  Sign Out
+                </button>
               )}
             </nav>
           </div>
