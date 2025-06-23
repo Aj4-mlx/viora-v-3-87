@@ -5,50 +5,17 @@ import { Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { products } from "@/data/products";
 
 export const NewArrivals = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [wishlistItems, setWishlistItems] = useState<number[]>([]);
 
-  const products = [
-    {
-      id: 1,
-      name: "Celestial Diamond Ring",
-      price: "24,500 EGP",
-      originalPrice: null,
-      image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
-      isNew: true,
-      rating: 5
-    },
-    {
-      id: 2,
-      name: "Vintage Pearl Necklace",
-      price: "12,000 EGP",
-      originalPrice: "15,000 EGP",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
-      isNew: true,
-      rating: 5
-    },
-    {
-      id: 3,
-      name: "Rose Gold Bracelet",
-      price: "8,900 EGP",
-      originalPrice: null,
-      image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
-      isNew: true,
-      rating: 4
-    },
-    {
-      id: 4,
-      name: "Sapphire Drop Earrings",
-      price: "16,500 EGP",
-      originalPrice: null,
-      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
-      isNew: true,
-      rating: 5
-    }
-  ];
+  // Get only new arrivals
+  const newArrivals = products.filter(product => product.isNew).slice(0, 4);
 
   const handleWishlistToggle = (productId: number, productName: string) => {
     const isInWishlist = wishlistItems.includes(productId);
@@ -72,10 +39,12 @@ export const NewArrivals = () => {
     navigate('/shop');
   };
 
-  const handleAddToCart = (productName: string) => {
-    toast({
-      title: "Added to Cart",
-      description: `${productName} has been added to your cart.`,
+  const handleAddToCart = (product: typeof products[0]) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
     });
   };
 
@@ -93,7 +62,7 @@ export const NewArrivals = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {newArrivals.map((product) => (
             <Card key={product.id} className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white">
               <CardContent className="p-0">
                 <div className="relative aspect-square bg-white mb-4 overflow-hidden">
@@ -144,7 +113,7 @@ export const NewArrivals = () => {
                     <Button 
                       size="sm"
                       className="bg-coral-peach hover:bg-coral-peach/80 text-white"
-                      onClick={() => handleAddToCart(product.name)}
+                      onClick={() => handleAddToCart(product)}
                     >
                       Add to Cart
                     </Button>

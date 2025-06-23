@@ -1,13 +1,39 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSearch } from "@/contexts/SearchContext";
+import { useCart } from "@/contexts/CartContext";
+import { searchProducts } from "@/data/products";
 
 export const Header = () => {
-  const [cartCount, setCartCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { searchQuery, setSearchQuery, setSearchResults, setIsSearching } = useSearch();
+  const { cartCount } = useCart();
+  const navigate = useNavigate();
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      setIsSearching(true);
+      const results = searchProducts(query);
+      setSearchResults(results);
+      // Navigate to shop with search results
+      navigate('/shop');
+    } else {
+      setIsSearching(false);
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      handleSearch(searchQuery);
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-slate-200">
@@ -47,13 +73,15 @@ export const Header = () => {
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <div className="relative hidden md:block">
+            <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input 
                 placeholder="Search jewelry..." 
                 className="pl-10 w-64 border-slate-200 focus:border-coral-peach"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
               />
-            </div>
+            </form>
 
             {/* Wishlist */}
             <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach">
@@ -61,14 +89,16 @@ export const Header = () => {
             </Button>
 
             {/* Cart */}
-            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach relative">
-              <ShoppingCart className="w-5 h-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-coral-peach text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Button>
+            <Link to="/cart">
+              <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach relative">
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-coral-peach text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
 
             {/* Account */}
             <Link to="/sign-in">
@@ -93,6 +123,17 @@ export const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-slate-200 py-4">
             <nav className="flex flex-col space-y-4">
+              {/* Mobile Search */}
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <Input 
+                  placeholder="Search jewelry..." 
+                  className="pl-10 border-slate-200 focus:border-coral-peach"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                />
+              </form>
+              
               <Link 
                 to="/shop" 
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
@@ -120,6 +161,13 @@ export const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
+              </Link>
+              <Link 
+                to="/cart" 
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Cart ({cartCount})
               </Link>
               <Link 
                 to="/sign-in" 
