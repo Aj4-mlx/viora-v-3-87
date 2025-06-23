@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<SignUpFormData>({
     defaultValues: {
@@ -75,9 +76,11 @@ const SignUp = () => {
       password: data.password, // For demo only; do NOT do this in production
     }));
 
-    toast.success("Account created successfully! Welcome to VIORA.");
+    toast.success("Account created successfully! Please sign in to continue.");
     setIsLoading(false);
-    // Optionally redirect to home or cart
+    setTimeout(() => {
+      navigate('/sign-in?reason=signup-success');
+    }, 500);
   };
 
   return (

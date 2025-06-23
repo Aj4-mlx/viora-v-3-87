@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,7 @@ const SignIn = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const reason = params.get("reason");
+  const navigate = useNavigate();
 
   const form = useForm<SignInFormData>({
     defaultValues: {
@@ -27,6 +28,14 @@ const SignIn = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (reason === "signup-success") {
+      toast.success("Account created! Please sign in to continue.");
+      // Remove the query param so the toast doesn't show again on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [reason]);
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -61,6 +70,9 @@ const SignIn = () => {
 
     toast.success('Welcome back! Sign in successful.');
     setIsLoading(false);
+    setTimeout(() => {
+      navigate('/account');
+    }, 500);
     // Optionally redirect to dashboard or home page
   };
 
