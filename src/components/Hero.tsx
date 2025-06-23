@@ -11,7 +11,7 @@ export const Hero = () => {
         <div className="max-w-2xl">
           <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight">
             Timeless
-            <span className="block text-yellow-400">Elegance</span>
+            <span className="block text-coral-peach">Elegance</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
             Discover our curated collection of exquisite jewelry pieces, 
@@ -21,7 +21,7 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
               size="lg" 
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 text-lg font-medium"
+              className="bg-coral-peach hover:bg-coral-peach/80 text-white px-8 py-3 text-lg font-medium"
             >
               Shop Collection
             </Button>
@@ -37,8 +37,8 @@ export const Hero = () => {
       </div>
 
       {/* Decorative elements */}
-      <div className="absolute top-20 right-20 w-32 h-32 border border-yellow-400/20 rounded-full hidden lg:block"></div>
-      <div className="absolute bottom-20 right-40 w-16 h-16 bg-yellow-400/10 rounded-full hidden lg:block"></div>
+      <div className="absolute top-20 right-20 w-32 h-32 border border-coral-peach/20 rounded-full hidden lg:block"></div>
+      <div className="absolute bottom-20 right-40 w-16 h-16 bg-coral-peach/10 rounded-full hidden lg:block"></div>
     </section>
   );
 };

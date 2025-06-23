@@ -8,7 +8,7 @@ export const NewArrivals = () => {
     {
       id: 1,
       name: "Celestial Diamond Ring",
-      price: "$2,450",
+      price: "24,500 EGP",
       originalPrice: null,
       image: "/placeholder.svg",
       isNew: true,
@@ -17,8 +17,8 @@ export const NewArrivals = () => {
     {
       id: 2,
       name: "Vintage Pearl Necklace",
-      price: "$1,200",
-      originalPrice: "$1,500",
+      price: "12,000 EGP",
+      originalPrice: "15,000 EGP",
       image: "/placeholder.svg",
       isNew: true,
       rating: 5
@@ -26,7 +26,7 @@ export const NewArrivals = () => {
     {
       id: 3,
       name: "Rose Gold Bracelet",
-      price: "$890",
+      price: "8,900 EGP",
       originalPrice: null,
       image: "/placeholder.svg",
       isNew: true,
@@ -35,7 +35,7 @@ export const NewArrivals = () => {
     {
       id: 4,
       name: "Sapphire Drop Earrings",
-      price: "$1,650",
+      price: "16,500 EGP",
       originalPrice: null,
       image: "/placeholder.svg",
       isNew: true,
@@ -44,7 +44,7 @@ export const NewArrivals = () => {
   ];
 
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-16 bg-pale-peach/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-serif font-bold text-slate-900 mb-4">
@@ -58,11 +58,11 @@ export const NewArrivals = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
-            <Card key={product.id} className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300">
+            <Card key={product.id} className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white">
               <CardContent className="p-0">
                 <div className="relative aspect-square bg-white mb-4 overflow-hidden">
                   {product.isNew && (
-                    <span className="absolute top-3 left-3 bg-yellow-600 text-white text-xs px-2 py-1 rounded-full font-medium z-10">
+                    <span className="absolute top-3 left-3 bg-coral-peach text-white text-xs px-2 py-1 rounded-full font-medium z-10">
                       NEW
                     </span>
                   )}
@@ -74,20 +74,20 @@ export const NewArrivals = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="absolute top-3 right-3 text-slate-600 hover:text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-3 right-3 text-slate-600 hover:text-coral-peach opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Star className="w-4 h-4" />
                   </Button>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-slate-900 mb-2 group-hover:text-yellow-600 transition-colors">
+                  <h3 className="font-semibold text-slate-900 mb-2 group-hover:text-coral-peach transition-colors">
                     {product.name}
                   </h3>
                   <div className="flex items-center mb-2">
                     {[...Array(5)].map((_, i) => (
                       <Star 
                         key={i} 
-                        className={`w-4 h-4 ${i < product.rating ? 'text-yellow-400 fill-current' : 'text-slate-300'}`} 
+                        className={`w-4 h-4 ${i < product.rating ? 'text-muted-mustard fill-current' : 'text-slate-300'}`} 
                       />
                     ))}
                   </div>
@@ -113,7 +113,7 @@ export const NewArrivals = () => {
           <Button 
             size="lg"
             variant="outline"
-            className="border-slate-300 text-slate-700 hover:border-yellow-600 hover:text-yellow-600 px-8"
+            className="border-slate-300 text-slate-700 hover:border-coral-peach hover:text-coral-peach px-8"
           >
             View All Products
           </Button>

@@ -20,7 +20,7 @@ export const Newsletter = () => {
               className="bg-white text-slate-900 border-white flex-1"
             />
             <Button 
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-6"
+              className="bg-coral-peach hover:bg-coral-peach/80 text-white px-6"
             >
               Subscribe
             </Button>

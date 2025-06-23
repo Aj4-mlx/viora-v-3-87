@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,20 +38,19 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom Viora Color Palette */
+    --coral-peach: 10 72% 69%;
+    --pale-peach: 25 100% 84%;
+    --muted-mustard: 40 35% 66%;
+    --cream-beige: 35 55% 89%;
   }
 
   .dark {
@@ -99,5 +99,45 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom utility classes for Viora colors */
+@layer utilities {
+  .text-coral-peach {
+    color: hsl(var(--coral-peach));
+  }
+  .bg-coral-peach {
+    background-color: hsl(var(--coral-peach));
+  }
+  .border-coral-peach {
+    border-color: hsl(var(--coral-peach));
+  }
+  .text-pale-peach {
+    color: hsl(var(--pale-peach));
+  }
+  .bg-pale-peach {
+    background-color: hsl(var(--pale-peach));
+  }
+  .border-pale-peach {
+    border-color: hsl(var(--pale-peach));
+  }
+  .text-muted-mustard {
+    color: hsl(var(--muted-mustard));
+  }
+  .bg-muted-mustard {
+    background-color: hsl(var(--muted-mustard));
+  }
+  .border-muted-mustard {
+    border-color: hsl(var(--muted-mustard));
+  }
+  .text-cream-beige {
+    color: hsl(var(--cream-beige));
+  }
+  .bg-cream-beige {
+    background-color: hsl(var(--cream-beige));
+  }
+  .border-cream-beige {
+    border-color: hsl(var(--cream-beige));
   }
 }

@@ -28,7 +28,7 @@ export const FeaturedCollections = () => {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-cream-beige">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-serif font-bold text-slate-900 mb-4">
@@ -65,7 +65,7 @@ export const FeaturedCollections = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white"
+                      className="border-coral-peach text-coral-peach hover:bg-coral-peach hover:text-white"
                     >
                       Explore
                     </Button>
