@@ -1,11 +1,10 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
-  price: string;
+  price: number;
   image: string;
   quantity: number;
 }
@@ -14,8 +13,8 @@ interface CartContextType {
   cartItems: CartItem[];
   cartCount: number;
   addToCart: (item: Omit<CartItem, 'quantity'>) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
 }
@@ -42,7 +41,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(cartItem => cartItem.id === item.id);
-      
+
       if (existingItem) {
         toast.success(`${item.name} quantity updated in cart!`);
         return prevItems.map(cartItem =>
@@ -57,7 +56,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     });
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setCartItems(prevItems => {
       const item = prevItems.find(item => item.id === id);
       if (item) {
@@ -67,7 +66,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     });
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(id);
       return;
@@ -86,10 +85,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => {
-      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-      return total + (price * item.quantity);
-    }, 0);
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   return (

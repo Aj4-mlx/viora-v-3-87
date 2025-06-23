@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,14 +25,14 @@ const Cart = () => {
   });
 
   const governorates = [
-    "Cairo", "Alexandria", "Giza", "Qalyubia", "Port Said", "Suez", 
+    "Cairo", "Alexandria", "Giza", "Qalyubia", "Port Said", "Suez",
     "Luxor", "Aswan", "Asyut", "Beheira", "Beni Suef", "Dakahlia",
     "Damietta", "Fayyum", "Gharbia", "Ismailia", "Kafr el-Sheikh",
     "Matrouh", "Minya", "Monufia", "New Valley", "North Sinai",
     "Qena", "Red Sea", "Sharqia", "Sohag", "South Sinai"
   ];
 
-  const handleQuantityChange = (id: number, newQuantity: number) => {
+  const handleQuantityChange = (id: string, newQuantity: number) => {
     updateQuantity(id, newQuantity);
   };
 
@@ -78,7 +77,7 @@ VIORA Team
       // In a real app, this would send an SMS/email
       toast.success("Order placed successfully! Check your messages for confirmation details.");
       console.log("COD Order Details:", orderDetails);
-      
+
       // Clear cart after successful order
       clearCart();
     } else {
@@ -100,7 +99,7 @@ VIORA Team
           <div className="text-center">
             <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">Your Cart is Empty</h1>
             <p className="text-xl text-slate-600 mb-8">Add some beautiful jewelry to get started!</p>
-            <Button 
+            <Button
               onClick={() => window.location.href = '/shop'}
               className="bg-coral-peach hover:bg-coral-peach/80"
             >
@@ -116,10 +115,10 @@ VIORA Team
   return (
     <div className="min-h-screen bg-slate-50">
       <Header />
-      
+
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-serif font-bold text-slate-900 mb-8">Shopping Cart</h1>
-        
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
@@ -131,14 +130,14 @@ VIORA Team
                 <div className="space-y-4">
                   {cartItems.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                      <img 
-                        src={item.image} 
+                      <img
+                        src={item.image}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded"
                       />
                       <div className="flex-1">
                         <h3 className="font-semibold text-slate-900">{item.name}</h3>
-                        <p className="text-slate-600">{item.price}</p>
+                        <p className="text-slate-600">{item.price.toLocaleString()} EGP</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
@@ -183,7 +182,7 @@ VIORA Team
                     <Input
                       id="name"
                       value={customerInfo.name}
-                      onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -193,7 +192,7 @@ VIORA Team
                       id="email"
                       type="email"
                       value={customerInfo.email}
-                      onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
                       placeholder="Enter your email"
                     />
                   </div>
@@ -204,15 +203,15 @@ VIORA Team
                     <Input
                       id="phone"
                       value={customerInfo.phone}
-                      onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
                       placeholder="Enter your phone number"
                     />
                   </div>
                   <div>
                     <Label htmlFor="governorate">Governorate *</Label>
-                    <Select 
-                      value={customerInfo.governorate} 
-                      onValueChange={(value) => setCustomerInfo({...customerInfo, governorate: value})}
+                    <Select
+                      value={customerInfo.governorate}
+                      onValueChange={(value) => setCustomerInfo({ ...customerInfo, governorate: value })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select governorate" />
@@ -230,7 +229,7 @@ VIORA Team
                   <Input
                     id="city"
                     value={customerInfo.city}
-                    onChange={(e) => setCustomerInfo({...customerInfo, city: e.target.value})}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })}
                     placeholder="Enter your city"
                   />
                 </div>
@@ -239,7 +238,7 @@ VIORA Team
                   <Input
                     id="address"
                     value={customerInfo.address}
-                    onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
                     placeholder="Enter your full address"
                   />
                 </div>
@@ -283,7 +282,7 @@ VIORA Team
                   </RadioGroup>
                 </div>
 
-                <Button 
+                <Button
                   className="w-full bg-coral-peach hover:bg-coral-peach/80 mt-6"
                   onClick={handleCheckout}
                 >
