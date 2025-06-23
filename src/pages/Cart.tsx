@@ -11,6 +11,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
@@ -23,6 +24,7 @@ const Cart = () => {
     city: "",
     governorate: ""
   });
+  const navigate = useNavigate();
 
   const governorates = [
     "Cairo", "Alexandria", "Giza", "Qalyubia", "Port Said", "Suez",
@@ -37,6 +39,13 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
+    // Check if user is signed in (assume user info is stored in localStorage as 'user')
+    const user = localStorage.getItem('user');
+    if (!user) {
+      navigate('/sign-in?reason=auth-required');
+      return;
+    }
+
     if (cartItems.length === 0) {
       toast.error("Your cart is empty!");
       return;
