@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
-import { searchProducts } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,12 +13,16 @@ export const Header = () => {
   const { cartCount } = useCart();
   const navigate = useNavigate();
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
       setIsSearching(true);
-      const results = searchProducts(query);
-      setSearchResults(results);
+      // Search products in Supabase
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .ilike("name", `%${query}%`);
+      setSearchResults(data || []);
       // Navigate to shop with search results
       navigate('/shop');
     } else {
@@ -28,10 +31,10 @@ export const Header = () => {
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      handleSearch(searchQuery);
+      await handleSearch(searchQuery);
     }
   };
 
@@ -42,7 +45,7 @@ export const Header = () => {
         <div className="bg-slate-900 text-white text-center py-2 text-sm -mx-4 mb-4">
           Free shipping on orders over 5,000 EGP • Complimentary gift wrapping
         </div>
-        
+
         {/* Main header */}
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
@@ -75,8 +78,8 @@ export const Header = () => {
             {/* Search */}
             <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <Input 
-                placeholder="Search jewelry..." 
+              <Input
+                placeholder="Search jewelry..."
                 className="pl-10 w-64 border-slate-200 focus:border-coral-peach"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
@@ -108,9 +111,9 @@ export const Header = () => {
             </Link>
 
             {/* Mobile menu button */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="md:hidden text-slate-700"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -126,51 +129,51 @@ export const Header = () => {
               {/* Mobile Search */}
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <Input 
-                  placeholder="Search jewelry..." 
+                <Input
+                  placeholder="Search jewelry..."
                   className="pl-10 border-slate-200 focus:border-coral-peach"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                 />
               </form>
-              
-              <Link 
-                to="/shop" 
+
+              <Link
+                to="/shop"
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Shop
               </Link>
-              <Link 
-                to="/collections" 
+              <Link
+                to="/collections"
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Collections
               </Link>
-              <Link 
-                to="/about" 
+              <Link
+                to="/about"
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
-              <Link 
-                to="/contact" 
+              <Link
+                to="/contact"
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
-              <Link 
-                to="/cart" 
+              <Link
+                to="/cart"
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cart ({cartCount})
               </Link>
-              <Link 
-                to="/sign-in" 
+              <Link
+                to="/sign-in"
                 className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >

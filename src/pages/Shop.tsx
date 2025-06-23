@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,29 +7,54 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
-import { products } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
+
+type Product = Database["public"]["Tables"]["products"]["Row"];
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedCategory, setSelectedCategory] = useState("All");
-  
+
   const { searchQuery, searchResults, isSearching } = useSearch();
   const { addToCart } = useCart();
 
   const categories = ["All", "Rings", "Necklaces", "Earrings", "Bracelets"];
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
+      if (error) {
+        setError("Failed to load products");
+        setProducts([]);
+      } else {
+        setProducts(data || []);
+      }
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
 
   // Determine which products to show
   const getDisplayProducts = () => {
     if (isSearching && searchResults.length >= 0) {
       return searchResults;
     }
-    
+
     if (selectedCategory === "All") {
       return products;
     }
-    
+
     return products.filter(product => product.category === selectedCategory);
   };
 
@@ -40,23 +64,21 @@ const Shop = () => {
   const sortedProducts = [...displayProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
-        return parseFloat(a.price.replace(/[^0-9.]/g, '')) - parseFloat(b.price.replace(/[^0-9.]/g, ''));
+        return (a.price ?? 0) - (b.price ?? 0);
       case 'price-high':
-        return parseFloat(b.price.replace(/[^0-9.]/g, '')) - parseFloat(a.price.replace(/[^0-9.]/g, ''));
-      case 'popular':
-        return b.rating - a.rating;
-      case 'newest':
+        return (b.price ?? 0) - (a.price ?? 0);
+      // 'popular' and 'newest' require extra fields, fallback to name
       default:
-        return b.isNew ? 1 : -1;
+        return a.name.localeCompare(b.name);
     }
   });
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  const handleAddToCart = (product: Product) => {
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image
+      image: product.image_url || ''
     });
   };
 
@@ -64,10 +86,25 @@ const Shop = () => {
     toast.info("Loading more products...");
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span>Loading products...</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-r from-coral-peach/10 to-pale-peach/20">
         <div className="container mx-auto px-4">
@@ -76,7 +113,7 @@ const Shop = () => {
               {isSearching && searchQuery ? `Search Results for "${searchQuery}"` : "Our Collection"}
             </h1>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              {isSearching && searchQuery 
+              {isSearching && searchQuery
                 ? `Found ${searchResults.length} products matching your search`
                 : "Discover our complete range of exquisite jewelry pieces, crafted with precision and designed to last a lifetime."
               }
@@ -98,8 +135,8 @@ const Shop = () => {
                     variant={selectedCategory === category ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category 
-                      ? "bg-coral-peach hover:bg-coral-peach/80" 
+                    className={selectedCategory === category
+                      ? "bg-coral-peach hover:bg-coral-peach/80"
                       : "border-slate-300 hover:border-coral-peach hover:text-coral-peach"
                     }
                   >
@@ -155,13 +192,13 @@ const Shop = () => {
                 {isSearching ? "No products found" : "No products available"}
               </h3>
               <p className="text-slate-600 mb-8">
-                {isSearching 
+                {isSearching
                   ? `Try searching for something else or browse our full collection.`
                   : "Please check back later for new products."
                 }
               </p>
               {isSearching && (
-                <Button 
+                <Button
                   onClick={() => window.location.reload()}
                   className="bg-coral-peach hover:bg-coral-peach/80"
                 >
@@ -170,24 +207,22 @@ const Shop = () => {
               )}
             </div>
           ) : (
-            <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                : 'grid-cols-1 max-w-4xl mx-auto'
-            }`}>
+            <div className={`grid gap-6 ${viewMode === 'grid'
+              ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'grid-cols-1 max-w-4xl mx-auto'
+              }`}>
               {sortedProducts.map((product) => (
                 <Card key={product.id} className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white">
                   <CardContent className={`p-0 ${viewMode === 'list' ? 'flex' : ''}`}>
-                    <div className={`relative bg-white overflow-hidden ${
-                      viewMode === 'list' ? 'w-64 h-64 flex-shrink-0' : 'aspect-square mb-4'
-                    }`}>
+                    <div className={`relative bg-white overflow-hidden ${viewMode === 'list' ? 'w-64 h-64 flex-shrink-0' : 'aspect-square mb-4'
+                      }`}>
                       {product.isNew && (
                         <span className="absolute top-3 left-3 bg-coral-peach text-white text-xs px-2 py-1 rounded-full font-medium z-10">
                           NEW
                         </span>
                       )}
-                      <img 
-                        src={product.image} 
+                      <img
+                        src={product.image_url || ''}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -199,9 +234,9 @@ const Shop = () => {
                       <p className="text-sm text-slate-500 mb-2">{product.category}</p>
                       <div className="flex items-center mb-2">
                         {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-4 h-4 ${i < product.rating ? 'text-muted-mustard fill-current' : 'text-slate-300'}`} 
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < product.rating ? 'text-muted-mustard fill-current' : 'text-slate-300'}`}
                           />
                         ))}
                       </div>
@@ -216,7 +251,7 @@ const Shop = () => {
                             </span>
                           )}
                         </div>
-                        <Button 
+                        <Button
                           size="sm"
                           className="bg-coral-peach hover:bg-coral-peach/80 text-white"
                           onClick={() => handleAddToCart(product)}
@@ -234,7 +269,7 @@ const Shop = () => {
           {/* Load More */}
           {sortedProducts.length > 0 && (
             <div className="text-center mt-12">
-              <Button 
+              <Button
                 size="lg"
                 variant="outline"
                 className="border-slate-300 text-slate-700 hover:border-coral-peach hover:text-coral-peach px-8"

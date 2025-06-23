@@ -1,25 +1,47 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
-import { products } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type Product = Database["public"]["Tables"]["products"]["Row"];
 
 export const NewArrivals = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart } = useCart();
   const [wishlistItems, setWishlistItems] = useState<number[]>([]);
+  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get only new arrivals
-  const newArrivals = products.filter(product => product.isNew).slice(0, 4);
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(4);
+      if (error) {
+        setError("Failed to load new arrivals");
+        setNewArrivals([]);
+      } else {
+        setNewArrivals(data || []);
+      }
+      setLoading(false);
+    };
+    fetchNewArrivals();
+  }, []);
 
   const handleWishlistToggle = (productId: number, productName: string) => {
     const isInWishlist = wishlistItems.includes(productId);
-    
+
     if (isInWishlist) {
       setWishlistItems(prev => prev.filter(id => id !== productId));
       toast({
@@ -39,14 +61,29 @@ export const NewArrivals = () => {
     navigate('/shop');
   };
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  const handleAddToCart = (product: Product) => {
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image
+      image: product.image_url || ''
     });
   };
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-pale-peach/30 text-center">
+        <span>Loading new arrivals...</span>
+      </section>
+    );
+  }
+  if (error) {
+    return (
+      <section className="py-16 bg-pale-peach/30 text-center text-red-500">
+        {error}
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-pale-peach/30">
@@ -56,7 +93,7 @@ export const NewArrivals = () => {
             New Arrivals
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Discover the latest additions to our collection, featuring 
+            Discover the latest additions to our collection, featuring
             contemporary designs and timeless classics.
           </p>
         </div>
@@ -71,17 +108,16 @@ export const NewArrivals = () => {
                       NEW
                     </span>
                   )}
-                  <img 
-                    src={product.image} 
+                  <img
+                    src={product.image_url || ''}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
-                    className={`absolute top-3 right-3 hover:text-coral-peach opacity-0 group-hover:opacity-100 transition-opacity ${
-                      wishlistItems.includes(product.id) ? 'text-coral-peach' : 'text-slate-600'
-                    }`}
+                    className={`absolute top-3 right-3 hover:text-coral-peach opacity-0 group-hover:opacity-100 transition-opacity ${wishlistItems.includes(product.id) ? 'text-coral-peach' : 'text-slate-600'
+                      }`}
                     onClick={() => handleWishlistToggle(product.id, product.name)}
                   >
                     <Star className={`w-4 h-4 ${wishlistItems.includes(product.id) ? 'fill-current' : ''}`} />
@@ -93,9 +129,9 @@ export const NewArrivals = () => {
                   </h3>
                   <div className="flex items-center mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`w-4 h-4 ${i < product.rating ? 'text-muted-mustard fill-current' : 'text-slate-300'}`} 
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${i < product.rating ? 'text-muted-mustard fill-current' : 'text-slate-300'}`}
                       />
                     ))}
                   </div>
@@ -110,7 +146,7 @@ export const NewArrivals = () => {
                         </span>
                       )}
                     </div>
-                    <Button 
+                    <Button
                       size="sm"
                       className="bg-coral-peach hover:bg-coral-peach/80 text-white"
                       onClick={() => handleAddToCart(product)}
@@ -125,7 +161,7 @@ export const NewArrivals = () => {
         </div>
 
         <div className="text-center mt-12">
-          <Button 
+          <Button
             size="lg"
             variant="outline"
             className="border-slate-300 text-slate-700 hover:border-coral-peach hover:text-coral-peach px-8"
