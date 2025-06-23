@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
@@ -16,7 +17,7 @@ export const NewArrivals = () => {
       name: "Celestial Diamond Ring",
       price: "24,500 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       isNew: true,
       rating: 5
     },
@@ -25,7 +26,7 @@ export const NewArrivals = () => {
       name: "Vintage Pearl Necklace",
       price: "12,000 EGP",
       originalPrice: "15,000 EGP",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
       isNew: true,
       rating: 5
     },
@@ -34,7 +35,7 @@ export const NewArrivals = () => {
       name: "Rose Gold Bracelet",
       price: "8,900 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       isNew: true,
       rating: 4
     },
@@ -43,7 +44,7 @@ export const NewArrivals = () => {
       name: "Sapphire Drop Earrings",
       price: "16,500 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
       isNew: true,
       rating: 5
     }
@@ -69,6 +70,13 @@ export const NewArrivals = () => {
 
   const handleViewAllProducts = () => {
     navigate('/shop');
+  };
+
+  const handleAddToCart = (productName: string) => {
+    toast({
+      title: "Added to Cart",
+      description: `${productName} has been added to your cart.`,
+    });
   };
 
   return (
@@ -133,6 +141,13 @@ export const NewArrivals = () => {
                         </span>
                       )}
                     </div>
+                    <Button 
+                      size="sm"
+                      className="bg-coral-peach hover:bg-coral-peach/80 text-white"
+                      onClick={() => handleAddToCart(product.name)}
+                    >
+                      Add to Cart
+                    </Button>
                   </div>
                 </div>
               </CardContent>

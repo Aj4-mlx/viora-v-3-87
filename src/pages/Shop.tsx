@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Star, Filter, Grid3X3, List } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { toast } from "sonner";
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -17,7 +18,7 @@ const Shop = () => {
       name: "Celestial Diamond Ring",
       price: "24,500 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       category: "Rings",
       rating: 5,
       isNew: true
@@ -27,7 +28,7 @@ const Shop = () => {
       name: "Vintage Pearl Necklace",
       price: "12,000 EGP",
       originalPrice: "15,000 EGP",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
       category: "Necklaces",
       rating: 5,
       isNew: false
@@ -37,7 +38,7 @@ const Shop = () => {
       name: "Rose Gold Bracelet",
       price: "8,900 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       category: "Bracelets",
       rating: 4,
       isNew: true
@@ -47,7 +48,7 @@ const Shop = () => {
       name: "Sapphire Drop Earrings",
       price: "16,500 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
       category: "Earrings",
       rating: 5,
       isNew: false
@@ -57,7 +58,7 @@ const Shop = () => {
       name: "Classic Gold Chain",
       price: "19,800 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80",
       category: "Necklaces",
       rating: 4,
       isNew: false
@@ -67,7 +68,7 @@ const Shop = () => {
       name: "Emerald Statement Ring",
       price: "32,000 EGP",
       originalPrice: null,
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       category: "Rings",
       rating: 5,
       isNew: true
@@ -80,6 +81,14 @@ const Shop = () => {
   const filteredProducts = selectedCategory === "All" 
     ? products 
     : products.filter(product => product.category === selectedCategory);
+
+  const handleAddToCart = (productName: string) => {
+    toast.success(`${productName} added to cart!`);
+  };
+
+  const handleLoadMore = () => {
+    toast.info("Loading more products...");
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -211,6 +220,7 @@ const Shop = () => {
                       <Button 
                         size="sm"
                         className="bg-coral-peach hover:bg-coral-peach/80 text-white"
+                        onClick={() => handleAddToCart(product.name)}
                       >
                         Add to Cart
                       </Button>
@@ -227,6 +237,7 @@ const Shop = () => {
               size="lg"
               variant="outline"
               className="border-slate-300 text-slate-700 hover:border-coral-peach hover:text-coral-peach px-8"
+              onClick={handleLoadMore}
             >
               Load More Products
             </Button>

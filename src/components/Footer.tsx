@@ -86,36 +86,24 @@ export const Footer = () => {
             <h4 className="font-semibold text-slate-900 mb-4">Customer Care</h4>
             <ul className="space-y-2 text-slate-600">
               <li>
-                <button 
-                  onClick={() => handleComingSoon("Size Guide")}
-                  className="hover:text-yellow-600 transition-colors text-left"
-                >
+                <Link to="/size-guide" className="hover:text-yellow-600 transition-colors">
                   Size Guide
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  onClick={() => handleComingSoon("Shipping Info")}
-                  className="hover:text-yellow-600 transition-colors text-left"
-                >
+                <Link to="/shipping-info" className="hover:text-yellow-600 transition-colors">
                   Shipping Info
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  onClick={() => handleComingSoon("Returns")}
-                  className="hover:text-yellow-600 transition-colors text-left"
-                >
+                <Link to="/returns" className="hover:text-yellow-600 transition-colors">
                   Returns
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  onClick={() => handleComingSoon("Care Instructions")}
-                  className="hover:text-yellow-600 transition-colors text-left"
-                >
+                <Link to="/care-instructions" className="hover:text-yellow-600 transition-colors">
                   Care Instructions
-                </button>
+                </Link>
               </li>
               <li>
                 <Link to="/contact" className="hover:text-yellow-600 transition-colors">

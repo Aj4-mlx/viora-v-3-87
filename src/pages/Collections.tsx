@@ -17,56 +17,56 @@ const Collections = () => {
       id: 1,
       name: "Wedding Collection",
       description: "Elegant pieces for your special day",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
       itemCount: 42,
       theme: "Timeless elegance for matrimonial moments",
       items: [
-        { name: "Diamond Engagement Ring", type: "Ring", price: "45,000 EGP", rating: 5 },
-        { name: "Pearl Wedding Necklace", type: "Necklace", price: "18,500 EGP", rating: 5 },
-        { name: "Bridal Tennis Bracelet", type: "Bracelet", price: "22,000 EGP", rating: 5 },
-        { name: "Wedding Band Set", type: "Ring", price: "28,000 EGP", rating: 5 }
+        { name: "Diamond Engagement Ring", type: "Ring", price: "45,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Pearl Wedding Necklace", type: "Necklace", price: "18,500 EGP", rating: 5, image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" },
+        { name: "Bridal Tennis Bracelet", type: "Bracelet", price: "22,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Wedding Band Set", type: "Ring", price: "28,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" }
       ]
     },
     {
       id: 2,
       name: "Summer Collection",
       description: "Light and vibrant pieces for sunny days",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80",
       itemCount: 36,
       theme: "Bright and breezy jewelry for warm weather",
       items: [
-        { name: "Coral Reef Necklace", type: "Necklace", price: "12,500 EGP", rating: 4 },
-        { name: "Sunshine Ring", type: "Ring", price: "8,900 EGP", rating: 5 },
-        { name: "Ocean Wave Bracelet", type: "Bracelet", price: "6,800 EGP", rating: 4 },
-        { name: "Tropical Earrings", type: "Earrings", price: "5,200 EGP", rating: 5 }
+        { name: "Coral Reef Necklace", type: "Necklace", price: "12,500 EGP", rating: 4, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80" },
+        { name: "Sunshine Ring", type: "Ring", price: "8,900 EGP", rating: 5, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Ocean Wave Bracelet", type: "Bracelet", price: "6,800 EGP", rating: 4, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Tropical Earrings", type: "Earrings", price: "5,200 EGP", rating: 5, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" }
       ]
     },
     {
       id: 3,
       name: "Vintage Collection",
       description: "Classic designs with timeless appeal",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
       itemCount: 28,
       theme: "Nostalgic pieces inspired by bygone eras",
       items: [
-        { name: "Art Deco Ring", type: "Ring", price: "35,000 EGP", rating: 5 },
-        { name: "Victorian Pendant", type: "Necklace", price: "24,000 EGP", rating: 4 },
-        { name: "Antique Charm Bracelet", type: "Bracelet", price: "16,500 EGP", rating: 5 },
-        { name: "Vintage Pearl Earrings", type: "Earrings", price: "12,800 EGP", rating: 4 }
+        { name: "Art Deco Ring", type: "Ring", price: "35,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Victorian Pendant", type: "Necklace", price: "24,000 EGP", rating: 4, image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" },
+        { name: "Antique Charm Bracelet", type: "Bracelet", price: "16,500 EGP", rating: 5, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Vintage Pearl Earrings", type: "Earrings", price: "12,800 EGP", rating: 4, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" }
       ]
     },
     {
       id: 4,
       name: "Modern Minimalist",
       description: "Clean lines and contemporary designs",
-      image: "/placeholder.svg",
+      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
       itemCount: 32,
       theme: "Simple elegance for the modern woman",
       items: [
-        { name: "Geometric Ring", type: "Ring", price: "14,500 EGP", rating: 4 },
-        { name: "Minimalist Chain", type: "Necklace", price: "9,800 EGP", rating: 5 },
-        { name: "Sleek Bangle", type: "Bracelet", price: "7,200 EGP", rating: 4 },
-        { name: "Modern Studs", type: "Earrings", price: "4,500 EGP", rating: 5 }
+        { name: "Geometric Ring", type: "Ring", price: "14,500 EGP", rating: 4, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Minimalist Chain", type: "Necklace", price: "9,800 EGP", rating: 5, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80" },
+        { name: "Sleek Bangle", type: "Bracelet", price: "7,200 EGP", rating: 4, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
+        { name: "Modern Studs", type: "Earrings", price: "4,500 EGP", rating: 5, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" }
       ]
     }
   ];
@@ -178,7 +178,7 @@ const Collections = () => {
                   <CardContent className="p-0">
                     <div className="aspect-square bg-slate-100 mb-4 overflow-hidden relative">
                       <img 
-                        src="/placeholder.svg" 
+                        src={item.image} 
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
