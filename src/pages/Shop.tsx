@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
 
@@ -20,6 +21,7 @@ const Shop = () => {
 
   const { searchQuery, searchResults, isSearching } = useSearch();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const categories = ["All", "Rings", "Necklaces", "Earrings", "Bracelets"];
 
@@ -212,7 +214,14 @@ const Shop = () => {
               : 'grid-cols-1 max-w-4xl mx-auto'
               }`}>
               {sortedProducts.map((product) => (
-                <Card key={product.id} className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white">
+                <Card
+                  key={product.id}
+                  className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white"
+                  onClick={() => navigate(`/product/${product.id}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/product/${product.id}`); }}
+                >
                   <CardContent className={`p-0 ${viewMode === 'list' ? 'flex' : ''}`}>
                     <div className={`relative bg-white overflow-hidden ${viewMode === 'list' ? 'w-64 h-64 flex-shrink-0' : 'aspect-square mb-4'
                       }`}>
@@ -254,7 +263,7 @@ const Shop = () => {
                         <Button
                           size="sm"
                           className="bg-coral-peach hover:bg-coral-peach/80 text-white"
-                          onClick={() => handleAddToCart(product)}
+                          onClick={e => { e.stopPropagation(); handleAddToCart(product); }}
                         >
                           Add to Cart
                         </Button>
