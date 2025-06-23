@@ -11,6 +11,7 @@ import { Footer } from "@/components/Footer";
 
 const Account = () => {
     const [user, setUser] = useState<any>(null);
+    const [profile, setProfile] = useState<any>(null);
     const [orders, setOrders] = useState<any[]>([]);
     const [phone, setPhone] = useState("");
     const [editingPhone, setEditingPhone] = useState(false);
@@ -21,13 +22,23 @@ const Account = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const stored = localStorage.getItem("user");
-        if (stored) {
-            const u = JSON.parse(stored);
-            setUser(u);
-            setPhone(u.phone || "");
-            setPassword(u.password || "");
+        async function fetchUserAndProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('customers')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                setProfile(profile);
+            }
         }
+        fetchUserAndProfile();
+        const { data: listener } = supabase.auth.onAuthStateChange(() => {
+            fetchUserAndProfile();
+        });
+        return () => { listener.subscription.unsubscribe(); };
     }, []);
 
     useEffect(() => {
@@ -45,7 +56,6 @@ const Account = () => {
     }, [user]);
 
     const handleSignOut = () => {
-        localStorage.removeItem("user");
         toast.success("Signed out successfully.");
         navigate("/sign-in");
     };
@@ -57,7 +67,6 @@ const Account = () => {
         }
         setUser((u: any) => {
             const updated = { ...u, phone };
-            localStorage.setItem("user", JSON.stringify(updated));
             return updated;
         });
         setEditingPhone(false);
@@ -71,7 +80,6 @@ const Account = () => {
         }
         setUser((u: any) => {
             const updated = { ...u, password: newPassword };
-            localStorage.setItem("user", JSON.stringify(updated));
             return updated;
         });
         setPassword(newPassword);
@@ -111,7 +119,7 @@ const Account = () => {
                             <CardTitle>Profile Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div><b>Name:</b> {user.name}</div>
+                            <div><b>Name:</b> {profile?.name || "-"}</div>
                             <div><b>Email:</b> {user.email}</div>
                             <div>
                                 <b>Phone:</b> {editingPhone ? (

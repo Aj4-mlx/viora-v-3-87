@@ -144,41 +144,27 @@ const Cart = () => {
 
   const handleGuestAccountAndOrder = async () => {
     setIsLoading(true);
-    // Check if email already exists
-    const { data: existing } = await supabase
-      .from('customers')
-      .select('id')
-      .eq('email', pendingOrder.customerInfo.email)
-      .single();
-    if (existing) {
-      toast.error("An account with this email already exists. Please sign in.");
+    // Check if email already exists in Supabase Auth
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: pendingOrder.customerInfo.email,
+      password: guestPassword,
+    });
+    if (signUpError) {
+      toast.error(signUpError.message || "Failed to create account. Please try again.");
       setIsLoading(false);
       setShowPasswordModal(false);
       navigate('/sign-in?reason=auth-required');
       return;
     }
-    // Create new customer
-    const { data: newCustomer, error } = await supabase
-      .from('customers')
-      .insert({
+    // Create customer profile in customers table
+    const { user } = signUpData;
+    if (user) {
+      await supabase.from('customers').insert({
+        id: user.id,
         email: pendingOrder.customerInfo.email,
         name: pendingOrder.customerInfo.name,
-      })
-      .select()
-      .single();
-    if (error || !newCustomer) {
-      toast.error("Failed to create account. Please try again.");
-      setIsLoading(false);
-      return;
+      });
     }
-    // Store user info in localStorage (simulate login)
-    localStorage.setItem('user', JSON.stringify({
-      id: newCustomer.id,
-      email: newCustomer.email,
-      name: newCustomer.name,
-      phone: pendingOrder.customerInfo.phone,
-      password: guestPassword, // For demo only
-    }));
     setShowPasswordModal(false);
     setIsLoading(false);
     setGuestPassword("");

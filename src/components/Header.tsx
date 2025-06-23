@@ -17,9 +17,15 @@ export const Header = () => {
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setIsSignedIn(!!localStorage.getItem('user'));
-    window.addEventListener('storage', () => setIsSignedIn(!!localStorage.getItem('user')));
-    return () => window.removeEventListener('storage', () => setIsSignedIn(!!localStorage.getItem('user')));
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
+    }
+    checkAuth();
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      checkAuth();
+    });
+    return () => { listener.subscription.unsubscribe(); };
   }, []);
 
   useEffect(() => {
@@ -57,8 +63,8 @@ export const Header = () => {
     }
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem('user');
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
     setIsSignedIn(false);
     setShowAccountMenu(false);
     window.location.href = '/';

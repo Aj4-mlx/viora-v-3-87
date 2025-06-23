@@ -38,49 +38,31 @@ const SignUp = () => {
       toast.error("Passwords don't match");
       return;
     }
-
     setIsLoading(true);
-
-    // Check if email already exists
-    const { data: existing, error: fetchError } = await supabase
-      .from('customers')
-      .select('id')
-      .eq('email', data.email)
-      .single();
-    if (existing) {
-      toast.error("An account with this email already exists.");
+    // Sign up with Supabase Auth
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    });
+    if (signUpError) {
+      toast.error(signUpError.message || "Failed to create account.");
       setIsLoading(false);
       return;
     }
-
-    // Create new customer
-    const { data: newCustomer, error } = await supabase
-      .from('customers')
-      .insert({
+    // Create customer profile in customers table
+    const { user } = signUpData;
+    if (user) {
+      await supabase.from('customers').insert({
+        id: user.id,
         email: data.email,
         name: `${data.firstName} ${data.lastName}`,
-      })
-      .select()
-      .single();
-    if (error || !newCustomer) {
-      toast.error("Failed to create account. Please try again.");
-      setIsLoading(false);
-      return;
+      });
     }
-
-    // Store user info in localStorage (simulate login)
-    localStorage.setItem('user', JSON.stringify({
-      id: newCustomer.id,
-      email: newCustomer.email,
-      name: newCustomer.name,
-      password: data.password, // For demo only; do NOT do this in production
-    }));
-
-    toast.success("Account created successfully! Please sign in to continue.");
+    toast.success("Account created! Please check your email to verify your account, then sign in.");
     setIsLoading(false);
     setTimeout(() => {
       navigate('/sign-in?reason=signup-success');
-    }, 500);
+    }, 1000);
   };
 
   return (

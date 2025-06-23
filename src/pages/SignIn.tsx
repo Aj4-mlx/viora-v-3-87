@@ -39,41 +39,19 @@ const SignIn = () => {
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
-
-    // Check if user exists in Supabase
-    const { data: user, error } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('email', data.email)
-      .single();
-    if (!user) {
-      toast.error('No account found with this email.');
-      setIsLoading(false);
-      return;
-    }
-
-    // For demo: check password from localStorage (since DB has no password field)
-    const localUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (localUser.email !== data.email || localUser.password !== data.password) {
-      toast.error('Incorrect password.');
-      setIsLoading(false);
-      return;
-    }
-
-    // Store user info in localStorage (simulate login)
-    localStorage.setItem('user', JSON.stringify({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      password: data.password, // For demo only
-    }));
-
-    toast.success('Welcome back! Sign in successful.');
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
     setIsLoading(false);
+    if (error) {
+      toast.error(error.message || 'Incorrect email or password.');
+      return;
+    }
+    toast.success('Welcome back! Sign in successful.');
     setTimeout(() => {
       navigate('/account');
     }, 500);
-    // Optionally redirect to dashboard or home page
   };
 
   return (
