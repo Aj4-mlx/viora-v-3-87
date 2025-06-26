@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,7 +31,7 @@ interface Collection {
 
 const Collections = () => {
   const navigate = useNavigate();
-  const { toast: toastHook } = useToast();
+  const { toast } = useToast();
   const { addToCart } = useCart();
 
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -54,7 +55,71 @@ const Collections = () => {
 
       if (collectionsError) {
         console.error("Collections error:", collectionsError);
-        throw collectionsError;
+
+        // If the table doesn't exist, use default collections
+        if (collectionsError.message.includes("does not exist")) {
+          const defaultCollections = [
+            {
+              id: "1",
+              name: "Summer Essentials",
+              description: "Our Summer Essentials collection features light, vibrant pieces perfect for the season.",
+              theme: "Summer",
+              image_url: "https://images.unsplash.com/photo-1523268755815-fe7c372a0349?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            },
+            {
+              id: "2",
+              name: "Elegant Evening",
+              description: "Sophisticated jewelry designed for special occasions and evening events.",
+              theme: "Elegance",
+              image_url: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            },
+            {
+              id: "3",
+              name: "Minimalist",
+              description: "Clean, simple designs for everyday wear with a modern aesthetic.",
+              theme: "Minimalism",
+              image_url: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            },
+            {
+              id: "4",
+              name: "Vintage Inspired",
+              description: "Timeless pieces inspired by classic designs from past eras.",
+              theme: "Vintage",
+              image_url: "https://images.unsplash.com/photo-1570891836654-32f91104c324?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            }
+          ];
+
+          // Fetch some products to associate with these collections
+          const { data: products } = await supabase
+            .from('products')
+            .select('*')
+            .limit(20);
+
+          const collectionsWithItems = defaultCollections.map(collection => {
+            // Randomly assign some products to each collection
+            const collectionProducts = products ? products.filter(() => Math.random() > 0.7) : [];
+
+            // Add a random rating between 4-5 for display purposes
+            const itemsWithRating = collectionProducts.map(product => ({
+              ...product,
+              rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
+            }));
+
+            return {
+              ...collection,
+              items: itemsWithRating
+            };
+          });
+
+          setCollections(collectionsWithItems);
+          if (collectionsWithItems.length > 0) {
+            setSelectedCollection(collectionsWithItems[0]);
+          }
+          setLoading(false);
+          return;
+        } else {
+          throw collectionsError;
+        }
       }
 
       if (!collectionsData || collectionsData.length === 0) {
@@ -72,13 +137,7 @@ const Collections = () => {
             .select('product_id')
             .eq('collection_id', collection.id);
 
-          if (relationsError) {
-            console.error('Error fetching product relations:', relationsError);
-            return {
-              ...collection,
-              items: []
-            };
-          }
+          if (relationsError) throw relationsError;
 
           if (!productRelations || productRelations.length === 0) {
             return {
@@ -94,13 +153,7 @@ const Collections = () => {
             .select('*')
             .in('id', productIds);
 
-          if (productsError) {
-            console.error('Error fetching products:', productsError);
-            return {
-              ...collection,
-              items: []
-            };
-          }
+          if (productsError) throw productsError;
 
           // Add a random rating between 4-5 for display purposes
           const itemsWithRating = (products || []).map(product => ({
@@ -131,7 +184,7 @@ const Collections = () => {
   const handleViewAllInShop = () => {
     if (!selectedCollection) return;
 
-    toastHook({
+    toast({
       title: "Redirecting to Shop",
       description: `Viewing all ${selectedCollection.name} items in shop...`,
     });

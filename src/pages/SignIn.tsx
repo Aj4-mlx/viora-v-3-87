@@ -58,46 +58,6 @@ const SignIn = () => {
     }, 500);
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsLoading(true);
-      const { error } = await signInWithGoogle();
-      if (error) {
-        toast.error(error.message || "Google sign-in failed");
-      } else {
-        toast.success('Welcome! Sign in successful.');
-        setTimeout(() => {
-          navigate('/');
-        }, 500);
-      }
-    } catch (err) {
-      toast.error("Failed to sign in with Google");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFacebookSignIn = async () => {
-    try {
-      setIsLoading(true);
-      const { error } = await signInWithFacebook();
-      if (error) {
-        toast.error(error.message || "Facebook sign-in failed");
-      } else {
-        toast.success('Welcome! Sign in successful.');
-        setTimeout(() => {
-          navigate('/');
-        }, 500);
-      }
-    } catch (err) {
-      toast.error("Failed to sign in with Facebook");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -224,7 +184,20 @@ const SignIn = () => {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                onClick={handleGoogleSignIn}
+                onClick={async () => {
+                  try {
+                    setIsLoading(true);
+                    const { error } = await signInWithGoogle();
+                    if (error) {
+                      toast.error(error.message || "Google sign-in failed");
+                    }
+                  } catch (err) {
+                    toast.error("Failed to sign in with Google");
+                    console.error(err);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
                 disabled={isLoading}
               >
                 <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
@@ -249,7 +222,20 @@ const SignIn = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={handleFacebookSignIn}
+                onClick={async () => {
+                  try {
+                    setIsLoading(true);
+                    const { error } = await signInWithFacebook();
+                    if (error) {
+                      toast.error(error.message || "Facebook sign-in failed");
+                    }
+                  } catch (err) {
+                    toast.error("Failed to sign in with Facebook");
+                    console.error(err);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
                 disabled={isLoading}
               >
                 <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
