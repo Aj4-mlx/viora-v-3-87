@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SignInFormData {
   email: string;
@@ -21,6 +21,7 @@ const SignIn = () => {
   const params = new URLSearchParams(location.search);
   const reason = params.get("reason");
   const navigate = useNavigate();
+  const { signIn, user } = useAuth();
 
   const form = useForm<SignInFormData>({
     defaultValues: {
@@ -30,24 +31,27 @@ const SignIn = () => {
   });
 
   useEffect(() => {
+    if (user) {
+      navigate('/account');
+      return;
+    }
+
     if (reason === "signup-success") {
       toast.success("Account created! Please sign in to continue.");
-      // Remove the query param so the toast doesn't show again on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [reason]);
+  }, [reason, user, navigate]);
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    const { error } = await signIn(data.email, data.password);
     setIsLoading(false);
+    
     if (error) {
       toast.error(error.message || 'Incorrect email or password.');
       return;
     }
+    
     toast.success('Welcome back! Sign in successful.');
     setTimeout(() => {
       navigate('/account');

@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SignUpFormData {
   firstName: string;
@@ -22,6 +23,7 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { signUp, user } = useAuth();
 
   const form = useForm<SignUpFormData>({
     defaultValues: {
@@ -33,33 +35,33 @@ const SignUp = () => {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      navigate('/account');
+    }
+  }, [user, navigate]);
+
   const onSubmit = async (data: SignUpFormData) => {
     if (data.password !== data.confirmPassword) {
       toast.error("Passwords don't match");
       return;
     }
+    
     setIsLoading(true);
-    // Sign up with Supabase Auth
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
+    const { error } = await signUp(data.email, data.password, {
+      name: `${data.firstName} ${data.lastName}`,
+      first_name: data.firstName,
+      last_name: data.lastName
     });
-    if (signUpError) {
-      toast.error(signUpError.message || "Failed to create account.");
-      setIsLoading(false);
+    
+    setIsLoading(false);
+    
+    if (error) {
+      toast.error(error.message || "Failed to create account.");
       return;
     }
-    // Create customer profile in customers table
-    const { user } = signUpData;
-    if (user) {
-      await supabase.from('customers').insert({
-        id: user.id,
-        email: data.email,
-        name: `${data.firstName} ${data.lastName}`,
-      });
-    }
+    
     toast.success("Account created! Please check your email to verify your account, then sign in.");
-    setIsLoading(false);
     setTimeout(() => {
       navigate('/sign-in?reason=signup-success');
     }, 1000);

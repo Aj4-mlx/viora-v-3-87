@@ -1,5 +1,7 @@
+
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,103 +12,95 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 const Account = () => {
-    const [user, setUser] = useState<any>(null);
+    const { user, signOut, loading } = useAuth();
     const [profile, setProfile] = useState<any>(null);
     const [orders, setOrders] = useState<any[]>([]);
     const [phone, setPhone] = useState("");
     const [editingPhone, setEditingPhone] = useState(false);
-    const [password, setPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [changingPassword, setChangingPassword] = useState(false);
     const { cartItems } = useCart();
     const navigate = useNavigate();
 
     useEffect(() => {
-        async function fetchUserAndProfile() {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-            if (user) {
-                const { data: profile } = await supabase
-                    .from('customers')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-                setProfile(profile);
-            }
+        if (!loading && !user) {
+            navigate('/sign-in');
+            return;
         }
-        fetchUserAndProfile();
-        const { data: listener } = supabase.auth.onAuthStateChange(() => {
-            fetchUserAndProfile();
-        });
-        return () => { listener.subscription.unsubscribe(); };
-    }, []);
-
-    useEffect(() => {
+        
         if (user) {
-            // Fetch orders for this user from Supabase
-            supabase
-                .from("orders")
-                .select("*")
-                .eq("customer_id", user.id)
-                .order("created_at", { ascending: false })
-                .then(({ data }) => {
-                    setOrders(data || []);
-                });
+            fetchProfile();
+            fetchOrders();
         }
-    }, [user]);
+    }, [user, loading, navigate]);
 
-    const handleSignOut = () => {
-        toast.success("Signed out successfully.");
-        navigate("/sign-in");
+    const fetchProfile = async () => {
+        if (!user) return;
+        
+        const { data: profile } = await supabase
+            .from('customers')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+        
+        if (profile) {
+            setProfile(profile);
+            setPhone(profile.phone || "");
+        }
     };
 
-    const handlePhoneSave = () => {
+    const fetchOrders = async () => {
+        if (!user) return;
+        
+        const { data: orders } = await supabase
+            .from("orders")
+            .select(`
+                *,
+                order_items(
+                    *,
+                    products(name, image_url)
+                )
+            `)
+            .eq("customer_id", user.id)
+            .order("created_at", { ascending: false });
+        
+        if (orders) setOrders(orders);
+    };
+
+    const handleSignOut = async () => {
+        await signOut();
+        toast.success("Signed out successfully.");
+        navigate("/");
+    };
+
+    const handlePhoneSave = async () => {
         if (!/^01[0-9]{9}$/.test(phone)) {
             toast.error("Please enter a valid Egyptian phone number.");
             return;
         }
-        setUser((u: any) => {
-            const updated = { ...u, phone };
-            return updated;
-        });
-        setEditingPhone(false);
-        toast.success("Phone number updated.");
-    };
-
-    const handleChangePassword = () => {
-        if (newPassword.length < 6) {
-            toast.error("Password must be at least 6 characters.");
-            return;
+        
+        const { error } = await supabase
+            .from('customers')
+            .update({ phone })
+            .eq('id', user?.id);
+            
+        if (error) {
+            toast.error("Failed to update phone number.");
+        } else {
+            toast.success("Phone number updated.");
+            setEditingPhone(false);
+            fetchProfile();
         }
-        setUser((u: any) => {
-            const updated = { ...u, password: newPassword };
-            return updated;
-        });
-        setPassword(newPassword);
-        setNewPassword("");
-        setChangingPassword(false);
-        toast.success("Password changed (demo only).");
-        // TODO: Update password in backend if/when supported
     };
 
-    if (!user) {
+    if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col">
-                <Header />
-                <div className="flex-1 flex items-center justify-center">
-                    <Card className="w-full max-w-md">
-                        <CardHeader>
-                            <CardTitle>Not Signed In</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="mb-4">Please sign in to view your account.</p>
-                            <Button onClick={() => navigate("/sign-in")}>Sign In</Button>
-                        </CardContent>
-                    </Card>
-                </div>
-                <Footer />
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+                <div>Loading...</div>
             </div>
         );
+    }
+
+    if (!user) {
+        return null; // Will redirect in useEffect
     }
 
     return (
@@ -119,35 +113,26 @@ const Account = () => {
                             <CardTitle>Profile Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div><b>Name:</b> {profile?.name || "-"}</div>
+                            <div><b>Name:</b> {profile?.name || user?.email?.split('@')[0]}</div>
                             <div><b>Email:</b> {user.email}</div>
                             <div>
                                 <b>Phone:</b> {editingPhone ? (
-                                    <span>
-                                        <Input value={phone} onChange={e => setPhone(e.target.value)} className="inline w-48 mr-2" />
+                                    <span className="ml-2">
+                                        <Input 
+                                            value={phone} 
+                                            onChange={e => setPhone(e.target.value)} 
+                                            className="inline w-48 mr-2" 
+                                            placeholder="01XXXXXXXXX"
+                                        />
                                         <Button size="sm" onClick={handlePhoneSave}>Save</Button>
-                                        <Button size="sm" variant="ghost" onClick={() => setEditingPhone(false)}>Cancel</Button>
+                                        <Button size="sm" variant="ghost" onClick={() => setEditingPhone(false)} className="ml-2">Cancel</Button>
                                     </span>
                                 ) : (
-                                    <span>
-                                        {phone ? phone : <span className="text-slate-400">Not set</span>}
+                                    <span className="ml-2">
+                                        {phone || <span className="text-slate-400">Not set</span>}
                                         <Button size="sm" variant="ghost" onClick={() => setEditingPhone(true)} className="ml-2">Edit</Button>
                                     </span>
                                 )}
-                            </div>
-                            <div>
-                                <b>Password:</b> {changingPassword ? (
-                                    <span>
-                                        <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="inline w-48 mr-2" placeholder="New password" />
-                                        <Button size="sm" onClick={handleChangePassword}>Change</Button>
-                                        <Button size="sm" variant="ghost" onClick={() => setChangingPassword(false)}>Cancel</Button>
-                                    </span>
-                                ) : (
-                                    <span>
-                                        ****** <Button size="sm" variant="ghost" onClick={() => setChangingPassword(true)} className="ml-2">Change</Button>
-                                    </span>
-                                )}
-                                {/* TODO: Implement real password change with backend */}
                             </div>
                             <Button variant="outline" onClick={handleSignOut}>Sign Out</Button>
                         </CardContent>
@@ -175,7 +160,7 @@ const Account = () => {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Orders</CardTitle>
+                            <CardTitle>Order History</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {orders.length === 0 ? (
@@ -183,13 +168,37 @@ const Account = () => {
                             ) : (
                                 <ul className="space-y-4">
                                     {orders.map(order => (
-                                        <li key={order.id} className="border-b pb-2">
-                                            <div><b>Order ID:</b> {order.id}</div>
-                                            <div><b>Status:</b> {order.status}</div>
-                                            <div><b>Total:</b> {order.total} EGP</div>
-                                            <div><b>Placed:</b> {new Date(order.created_at).toLocaleString()}</div>
-                                            <div><b>Products:</b> {order.product_ids?.join(", ")}</div>
-                                            {/* TODO: Implement order tracking details if available */}
+                                        <li key={order.id} className="border rounded-lg p-4">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <div className="font-semibold">Order #{order.order_number}</div>
+                                                    <div className="text-sm text-slate-600">
+                                                        {new Date(order.created_at).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="font-semibold">{order.total} EGP</div>
+                                                    <div className={`text-sm px-2 py-1 rounded ${
+                                                        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                        order.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                                                        order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
+                                                        order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                                                        'bg-gray-100 text-gray-800'
+                                                    }`}>
+                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {order.order_items && order.order_items.length > 0 && (
+                                                <div className="text-sm text-slate-600">
+                                                    Items: {order.order_items.map((item: any) => 
+                                                        item.products?.name || 'Unknown Product'
+                                                    ).join(', ')}
+                                                </div>
+                                            )}
+                                            <div className="text-sm text-slate-600">
+                                                Payment: {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Card Payment'}
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>
@@ -203,4 +212,4 @@ const Account = () => {
     );
 };
 
-export default Account; 
+export default Account;
