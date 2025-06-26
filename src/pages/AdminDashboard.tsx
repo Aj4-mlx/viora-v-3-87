@@ -5,12 +5,13 @@ import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Package, Users, ShoppingCart, BarChart3, Plus } from "lucide-react";
+import { LogOut, Package, Users, ShoppingCart, BarChart3, Plus, Grid } from "lucide-react";
 import ProductManager from "@/components/admin/ProductManager";
 import CustomerManager from "@/components/admin/CustomerManager";
 import OrderManager from "@/components/admin/OrderManager";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import AddProductForm from "@/components/admin/AddProductForm";
+import CollectionManager from "@/components/admin/CollectionManager";
 
 const AdminDashboard = () => {
   const { admin, signOut } = useAdminAuth();
@@ -55,7 +56,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Analytics
@@ -67,6 +68,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Products
+            </TabsTrigger>
+            <TabsTrigger value="collections" className="flex items-center gap-2">
+              <Grid className="h-4 w-4" />
+              Collections
             </TabsTrigger>
             <TabsTrigger value="customers" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -98,6 +103,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="products">
             <ProductManager />
+          </TabsContent>
+
+          <TabsContent value="collections">
+            <CollectionManager />
           </TabsContent>
 
           <TabsContent value="customers">

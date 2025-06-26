@@ -18,6 +18,8 @@ const Shop = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  const [collections, setCollections] = useState<{ id: string, name: string }[]>([]);
 
   const { searchQuery, searchResults, isSearching } = useSearch();
   const { addToCart } = useCart();
@@ -35,7 +37,7 @@ const Shop = () => {
       setError(null);
       const { data, error } = await supabase
         .from("products")
-        .select("*");
+        .select("*, collection_ids");
       if (error) {
         setError("Failed to load products");
         setProducts([]);
@@ -44,7 +46,22 @@ const Shop = () => {
       }
       setLoading(false);
     };
+
+    const fetchCollections = async () => {
+      const { data, error } = await supabase
+        .from("collections")
+        .select("id, name")
+        .order("name");
+
+      if (error) {
+        console.error("Failed to load collections:", error);
+      } else {
+        setCollections(data || []);
+      }
+    };
+
     fetchProducts();
+    fetchCollections();
   }, []);
 
   // Determine which products to show
@@ -53,11 +70,21 @@ const Shop = () => {
       return searchResults;
     }
 
-    if (selectedCategory === "All") {
-      return products;
+    let filteredProducts = products;
+
+    // Filter by category if not "All"
+    if (selectedCategory !== "All") {
+      filteredProducts = filteredProducts.filter(product => product.category === selectedCategory);
     }
 
-    return products.filter(product => product.category === selectedCategory);
+    // Filter by collection if one is selected
+    if (selectedCollection) {
+      filteredProducts = filteredProducts.filter(product =>
+        product.collection_ids && product.collection_ids.includes(selectedCollection)
+      );
+    }
+
+    return filteredProducts;
   };
 
   const displayProducts = getDisplayProducts();
@@ -128,23 +155,63 @@ const Shop = () => {
       <section className="py-8 bg-white border-b">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            {/* Category Filters */}
+            {/* Filters */}
             {!isSearching && (
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category
-                      ? "bg-coral-peach hover:bg-coral-peach/80"
-                      : "border-slate-300 hover:border-coral-peach hover:text-coral-peach"
-                    }
-                  >
-                    {category}
-                  </Button>
-                ))}
+              <div className="flex flex-col gap-4 w-full md:w-auto">
+                {/* Category Filters */}
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Categories</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCategory(category)}
+                        className={selectedCategory === category
+                          ? "bg-coral-peach hover:bg-coral-peach/80"
+                          : "border-slate-300 hover:border-coral-peach hover:text-coral-peach"
+                        }
+                      >
+                        {category}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Collection Filters */}
+                {collections.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">Collections</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={selectedCollection === null ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCollection(null)}
+                        className={selectedCollection === null
+                          ? "bg-coral-peach hover:bg-coral-peach/80"
+                          : "border-slate-300 hover:border-coral-peach hover:text-coral-peach"
+                        }
+                      >
+                        All
+                      </Button>
+                      {collections.map((collection) => (
+                        <Button
+                          key={collection.id}
+                          variant={selectedCollection === collection.id ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedCollection(collection.id)}
+                          className={selectedCollection === collection.id
+                            ? "bg-coral-peach hover:bg-coral-peach/80"
+                            : "border-slate-300 hover:border-coral-peach hover:text-coral-peach"
+                          }
+                        >
+                          {collection.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

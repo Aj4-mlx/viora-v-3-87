@@ -27,6 +27,30 @@ This script will:
 - Run all migrations in the `supabase/migrations` folder
 - Seed the database with sample collections and associate them with products
 
+## Database Schema
+
+### Collections System
+
+The collections system uses the following tables:
+
+- **collections**: Stores collection information
+  - `id`: UUID primary key
+  - `name`: Collection name
+  - `description`: Collection description
+  - `theme`: Collection theme
+  - `image_url`: Collection image
+  - `is_featured`: Boolean flag for featured collections
+  - `sort_order`: Integer for controlling display order
+
+- **products**: Products table with collection support
+  - `collection_ids`: UUID array storing IDs of collections this product belongs to
+
+- **product_collections**: Junction table for many-to-many relationship
+  - `product_id`: Reference to products table
+  - `collection_id`: Reference to collections table
+
+The database includes triggers that automatically keep `collection_ids` in sync with the junction table, so you can modify either one and the other will update automatically.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
@@ -92,7 +116,9 @@ This project is built with:
 - **Checkout**: Complete checkout with multiple payment options
 - **Order Tracking**: Track order status and history
 - **User Account**: View and manage account details, orders, and addresses
-- **Collections**: Browse curated collections of products
+- **Collections Management**: Create, edit, and manage product collections
+- **Product Collections**: Assign products to multiple collections
+- **Collection Filtering**: Filter products by collection on the shop page
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 
 ## Payment Methods
