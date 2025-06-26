@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +9,7 @@ import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Eye, RefreshCw, Truck } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, Truck } from "lucide-react";
 
 const Account = () => {
     const { user, signOut, loading } = useAuth();
@@ -21,6 +20,7 @@ const Account = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [changingPassword, setChangingPassword] = useState(false);
     const [isReordering, setIsReordering] = useState(false);
     const { cartItems, addToCart, clearCart } = useCart();
@@ -137,7 +137,7 @@ const Account = () => {
                 .from('order_items')
                 .select(`
                     *,
-                    products(id, name, price, image_url, stock_quantity)
+                    products(id, name, price, image_url, stock)
                 `)
                 .eq('order_id', orderId);
 
@@ -153,13 +153,12 @@ const Account = () => {
             // Add items to cart if they're still available
             let unavailableItems = [];
             for (const item of orderItems) {
-                if (item.products && item.products.stock_quantity > 0) {
+                if (item.products && item.products.stock > 0) {
                     addToCart({
                         id: item.products.id,
                         name: item.products.name,
                         price: item.products.price,
                         image: item.products.image_url,
-                        quantity: item.quantity
                     });
                 } else {
                     unavailableItems.push(item.products?.name || 'Unknown product');
@@ -245,7 +244,7 @@ const Account = () => {
                                                     onClick={() => setShowPassword(!showPassword)}
                                                 >
                                                     {showPassword ? (
-                                                        <Eye className="h-4 w-4" />
+                                                        <EyeOff className="h-4 w-4" />
                                                     ) : (
                                                         <Eye className="h-4 w-4" />
                                                     )}
@@ -257,12 +256,27 @@ const Account = () => {
                                         </div>
                                         <div>
                                             <label className="text-sm text-slate-600">Confirm Password</label>
-                                            <Input 
-                                                type="password"
-                                                value={confirmPassword} 
-                                                onChange={e => setConfirmPassword(e.target.value)} 
-                                                placeholder="Confirm new password"
-                                            />
+                                            <div className="relative">
+                                                <Input 
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    value={confirmPassword} 
+                                                    onChange={e => setConfirmPassword(e.target.value)} 
+                                                    placeholder="Confirm new password"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                >
+                                                    {showConfirmPassword ? (
+                                                        <EyeOff className="h-4 w-4" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
                                             {confirmPassword && password !== confirmPassword && (
                                                 <p className="text-xs text-red-500 mt-1">Passwords don't match</p>
                                             )}

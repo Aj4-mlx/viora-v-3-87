@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,7 +36,7 @@ const SignUp = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/account');
+      navigate('/');
     }
   }, [user, navigate]);
 
