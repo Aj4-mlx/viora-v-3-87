@@ -27,11 +27,11 @@ const OrderTracking = () => {
     const navigate = useNavigate();
 
     // If orderId is provided in URL, fetch the order
-    useState(() => {
+    useEffect(() => {
         if (orderId) {
             fetchOrder(orderId);
         }
-    });
+    }, [orderId]);
 
     const fetchOrder = async (id: string) => {
         setLoading(true);
@@ -237,8 +237,8 @@ const OrderTracking = () => {
                                                 {getOrderStatusSteps(order).map((step, index) => (
                                                     <div key={index} className="flex items-start">
                                                         <div className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full ${step.current ? 'bg-coral-peach text-white' :
-                                                                step.completed ? 'bg-green-500 text-white' :
-                                                                    'bg-slate-200 text-slate-500'
+                                                            step.completed ? 'bg-green-500 text-white' :
+                                                                'bg-slate-200 text-slate-500'
                                                             }`}>
                                                             {step.icon}
                                                         </div>

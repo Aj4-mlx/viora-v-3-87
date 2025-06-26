@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
 import Account from "./pages/Account";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import OrderTracking from "./pages/OrderTracking";
 import ResetPassword from "./pages/ResetPassword";
 import { useEffect } from "react";
 
@@ -68,6 +69,8 @@ const App = () => {
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/account" element={<Account />} />
                     <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+                    <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+                    <Route path="/order-tracking" element={<OrderTracking />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

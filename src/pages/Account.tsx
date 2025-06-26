@@ -223,7 +223,67 @@ const Account = () => {
                                     </span>
                                 )}
                             </div>
-                            <Button variant="outline" onClick={handleSignOut}>Sign Out</Button>
+                            
+                            <div className="mt-4">
+                                {changingPassword ? (
+                                    <div className="space-y-3 border p-3 rounded-md">
+                                        <h3 className="font-medium">Change Password</h3>
+                                        <div>
+                                            <label className="text-sm text-slate-600">New Password</label>
+                                            <div className="relative">
+                                                <Input 
+                                                    type={showPassword ? "text" : "password"}
+                                                    value={password} 
+                                                    onChange={e => setPassword(e.target.value)} 
+                                                    placeholder="Enter new password"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                >
+                                                    {showPassword ? (
+                                                        <Eye className="h-4 w-4" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
+                                            {password && password.length < 6 && (
+                                                <p className="text-xs text-red-500 mt-1">Password must be at least 6 characters</p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-slate-600">Confirm Password</label>
+                                            <Input 
+                                                type="password"
+                                                value={confirmPassword} 
+                                                onChange={e => setConfirmPassword(e.target.value)} 
+                                                placeholder="Confirm new password"
+                                            />
+                                            {confirmPassword && password !== confirmPassword && (
+                                                <p className="text-xs text-red-500 mt-1">Passwords don't match</p>
+                                            )}
+                                        </div>
+                                        <div className="flex space-x-2">
+                                            <Button size="sm" onClick={handlePasswordChange}>Update Password</Button>
+                                            <Button size="sm" variant="ghost" onClick={() => {
+                                                setChangingPassword(false);
+                                                setPassword("");
+                                                setConfirmPassword("");
+                                            }}>Cancel</Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Button variant="outline" onClick={() => setChangingPassword(true)}>Change Password</Button>
+                                )}
+                            </div>
+                            
+                            <div className="mt-4">
+                                <Button variant="outline" onClick={handleSignOut}>Sign Out</Button>
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -286,6 +346,27 @@ const Account = () => {
                                             )}
                                             <div className="text-sm text-slate-600">
                                                 Payment: {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Card Payment'}
+                                            </div>
+                                            <div className="mt-3 flex space-x-2">
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline"
+                                                    className="flex items-center"
+                                                    onClick={() => navigate(`/order-tracking/${order.order_number || order.id}`)}
+                                                >
+                                                    <Truck className="h-3 w-3 mr-1" />
+                                                    Track Order
+                                                </Button>
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline"
+                                                    className="flex items-center"
+                                                    onClick={() => handleReorder(order.id)}
+                                                    disabled={isReordering}
+                                                >
+                                                    <RefreshCw className="h-3 w-3 mr-1" />
+                                                    {isReordering ? 'Processing...' : 'Reorder'}
+                                                </Button>
                                             </div>
                                         </li>
                                     ))}

@@ -42,7 +42,7 @@ export const CheckoutForm = () => {
   const { cartItems, getTotalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: "",
     email: "",
@@ -51,7 +51,7 @@ export const CheckoutForm = () => {
     city: "",
     governorate: ""
   });
-  
+
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isLoading, setIsLoading] = useState(false);
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
@@ -60,17 +60,23 @@ export const CheckoutForm = () => {
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
 
   const subtotal = getTotalPrice();
-  
+
   // Find the selected shipping rate based on governorate and provider
   const selectedShippingRate = shippingRates.find(
-    rate => rate.governorate === customerInfo.governorate && 
-            rate.provider_id === selectedProviderId
+    rate => rate.governorate === customerInfo.governorate &&
+      rate.provider_id === selectedProviderId
   );
-  
+
   // Calculate shipping cost
-  const shipping = selectedShippingRate ? 
+  const shipping = selectedShippingRate ?
     (subtotal >= selectedShippingRate.free_shipping_threshold ? 0 : selectedShippingRate.rate) : 50;
-  
+
+  // Default governorates if none are loaded from the database
+  const defaultGovernorates = [
+    'Cairo', 'Alexandria', 'Giza', 'Luxor', 'Aswan', 'Hurghada', 'Sharm El Sheikh',
+    'Port Said', 'Suez', 'Ismailia', 'Mansoura', 'Tanta', 'Assiut', 'Fayoum'
+  ];
+
   const total = subtotal + shipping;
 
   useEffect(() => {
@@ -81,7 +87,7 @@ export const CheckoutForm = () => {
       setCustomerInfo(prev => ({ ...prev, email: user.email || "" }));
     }
   }, [user]);
-  
+
   // When governorate changes, select the first available provider for that governorate
   useEffect(() => {
     if (customerInfo.governorate && shippingRates.length > 0) {
@@ -93,16 +99,99 @@ export const CheckoutForm = () => {
   }, [customerInfo.governorate, shippingRates, selectedProviderId]);
 
   const fetchShippingProviders = async () => {
-    const { data } = await supabase.from('shipping_providers').select('*').eq('is_active', true);
-    if (data && data.length > 0) {
-      setShippingProviders(data);
-      setSelectedProviderId(data[0].id);
+    try {
+      const { data, error } = await supabase.from('shipping_providers').select('*').eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching shipping providers:', error);
+        // Use default providers if there's an error
+        const defaultProviders = [
+          { id: 'bosta', name: 'Bosta', base_rate: 60, free_shipping_threshold: 1000 },
+          { id: 'aramex', name: 'Aramex', base_rate: 75, free_shipping_threshold: 1000 }
+        ];
+        setShippingProviders(defaultProviders);
+        setSelectedProviderId(defaultProviders[0].id);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        setShippingProviders(data);
+        setSelectedProviderId(data[0].id);
+      } else {
+        // Use default providers if no data is returned
+        const defaultProviders = [
+          { id: 'bosta', name: 'Bosta', base_rate: 60, free_shipping_threshold: 1000 },
+          { id: 'aramex', name: 'Aramex', base_rate: 75, free_shipping_threshold: 1000 }
+        ];
+        setShippingProviders(defaultProviders);
+        setSelectedProviderId(defaultProviders[0].id);
+      }
+    } catch (err) {
+      console.error('Exception fetching shipping providers:', err);
+      // Use default providers if there's an exception
+      const defaultProviders = [
+        { id: 'bosta', name: 'Bosta', base_rate: 60, free_shipping_threshold: 1000 },
+        { id: 'aramex', name: 'Aramex', base_rate: 75, free_shipping_threshold: 1000 }
+      ];
+      setShippingProviders(defaultProviders);
+      setSelectedProviderId(defaultProviders[0].id);
     }
   };
 
   const fetchShippingRates = async () => {
-    const { data } = await supabase.from('shipping_rates').select('*');
-    if (data) setShippingRates(data);
+    try {
+      const { data, error } = await supabase.from('shipping_rates').select('*');
+
+      if (error) {
+        console.error('Error fetching shipping rates:', error);
+        // Use default rates if there's an error
+        generateDefaultShippingRates();
+        return;
+      }
+
+      if (data && data.length > 0) {
+        setShippingRates(data);
+      } else {
+        // Use default rates if no data is returned
+        generateDefaultShippingRates();
+      }
+    } catch (err) {
+      console.error('Exception fetching shipping rates:', err);
+      // Use default rates if there's an exception
+      generateDefaultShippingRates();
+    }
+  };
+
+  // Generate default shipping rates for all governorates and providers
+  const generateDefaultShippingRates = () => {
+    const rates: ShippingRate[] = [];
+
+    // For each default governorate
+    defaultGovernorates.forEach(governorate => {
+      // For Bosta
+      rates.push({
+        id: `bosta-${governorate}`,
+        governorate,
+        rate: governorate === 'Cairo' || governorate === 'Giza' ? 50 :
+          governorate === 'Alexandria' ? 60 :
+            governorate === 'Luxor' || governorate === 'Assiut' ? 80 : 90,
+        free_shipping_threshold: 1000,
+        provider_id: 'bosta'
+      });
+
+      // For Aramex
+      rates.push({
+        id: `aramex-${governorate}`,
+        governorate,
+        rate: governorate === 'Cairo' || governorate === 'Giza' ? 65 :
+          governorate === 'Alexandria' ? 75 :
+            governorate === 'Luxor' || governorate === 'Assiut' ? 95 : 105,
+        free_shipping_threshold: 1000,
+        provider_id: 'aramex'
+      });
+    });
+
+    setShippingRates(rates);
   };
 
   const fetchSavedAddresses = async () => {
@@ -150,14 +239,14 @@ export const CheckoutForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm() || cartItems.length === 0) return;
-    
+
     setIsLoading(true);
 
     try {
       let userId = user?.id;
-      
+
       // If user is not logged in, create a new account
       if (!user) {
         if (!showGuestCheckout) {
@@ -165,20 +254,20 @@ export const CheckoutForm = () => {
           setIsLoading(false);
           return;
         }
-        
+
         // Validate password
         if (guestPassword.length < 6) {
           toast.error("Password must be at least 6 characters long");
           setIsLoading(false);
           return;
         }
-        
+
         if (guestPassword !== confirmGuestPassword) {
           toast.error("Passwords don't match");
           setIsLoading(false);
           return;
         }
-        
+
         // Create new user account
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: customerInfo.email,
@@ -190,21 +279,21 @@ export const CheckoutForm = () => {
             }
           }
         });
-        
+
         if (authError) {
           toast.error(authError.message || "Failed to create account");
           setIsLoading(false);
           return;
         }
-        
+
         userId = authData.user?.id;
-        
+
         if (!userId) {
           toast.error("Failed to create account");
           setIsLoading(false);
           return;
         }
-        
+
         // Create customer record
         const { error: customerError } = await supabase
           .from('customers')
@@ -213,13 +302,25 @@ export const CheckoutForm = () => {
             name: customerInfo.name,
             email: customerInfo.email
           });
-          
+
         if (customerError) {
           console.error('Customer creation failed:', customerError);
         }
-        
+
         toast.success("Account created successfully! You can now log in with your email and password.");
       }
+
+      // Get shipping provider name
+      const providerName = shippingProviders.find(p => p.id === selectedProviderId)?.name ||
+        (selectedProviderId === 'bosta' ? 'Bosta' :
+          selectedProviderId === 'aramex' ? 'Aramex' : 'Unknown');
+
+      // Generate order number
+      const orderNumber = `V${new Date().getFullYear().toString().slice(-2)}${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+
+      // Calculate estimated delivery date (5-7 days from now)
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + 5 + Math.floor(Math.random() * 3));
 
       // Create order
       const { data: order, error: orderError } = await supabase
@@ -229,9 +330,19 @@ export const CheckoutForm = () => {
           product_ids: cartItems.map(item => item.id),
           total: total,
           status: "pending",
+          payment_status: paymentMethod === 'cod' ? 'pending' : 'pending',
           payment_method: paymentMethod,
           shipping_address: customerInfo,
-          note: `Payment: ${paymentMethod === 'cod' ? 'Cash on Delivery' : 'Card Payment'}`
+          shipping_cost: shipping,
+          shipping_provider: providerName,
+          order_number: orderNumber,
+          estimated_delivery_date: deliveryDate.toISOString().split('T')[0],
+          note: `Payment: ${paymentMethod === 'cod' ? 'Cash on Delivery' :
+              paymentMethod === 'card' ? 'Card Payment' :
+                paymentMethod === 'instapay' ? 'Instapay' :
+                  paymentMethod === 'vodafone' ? 'Vodafone Cash' :
+                    paymentMethod === 'fawry' ? 'Fawry' : 'Unknown'
+            }`
         })
         .select()
         .single();
@@ -259,13 +370,13 @@ export const CheckoutForm = () => {
           customer_id: userId,
           ...customerInfo
         });
-      
+
       if (addressError) console.warn('Failed to save address:', addressError);
 
       clearCart();
       toast.success("Order placed successfully!");
       navigate(`/order-confirmation/${order.id}`);
-      
+
     } catch (error: any) {
       console.error('Order creation failed:', error);
       toast.error("Failed to place order. Please try again.");
@@ -367,7 +478,10 @@ export const CheckoutForm = () => {
                   <SelectValue placeholder="Select governorate" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from(new Set(shippingRates.map(rate => rate.governorate))).map((governorate) => (
+                  {(shippingRates.length > 0
+                    ? Array.from(new Set(shippingRates.map(rate => rate.governorate)))
+                    : defaultGovernorates
+                  ).map((governorate) => (
                     <SelectItem key={governorate} value={governorate}>
                       {governorate}
                     </SelectItem>
@@ -376,7 +490,7 @@ export const CheckoutForm = () => {
               </Select>
             </div>
           </div>
-          
+
           {/* Shipping Provider Selection */}
           {customerInfo.governorate && (
             <div>
@@ -390,16 +504,24 @@ export const CheckoutForm = () => {
                   <SelectValue placeholder="Select shipping provider" />
                 </SelectTrigger>
                 <SelectContent>
-                  {shippingRates
-                    .filter(rate => rate.governorate === customerInfo.governorate)
-                    .map((rate) => {
-                      const provider = shippingProviders.find(p => p.id === rate.provider_id);
-                      return provider ? (
-                        <SelectItem key={rate.provider_id} value={rate.provider_id}>
-                          {provider.name} ({rate.rate} EGP shipping{rate.free_shipping_threshold > 0 ? `, free over ${rate.free_shipping_threshold} EGP` : ''})
-                        </SelectItem>
-                      ) : null;
-                    })}
+                  {shippingRates.length > 0 ? (
+                    shippingRates
+                      .filter(rate => rate.governorate === customerInfo.governorate)
+                      .map((rate) => {
+                        const provider = shippingProviders.find(p => p.id === rate.provider_id);
+                        return provider ? (
+                          <SelectItem key={rate.provider_id} value={rate.provider_id}>
+                            {provider.name} ({rate.rate} EGP shipping{rate.free_shipping_threshold > 0 ? `, free over ${rate.free_shipping_threshold} EGP` : ''})
+                          </SelectItem>
+                        ) : null;
+                      })
+                  ) : (
+                    // Default providers if none are loaded from the database
+                    <>
+                      <SelectItem value="bosta">Bosta (50 EGP shipping, free over 1,000 EGP)</SelectItem>
+                      <SelectItem value="aramex">Aramex (65 EGP shipping, free over 1,000 EGP)</SelectItem>
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -455,7 +577,7 @@ export const CheckoutForm = () => {
               <Label htmlFor="fawry">Fawry</Label>
             </div>
           </RadioGroup>
-          
+
           {paymentMethod === 'instapay' && (
             <div className="mt-4 p-3 bg-slate-50 rounded-md">
               <p className="text-sm text-slate-700 mb-2">
@@ -467,7 +589,7 @@ export const CheckoutForm = () => {
               </p>
             </div>
           )}
-          
+
           {paymentMethod === 'vodafone' && (
             <div className="mt-4 p-3 bg-slate-50 rounded-md">
               <p className="text-sm text-slate-700 mb-2">
@@ -479,7 +601,7 @@ export const CheckoutForm = () => {
               </p>
             </div>
           )}
-          
+
           {paymentMethod === 'fawry' && (
             <div className="mt-4 p-3 bg-slate-50 rounded-md">
               <p className="text-sm text-slate-700 mb-2">
@@ -582,9 +704,9 @@ export const CheckoutForm = () => {
             className="w-full bg-coral-peach hover:bg-coral-peach/80 mt-6"
             disabled={isLoading || cartItems.length === 0}
           >
-            {isLoading ? 'Placing Order...' : 
+            {isLoading ? 'Placing Order...' :
               showGuestCheckout && !user ? 'Create Account & Place Order' :
-              (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
+                (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
           </Button>
         </CardContent>
       </Card>

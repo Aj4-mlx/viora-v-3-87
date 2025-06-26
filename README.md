@@ -1,8 +1,31 @@
-# Welcome to your Lovable project
+# Viora Jewelry E-commerce Website
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/3943a5ef-76ee-4f60-81d9-651c8b25460d
+
+## Database Setup
+
+This project uses Supabase as the backend. To set up the database:
+
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Copy your Supabase URL and anon key to a `.env` file:
+
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+3. Run the setup script to create the necessary tables and seed the database:
+
+```sh
+node scripts/setup-database.js
+```
+
+This script will:
+- Run all migrations in the `supabase/migrations` folder
+- Seed the database with sample collections and associate them with products
 
 ## How can I edit this code?
 
@@ -59,6 +82,36 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Authentication, Database, Storage)
+
+## Features
+
+- **Authentication**: Email/password, Google, and Facebook sign-in
+- **Product Browsing**: Browse products by category, collection, or search
+- **Shopping Cart**: Add, remove, and update quantities of products
+- **Checkout**: Complete checkout with multiple payment options
+- **Order Tracking**: Track order status and history
+- **User Account**: View and manage account details, orders, and addresses
+- **Collections**: Browse curated collections of products
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+
+## Payment Methods
+
+The following payment methods are supported:
+
+- Cash on Delivery
+- Credit/Debit Card
+- Instapay
+- Vodafone Cash
+- Fawry
+
+## Shipping
+
+Shipping is calculated based on:
+
+- Shipping provider (Bosta, Aramex)
+- Delivery location (governorate)
+- Order total (free shipping over 1,000 EGP)
 
 ## How can I deploy this project?
 
