@@ -6,16 +6,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { searchQuery, setSearchQuery, setSearchResults, setIsSearching } = useSearch();
   const { cartCount } = useCart();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
+    }
+    checkAuth();
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      checkAuth();
+    });
+    return () => { listener.subscription.unsubscribe(); };
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -53,7 +64,8 @@ export const Header = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    await supabase.auth.signOut();
+    setIsSignedIn(false);
     setShowAccountMenu(false);
     navigate('/');
   };
@@ -124,44 +136,25 @@ export const Header = () => {
             </Link>
 
             {/* Account and Sign Out (desktop) */}
-            {user ? (
-              <div className="relative" ref={accountMenuRef}>
+            {isSignedIn && (
+              <>
+                <Link to="/account">
+                  <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                    Account
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"
                   className="border-slate-200 hover:border-coral-peach hover:text-coral-peach"
-                  onClick={() => setShowAccountMenu(!showAccountMenu)}
+                  onClick={handleSignOut}
                 >
-                  Account
+                  Sign Out
                 </Button>
-                {showAccountMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 z-50">
-                    <div className="py-1">
-                      <Link
-                        to="/account"
-                        className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                        onClick={() => setShowAccountMenu(false)}
-                      >
-                        My Account
-                      </Link>
-                      <Link
-                        to="/order-tracking"
-                        className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                        onClick={() => setShowAccountMenu(false)}
-                      >
-                        Track Orders
-                      </Link>
-                      <button
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100"
-                        onClick={handleSignOut}
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
+              </>
+            )}
+            {/* Sign In (desktop, only if not signed in) */}
+            {!isSignedIn && (
               <Link to="/sign-in">
                 <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
                   Sign In
@@ -231,37 +224,27 @@ export const Header = () => {
               >
                 Cart ({cartCount})
               </Link>
-              {user ? (
-                <>
-                  <Link
-                    to="/account"
-                    className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Account
-                  </Link>
-                  <Link
-                    to="/order-tracking"
-                    className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Track Orders
-                  </Link>
-                  <button
-                    className="text-red-600 text-left px-4 py-2 hover:bg-slate-100 rounded transition-colors font-medium"
-                    onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/sign-in"
-                  className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+              <Link
+                to="/account"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Account
+              </Link>
+              <Link
+                to="/sign-in"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              {isSignedIn && (
+                <button
+                  className="text-red-600 text-left px-4 py-2 hover:bg-slate-100 rounded transition-colors font-medium"
+                  onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                 >
-                  Sign In
-                </Link>
+                  Sign Out
+                </button>
               )}
             </nav>
           </div>
