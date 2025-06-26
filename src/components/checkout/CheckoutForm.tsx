@@ -92,15 +92,11 @@ export const CheckoutForm = () => {
   useEffect(() => {
     if (customerInfo.governorate && shippingRates.length > 0) {
       const availableRates = shippingRates.filter(rate => rate.governorate === customerInfo.governorate);
-      if (availableRates.length > 0) {
-        // Always set a provider when governorate changes to ensure one is selected
+      if (availableRates.length > 0 && !selectedProviderId) {
         setSelectedProviderId(availableRates[0].provider_id);
-      } else if (shippingProviders.length > 0) {
-        // If no rates for this governorate, use the first provider
-        setSelectedProviderId(shippingProviders[0].id);
       }
     }
-  }, [customerInfo.governorate, shippingRates, shippingProviders]);
+  }, [customerInfo.governorate, shippingRates, selectedProviderId]);
 
   const fetchShippingProviders = async () => {
     try {
@@ -224,10 +220,6 @@ export const CheckoutForm = () => {
       toast.error('Please select your governorate.');
       return false;
     }
-    if (!selectedProviderId) {
-      toast.error('Please select a shipping provider.');
-      return false;
-    }
     if (!customerInfo.city.trim()) {
       toast.error('Please enter your city.');
       return false;
@@ -330,16 +322,6 @@ export const CheckoutForm = () => {
       const deliveryDate = new Date();
       deliveryDate.setDate(deliveryDate.getDate() + 5 + Math.floor(Math.random() * 3));
 
-      // Determine payment status based on payment method
-      const paymentStatus = paymentMethod === 'cod' ? 'pending' :
-        (paymentMethod === 'instapay' || paymentMethod === 'vodafone' || paymentMethod === 'fawry') ?
-          'awaiting_payment' : 'pending';
-
-      // Determine order status based on payment method
-      const orderStatus = paymentMethod === 'cod' ? 'pending' :
-        (paymentMethod === 'instapay' || paymentMethod === 'vodafone' || paymentMethod === 'fawry') ?
-          'awaiting_payment' : 'pending';
-
       // Create order
       const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -347,19 +329,19 @@ export const CheckoutForm = () => {
           customer_id: userId,
           product_ids: cartItems.map(item => item.id),
           total: total,
-          status: orderStatus,
-          payment_status: paymentStatus,
+          status: "pending",
+          payment_status: paymentMethod === 'cod' ? 'pending' : 'pending',
           payment_method: paymentMethod,
-          shipping_address: JSON.stringify(customerInfo), // Convert to JSON string
+          shipping_address: customerInfo,
           shipping_cost: shipping,
           shipping_provider: providerName,
           order_number: orderNumber,
           estimated_delivery_date: deliveryDate.toISOString().split('T')[0],
           note: `Payment: ${paymentMethod === 'cod' ? 'Cash on Delivery' :
-            paymentMethod === 'card' ? 'Card Payment' :
-              paymentMethod === 'instapay' ? 'Instapay' :
-                paymentMethod === 'vodafone' ? 'Vodafone Cash' :
-                  paymentMethod === 'fawry' ? 'Fawry' : 'Unknown'
+              paymentMethod === 'card' ? 'Card Payment' :
+                paymentMethod === 'instapay' ? 'Instapay' :
+                  paymentMethod === 'vodafone' ? 'Vodafone Cash' :
+                    paymentMethod === 'fawry' ? 'Fawry' : 'Unknown'
             }`
         })
         .select()

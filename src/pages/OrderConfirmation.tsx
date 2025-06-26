@@ -32,12 +32,10 @@ const OrderConfirmation = () => {
     }, [orderId]);
 
     let deliveryInfo = null;
-    if (order && order.shipping_address) {
+    if (order && order.note) {
         try {
-            deliveryInfo = JSON.parse(order.shipping_address);
-        } catch (e) {
-            console.error("Error parsing shipping address:", e);
-        }
+            deliveryInfo = JSON.parse(order.note);
+        } catch { }
     }
 
     return (
@@ -59,72 +57,14 @@ const OrderConfirmation = () => {
                                     <div className="text-center mb-6">
                                         <h2 className="text-2xl font-bold mb-2 text-coral-peach">Thank you for your order!</h2>
                                         <div className="text-slate-700 mb-2">Your order has been placed successfully.</div>
-                                        <div className="text-slate-500 text-sm">Order Number: <span className="font-mono">{order.order_number || order.id}</span></div>
+                                        <div className="text-slate-500 text-sm">Order ID: <span className="font-mono">{order.id}</span></div>
                                     </div>
                                     <div className="mb-4">
                                         <b>Status:</b> <span className="capitalize">{order.status}</span>
                                     </div>
                                     <div className="mb-4">
-                                        <b>Payment Status:</b> <span className="capitalize">{order.payment_status}</span>
-                                    </div>
-                                    <div className="mb-4">
-                                        <b>Payment Method:</b> <span className="capitalize">
-                                            {order.payment_method === 'cod' ? 'Cash on Delivery' :
-                                                order.payment_method === 'card' ? 'Credit/Debit Card' :
-                                                    order.payment_method === 'instapay' ? 'Instapay' :
-                                                        order.payment_method === 'vodafone' ? 'Vodafone Cash' :
-                                                            order.payment_method === 'fawry' ? 'Fawry' : order.payment_method}
-                                        </span>
-                                    </div>
-                                    <div className="mb-4">
                                         <b>Total:</b> {order.total} EGP
                                     </div>
-
-                                    {/* Payment instructions for non-COD methods */}
-                                    {order.payment_method === 'instapay' && (
-                                        <div className="mb-6 p-4 bg-blue-50 rounded-md border border-blue-200">
-                                            <h3 className="font-bold text-blue-800 mb-2">Instapay Payment Instructions</h3>
-                                            <p className="text-blue-700 mb-2">Please complete your payment within 24 hours to avoid order cancellation.</p>
-                                            <ol className="list-decimal ml-5 text-blue-700">
-                                                <li>Open your Instapay app</li>
-                                                <li>Select "Pay Merchant"</li>
-                                                <li>Enter merchant code: VIORA2023</li>
-                                                <li>Enter the exact amount: {order.total} EGP</li>
-                                                <li>In the reference field, enter your order number: {order.order_number}</li>
-                                                <li>Complete the payment</li>
-                                            </ol>
-                                            <p className="mt-2 text-blue-700">We'll update your order status once payment is confirmed.</p>
-                                        </div>
-                                    )}
-
-                                    {order.payment_method === 'vodafone' && (
-                                        <div className="mb-6 p-4 bg-red-50 rounded-md border border-red-200">
-                                            <h3 className="font-bold text-red-800 mb-2">Vodafone Cash Payment Instructions</h3>
-                                            <p className="text-red-700 mb-2">Please complete your payment within 24 hours to avoid order cancellation.</p>
-                                            <ol className="list-decimal ml-5 text-red-700">
-                                                <li>Dial *9# on your Vodafone line</li>
-                                                <li>Select "Pay Merchant"</li>
-                                                <li>Enter merchant number: 01XXXXXXXXX</li>
-                                                <li>Enter the exact amount: {order.total} EGP</li>
-                                                <li>Use your order number as reference: {order.order_number}</li>
-                                            </ol>
-                                            <p className="mt-2 text-red-700">We'll update your order status once payment is confirmed.</p>
-                                        </div>
-                                    )}
-                                    <div className="mb-4">
-                                        <b>Shipping Provider:</b> {order.shipping_provider || "Standard Shipping"}
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <b>Shipping Cost:</b> {order.shipping_cost || 0} EGP
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <b>Estimated Delivery:</b> {order.estimated_delivery_date ?
-                                            new Date(order.estimated_delivery_date).toLocaleDateString() :
-                                            "5-7 business days"}
-                                    </div>
-
                                     {deliveryInfo && (
                                         <div className="mb-4">
                                             <b>Delivery Info:</b>
@@ -133,6 +73,7 @@ const OrderConfirmation = () => {
                                                 <li>Email: {deliveryInfo.email}</li>
                                                 <li>Phone: {deliveryInfo.phone}</li>
                                                 <li>Address: {deliveryInfo.address}, {deliveryInfo.city}, {deliveryInfo.governorate}</li>
+                                                <li>Payment: {deliveryInfo.paymentMethod}</li>
                                             </ul>
                                         </div>
                                     )}
