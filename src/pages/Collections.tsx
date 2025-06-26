@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, ArrowRight } from "lucide-react";
@@ -7,73 +7,116 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
+
+interface CollectionItem {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  image_url: string;
+  rating?: number;
+}
+
+interface Collection {
+  id: string;
+  name: string;
+  description: string;
+  theme: string;
+  image_url: string;
+  items: CollectionItem[];
+}
 
 const Collections = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addToCart } = useCart();
 
-  const collections = [
-    {
-      id: 1,
-      name: "Wedding Collection",
-      description: "Elegant pieces for your special day",
-      image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
-      itemCount: 42,
-      theme: "Timeless elegance for matrimonial moments",
-      items: [
-        { name: "Diamond Engagement Ring", type: "Ring", price: "45,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Pearl Wedding Necklace", type: "Necklace", price: "18,500 EGP", rating: 5, image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" },
-        { name: "Bridal Tennis Bracelet", type: "Bracelet", price: "22,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Wedding Band Set", type: "Ring", price: "28,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" }
-      ]
-    },
-    {
-      id: 2,
-      name: "Summer Collection",
-      description: "Light and vibrant pieces for sunny days",
-      image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80",
-      itemCount: 36,
-      theme: "Bright and breezy jewelry for warm weather",
-      items: [
-        { name: "Coral Reef Necklace", type: "Necklace", price: "12,500 EGP", rating: 4, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80" },
-        { name: "Sunshine Ring", type: "Ring", price: "8,900 EGP", rating: 5, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Ocean Wave Bracelet", type: "Bracelet", price: "6,800 EGP", rating: 4, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Tropical Earrings", type: "Earrings", price: "5,200 EGP", rating: 5, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" }
-      ]
-    },
-    {
-      id: 3,
-      name: "Vintage Collection",
-      description: "Classic designs with timeless appeal",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
-      itemCount: 28,
-      theme: "Nostalgic pieces inspired by bygone eras",
-      items: [
-        { name: "Art Deco Ring", type: "Ring", price: "35,000 EGP", rating: 5, image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Victorian Pendant", type: "Necklace", price: "24,000 EGP", rating: 4, image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" },
-        { name: "Antique Charm Bracelet", type: "Bracelet", price: "16,500 EGP", rating: 5, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Vintage Pearl Earrings", type: "Earrings", price: "12,800 EGP", rating: 4, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" }
-      ]
-    },
-    {
-      id: 4,
-      name: "Modern Minimalist",
-      description: "Clean lines and contemporary designs",
-      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80",
-      itemCount: 32,
-      theme: "Simple elegance for the modern woman",
-      items: [
-        { name: "Geometric Ring", type: "Ring", price: "14,500 EGP", rating: 4, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Minimalist Chain", type: "Necklace", price: "9,800 EGP", rating: 5, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2874&q=80" },
-        { name: "Sleek Bangle", type: "Bracelet", price: "7,200 EGP", rating: 4, image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" },
-        { name: "Modern Studs", type: "Earrings", price: "4,500 EGP", rating: 5, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80" }
-      ]
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
+
+  const fetchCollections = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch collections
+      const { data: collectionsData, error: collectionsError } = await supabase
+        .from('collections')
+        .select('*');
+
+      if (collectionsError) throw collectionsError;
+
+      if (!collectionsData || collectionsData.length === 0) {
+        setError("No collections found");
+        setLoading(false);
+        return;
+      }
+
+      // For each collection, fetch its products
+      const collectionsWithItems = await Promise.all(
+        collectionsData.map(async (collection) => {
+          // Get product IDs for this collection
+          const { data: productRelations, error: relationsError } = await supabase
+            .from('product_collections')
+            .select('product_id')
+            .eq('collection_id', collection.id);
+
+          if (relationsError) throw relationsError;
+
+          if (!productRelations || productRelations.length === 0) {
+            return {
+              ...collection,
+              items: []
+            };
+          }
+
+          // Get product details
+          const productIds = productRelations.map(relation => relation.product_id);
+          const { data: products, error: productsError } = await supabase
+            .from('products')
+            .select('*')
+            .in('id', productIds);
+
+          if (productsError) throw productsError;
+
+          // Add a random rating between 4-5 for display purposes
+          const itemsWithRating = (products || []).map(product => ({
+            ...product,
+            rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
+          }));
+
+          return {
+            ...collection,
+            items: itemsWithRating
+          };
+        })
+      );
+
+      setCollections(collectionsWithItems);
+      if (collectionsWithItems.length > 0) {
+        setSelectedCollection(collectionsWithItems[0]);
+      }
+
+    } catch (err: any) {
+      console.error("Error fetching collections:", err);
+      setError(err.message || "Failed to load collections");
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const [selectedCollection, setSelectedCollection] = useState(collections[0]);
+  };
 
   const handleViewAllInShop = () => {
+    if (!selectedCollection) return;
+
     toast({
       title: "Redirecting to Shop",
       description: `Viewing all ${selectedCollection.name} items in shop...`,
@@ -81,17 +124,58 @@ const Collections = () => {
     navigate('/shop');
   };
 
-  const handleAddToCart = (itemName: string) => {
-    toast({
-      title: "Added to Cart",
-      description: `${itemName} has been added to your cart.`,
+  const handleAddToCart = (item: CollectionItem) => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image_url || ''
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Header />
+        <div className="container mx-auto px-4 py-16 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-xl text-slate-600">Loading collections...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !selectedCollection) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Header />
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">
+              Our Collections
+            </h1>
+            <p className="text-xl text-red-600 max-w-2xl mx-auto">
+              {error || "No collections available at the moment."}
+            </p>
+            <Button
+              className="mt-8 bg-coral-peach hover:bg-coral-peach/80"
+              onClick={() => navigate('/shop')}
+            >
+              Browse All Products
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-r from-coral-peach/10 to-pale-peach/20">
         <div className="container mx-auto px-4">
@@ -100,7 +184,7 @@ const Collections = () => {
               Our Collections
             </h1>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Explore our carefully curated themed collections, each telling a unique story 
+              Explore our carefully curated themed collections, each telling a unique story
               through exquisite jewelry pieces designed for every occasion.
             </p>
           </div>
@@ -117,8 +201,8 @@ const Collections = () => {
                 variant={selectedCollection.id === collection.id ? "default" : "outline"}
                 size="lg"
                 onClick={() => setSelectedCollection(collection)}
-                className={selectedCollection.id === collection.id 
-                  ? "bg-coral-peach hover:bg-coral-peach/80" 
+                className={selectedCollection.id === collection.id
+                  ? "bg-coral-peach hover:bg-coral-peach/80"
                   : "border-slate-300 hover:border-coral-peach hover:text-coral-peach"
                 }
               >
@@ -141,15 +225,15 @@ const Collections = () => {
               {selectedCollection.theme}
             </p>
             <p className="text-slate-500">
-              {selectedCollection.itemCount} unique pieces
+              {selectedCollection.items.length} unique pieces
             </p>
           </div>
 
           {/* Collection Hero Image */}
           <div className="mb-12">
             <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden mb-6">
-              <img 
-                src={selectedCollection.image} 
+              <img
+                src={selectedCollection.image_url}
                 alt={selectedCollection.name}
                 className="w-full h-full object-cover"
               />
@@ -162,7 +246,7 @@ const Collections = () => {
               <h3 className="text-2xl font-serif font-bold text-slate-900">
                 Featured Items
               </h3>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={handleViewAllInShop}
                 className="border-coral-peach text-coral-peach hover:bg-coral-peach hover:text-white"
@@ -172,49 +256,62 @@ const Collections = () => {
               </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {selectedCollection.items.map((item, index) => (
-                <Card key={index} className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white">
-                  <CardContent className="p-0">
-                    <div className="aspect-square bg-slate-100 mb-4 overflow-hidden relative">
-                      <img 
-                        src={item.image} 
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <span className="absolute top-3 left-3 bg-coral-peach text-white text-xs px-2 py-1 rounded-full font-medium">
-                        {item.type}
-                      </span>
-                    </div>
-                    <div className="p-4">
-                      <h4 className="font-semibold text-slate-900 mb-2 group-hover:text-coral-peach transition-colors">
-                        {item.name}
-                      </h4>
-                      <div className="flex items-center mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-4 h-4 ${i < item.rating ? 'text-muted-mustard fill-current' : 'text-slate-300'}`} 
-                          />
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-semibold text-slate-900">
-                          {item.price}
+            {selectedCollection.items.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
+                <p className="text-slate-600">No items available in this collection yet.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {selectedCollection.items.map((item) => (
+                  <Card
+                    key={item.id}
+                    className="group cursor-pointer border-slate-200 hover:shadow-lg transition-all duration-300 bg-white"
+                    onClick={() => navigate(`/product/${item.id}`)}
+                  >
+                    <CardContent className="p-0">
+                      <div className="aspect-square bg-slate-100 mb-4 overflow-hidden relative">
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <span className="absolute top-3 left-3 bg-coral-peach text-white text-xs px-2 py-1 rounded-full font-medium">
+                          {item.category}
                         </span>
-                        <Button 
-                          size="sm"
-                          className="bg-coral-peach hover:bg-coral-peach/80 text-white"
-                          onClick={() => handleAddToCart(item.name)}
-                        >
-                          Add to Cart
-                        </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                      <div className="p-4">
+                        <h4 className="font-semibold text-slate-900 mb-2 group-hover:text-coral-peach transition-colors">
+                          {item.name}
+                        </h4>
+                        <div className="flex items-center mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${i < (item.rating || 5) ? 'text-muted-mustard fill-current' : 'text-slate-300'}`}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-semibold text-slate-900">
+                            {item.price.toLocaleString()} EGP
+                          </span>
+                          <Button
+                            size="sm"
+                            className="bg-coral-peach hover:bg-coral-peach/80 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddToCart(item);
+                            }}
+                          >
+                            Add to Cart
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Collection Story */}
@@ -223,9 +320,9 @@ const Collections = () => {
               About {selectedCollection.name}
             </h3>
             <p className="text-slate-600 leading-relaxed">
-              {selectedCollection.description}. Each piece in this collection has been carefully 
-              selected to embody the essence of {selectedCollection.theme.toLowerCase()}. 
-              From delicate rings to statement necklaces, every item tells a story of craftsmanship 
+              {selectedCollection.description}. Each piece in this collection has been carefully
+              selected to embody the essence of {selectedCollection.theme.toLowerCase()}.
+              From delicate rings to statement necklaces, every item tells a story of craftsmanship
               and beauty that will accompany you through life's most precious moments.
             </p>
           </div>

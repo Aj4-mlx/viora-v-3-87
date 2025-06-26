@@ -67,7 +67,7 @@ export const Header = () => {
     await supabase.auth.signOut();
     setIsSignedIn(false);
     setShowAccountMenu(false);
-    window.location.href = '/';
+    navigate('/');
   };
 
   return (
@@ -75,7 +75,7 @@ export const Header = () => {
       <div className="container mx-auto px-4">
         {/* Top banner */}
         <div className="bg-slate-900 text-white text-center py-2 text-sm -mx-4 mb-4">
-          Free shipping on orders over 5,000 EGP • Complimentary gift wrapping
+          Free shipping on orders over 1,000 EGP
         </div>
 
         {/* Main header */}

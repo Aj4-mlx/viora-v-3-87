@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
+import { Eye, EyeOff } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,10 +23,19 @@ interface CustomerInfo {
   governorate: string;
 }
 
+interface ShippingProvider {
+  id: string;
+  name: string;
+  base_rate: number;
+  free_shipping_threshold: number;
+}
+
 interface ShippingRate {
+  id: string;
   governorate: string;
   rate: number;
   free_shipping_threshold: number;
+  provider_id: string;
 }
 
 export const CheckoutForm = () => {
@@ -45,21 +55,50 @@ export const CheckoutForm = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isLoading, setIsLoading] = useState(false);
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
+  const [shippingProviders, setShippingProviders] = useState<ShippingProvider[]>([]);
+  const [selectedProviderId, setSelectedProviderId] = useState<string>("");
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
 
   const subtotal = getTotalPrice();
-  const selectedShippingRate = shippingRates.find(rate => rate.governorate === customerInfo.governorate);
+  
+  // Find the selected shipping rate based on governorate and provider
+  const selectedShippingRate = shippingRates.find(
+    rate => rate.governorate === customerInfo.governorate && 
+            rate.provider_id === selectedProviderId
+  );
+  
+  // Calculate shipping cost
   const shipping = selectedShippingRate ? 
     (subtotal >= selectedShippingRate.free_shipping_threshold ? 0 : selectedShippingRate.rate) : 50;
+  
   const total = subtotal + shipping;
 
   useEffect(() => {
+    fetchShippingProviders();
     fetchShippingRates();
     if (user) {
       fetchSavedAddresses();
       setCustomerInfo(prev => ({ ...prev, email: user.email || "" }));
     }
   }, [user]);
+  
+  // When governorate changes, select the first available provider for that governorate
+  useEffect(() => {
+    if (customerInfo.governorate && shippingRates.length > 0) {
+      const availableRates = shippingRates.filter(rate => rate.governorate === customerInfo.governorate);
+      if (availableRates.length > 0 && !selectedProviderId) {
+        setSelectedProviderId(availableRates[0].provider_id);
+      }
+    }
+  }, [customerInfo.governorate, shippingRates, selectedProviderId]);
+
+  const fetchShippingProviders = async () => {
+    const { data } = await supabase.from('shipping_providers').select('*').eq('is_active', true);
+    if (data && data.length > 0) {
+      setShippingProviders(data);
+      setSelectedProviderId(data[0].id);
+    }
+  };
 
   const fetchShippingRates = async () => {
     const { data } = await supabase.from('shipping_rates').select('*');
@@ -103,25 +142,90 @@ export const CheckoutForm = () => {
     return true;
   };
 
+  // State for guest checkout password
+  const [showGuestCheckout, setShowGuestCheckout] = useState(false);
+  const [guestPassword, setGuestPassword] = useState("");
+  const [confirmGuestPassword, setConfirmGuestPassword] = useState("");
+  const [showGuestPassword, setShowGuestPassword] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm() || cartItems.length === 0) return;
     
-    if (!user) {
-      toast.error("Please sign in to complete your order.");
-      navigate('/sign-in?reason=auth-required');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
+      let userId = user?.id;
+      
+      // If user is not logged in, create a new account
+      if (!user) {
+        if (!showGuestCheckout) {
+          setShowGuestCheckout(true);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Validate password
+        if (guestPassword.length < 6) {
+          toast.error("Password must be at least 6 characters long");
+          setIsLoading(false);
+          return;
+        }
+        
+        if (guestPassword !== confirmGuestPassword) {
+          toast.error("Passwords don't match");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Create new user account
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: customerInfo.email,
+          password: guestPassword,
+          options: {
+            data: {
+              name: customerInfo.name,
+              phone: customerInfo.phone
+            }
+          }
+        });
+        
+        if (authError) {
+          toast.error(authError.message || "Failed to create account");
+          setIsLoading(false);
+          return;
+        }
+        
+        userId = authData.user?.id;
+        
+        if (!userId) {
+          toast.error("Failed to create account");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Create customer record
+        const { error: customerError } = await supabase
+          .from('customers')
+          .insert({
+            id: userId,
+            name: customerInfo.name,
+            email: customerInfo.email
+          });
+          
+        if (customerError) {
+          console.error('Customer creation failed:', customerError);
+        }
+        
+        toast.success("Account created successfully! You can now log in with your email and password.");
+      }
+
       // Create order
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
-          customer_id: user.id,
+          customer_id: userId,
           product_ids: cartItems.map(item => item.id),
           total: total,
           status: "pending",
@@ -148,17 +252,15 @@ export const CheckoutForm = () => {
 
       if (itemsError) throw itemsError;
 
-      // Save address if user wants to
-      if (user) {
-        const { error: addressError } = await supabase
-          .from('customer_addresses')
-          .upsert({
-            customer_id: user.id,
-            ...customerInfo
-          });
-        
-        if (addressError) console.warn('Failed to save address:', addressError);
-      }
+      // Save address
+      const { error: addressError } = await supabase
+        .from('customer_addresses')
+        .upsert({
+          customer_id: userId,
+          ...customerInfo
+        });
+      
+      if (addressError) console.warn('Failed to save address:', addressError);
 
       clearCart();
       toast.success("Order placed successfully!");
@@ -265,15 +367,43 @@ export const CheckoutForm = () => {
                   <SelectValue placeholder="Select governorate" />
                 </SelectTrigger>
                 <SelectContent>
-                  {shippingRates.map((rate) => (
-                    <SelectItem key={rate.governorate} value={rate.governorate}>
-                      {rate.governorate} ({rate.rate} EGP shipping)
+                  {Array.from(new Set(shippingRates.map(rate => rate.governorate))).map((governorate) => (
+                    <SelectItem key={governorate} value={governorate}>
+                      {governorate}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
+          
+          {/* Shipping Provider Selection */}
+          {customerInfo.governorate && (
+            <div>
+              <Label htmlFor="shipping-provider">Shipping Provider *</Label>
+              <Select
+                value={selectedProviderId}
+                onValueChange={setSelectedProviderId}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select shipping provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  {shippingRates
+                    .filter(rate => rate.governorate === customerInfo.governorate)
+                    .map((rate) => {
+                      const provider = shippingProviders.find(p => p.id === rate.provider_id);
+                      return provider ? (
+                        <SelectItem key={rate.provider_id} value={rate.provider_id}>
+                          {provider.name} ({rate.rate} EGP shipping{rate.free_shipping_threshold > 0 ? `, free over ${rate.free_shipping_threshold} EGP` : ''})
+                        </SelectItem>
+                      ) : null;
+                    })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <Label htmlFor="city">City *</Label>
             <Input
@@ -310,11 +440,117 @@ export const CheckoutForm = () => {
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="card" id="card" />
-              <Label htmlFor="card">Credit/Debit Card (Coming Soon)</Label>
+              <Label htmlFor="card">Credit/Debit Card</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="instapay" id="instapay" />
+              <Label htmlFor="instapay">Instapay</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="vodafone" id="vodafone" />
+              <Label htmlFor="vodafone">Vodafone Cash</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="fawry" id="fawry" />
+              <Label htmlFor="fawry">Fawry</Label>
             </div>
           </RadioGroup>
+          
+          {paymentMethod === 'instapay' && (
+            <div className="mt-4 p-3 bg-slate-50 rounded-md">
+              <p className="text-sm text-slate-700 mb-2">
+                <strong>Instapay Instructions:</strong>
+              </p>
+              <p className="text-sm text-slate-600">
+                After placing your order, you'll receive payment instructions via email.
+                Please complete the payment within 24 hours to avoid order cancellation.
+              </p>
+            </div>
+          )}
+          
+          {paymentMethod === 'vodafone' && (
+            <div className="mt-4 p-3 bg-slate-50 rounded-md">
+              <p className="text-sm text-slate-700 mb-2">
+                <strong>Vodafone Cash Instructions:</strong>
+              </p>
+              <p className="text-sm text-slate-600">
+                After placing your order, send the payment to 01XXXXXXXXX with your order number.
+                Please complete the payment within 24 hours to avoid order cancellation.
+              </p>
+            </div>
+          )}
+          
+          {paymentMethod === 'fawry' && (
+            <div className="mt-4 p-3 bg-slate-50 rounded-md">
+              <p className="text-sm text-slate-700 mb-2">
+                <strong>Fawry Instructions:</strong>
+              </p>
+              <p className="text-sm text-slate-600">
+                After placing your order, you'll receive a Fawry reference number.
+                Pay at any Fawry outlet or via the Fawry app within 24 hours.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* Guest Checkout */}
+      {showGuestCheckout && !user && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Create Account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-slate-600 mb-4">
+              To complete your order, we'll create an account for you using your email address.
+              Please set a password to access your account and track your orders in the future.
+            </div>
+            <div>
+              <Label htmlFor="guestPassword">Password *</Label>
+              <div className="relative">
+                <Input
+                  id="guestPassword"
+                  type={showGuestPassword ? "text" : "password"}
+                  value={guestPassword}
+                  onChange={(e) => setGuestPassword(e.target.value)}
+                  placeholder="Create a password"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowGuestPassword(!showGuestPassword)}
+                >
+                  {showGuestPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              {guestPassword && guestPassword.length < 6 && (
+                <p className="text-sm text-red-500 mt-1">Password must be at least 6 characters</p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="confirmGuestPassword">Confirm Password *</Label>
+              <Input
+                id="confirmGuestPassword"
+                type="password"
+                value={confirmGuestPassword}
+                onChange={(e) => setConfirmGuestPassword(e.target.value)}
+                placeholder="Confirm your password"
+                required
+              />
+              {confirmGuestPassword && guestPassword !== confirmGuestPassword && (
+                <p className="text-sm text-red-500 mt-1">Passwords don't match</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Order Summary */}
       <Card>
@@ -330,7 +566,7 @@ export const CheckoutForm = () => {
             <span>Shipping:</span>
             <span>{shipping === 0 ? 'FREE' : `${shipping} EGP`}</span>
           </div>
-          {shipping === 0 && subtotal >= (selectedShippingRate?.free_shipping_threshold || 5000) && (
+          {shipping === 0 && subtotal >= (selectedShippingRate?.free_shipping_threshold || 1000) && (
             <div className="text-sm text-green-600">
               🎉 You qualified for free shipping!
             </div>
@@ -346,7 +582,9 @@ export const CheckoutForm = () => {
             className="w-full bg-coral-peach hover:bg-coral-peach/80 mt-6"
             disabled={isLoading || cartItems.length === 0}
           >
-            {isLoading ? 'Placing Order...' : (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
+            {isLoading ? 'Placing Order...' : 
+              showGuestCheckout && !user ? 'Create Account & Place Order' :
+              (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
           </Button>
         </CardContent>
       </Card>
