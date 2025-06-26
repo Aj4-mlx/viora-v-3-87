@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
@@ -16,12 +15,6 @@ interface ProductFormData {
   price: number;
   category: string;
   stock: number;
-}
-
-interface Collection {
-  id: string;
-  name: string;
-  theme: string;
 }
 
 const categories = [
@@ -39,26 +32,6 @@ const AddProductForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
-
-  useEffect(() => {
-    fetchCollections();
-  }, []);
-
-  const fetchCollections = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("collections")
-        .select("id, name, theme")
-        .order("name");
-
-      if (error) throw error;
-      setCollections(data || []);
-    } catch (error: any) {
-      console.error("Error fetching collections:", error);
-    }
-  };
 
   const form = useForm<ProductFormData>({
     defaultValues: {
@@ -167,7 +140,6 @@ const AddProductForm = () => {
           category: data.category,
           stock: data.stock,
           image_url: imageUrl,
-          collection_ids: selectedCollections.length > 0 ? selectedCollections : null,
         });
 
       if (error) {
@@ -179,7 +151,6 @@ const AddProductForm = () => {
       toast.success('Product created successfully!');
       form.reset();
       removeImage();
-      setSelectedCollections([]);
     } catch (error) {
       console.error('Error creating product:', error);
       toast.error('Failed to create product');
@@ -348,45 +319,6 @@ const AddProductForm = () => {
             </FormItem>
           )}
         />
-
-        {/* Collections */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium">Collections</h3>
-          <div className="border rounded-md p-4 space-y-2">
-            {collections.length === 0 ? (
-              <p className="text-sm text-slate-500">No collections available. Create collections first.</p>
-            ) : (
-              <>
-                <p className="text-sm text-slate-500 mb-3">Select collections for this product:</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {collections.map((collection) => (
-                    <div key={collection.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`collection-${collection.id}`}
-                        checked={selectedCollections.includes(collection.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedCollections([...selectedCollections, collection.id]);
-                          } else {
-                            setSelectedCollections(
-                              selectedCollections.filter((id) => id !== collection.id)
-                            );
-                          }
-                        }}
-                      />
-                      <label
-                        htmlFor={`collection-${collection.id}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {collection.name} <span className="text-slate-400">({collection.theme})</span>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
 
         <Button
           type="submit"

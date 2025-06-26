@@ -8,12 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
-interface Collection {
-  id: string;
-  name: string;
-  theme: string;
-}
-
 interface Product {
   id: string;
   name: string;
@@ -23,25 +17,21 @@ interface Product {
   stock: number;
   image_url: string | null;
   created_at: string;
-  collection_ids?: string[];
-  collections?: Collection[];
 }
 
 const ProductManager = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
-    fetchCollections();
   }, []);
 
   const fetchProducts = async () => {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('*, collections:collection_ids(id, name, theme)')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -56,21 +46,6 @@ const ProductManager = () => {
       toast.error('Failed to fetch products');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchCollections = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('collections')
-        .select('id, name, theme')
-        .order('name');
-
-      if (error) throw error;
-      setCollections(data || []);
-    } catch (error: any) {
-      console.error('Error fetching collections:', error);
-      toast.error('Failed to fetch collections');
     }
   };
 
@@ -145,7 +120,6 @@ const ProductManager = () => {
                   <TableHead>Category</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
-                  <TableHead>Collections</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -173,19 +147,6 @@ const ProductManager = () => {
                       <Badge variant={getStockBadgeVariant(product.stock)}>
                         {product.stock}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {product.collections && product.collections.length > 0 ? (
-                          product.collections.map((collection: any) => (
-                            <Badge key={collection.id} variant="outline" className="bg-slate-100">
-                              {collection.name}
-                            </Badge>
-                          ))
-                        ) : (
-                          <span className="text-slate-400 text-xs">None</span>
-                        )}
-                      </div>
                     </TableCell>
                     <TableCell>
                       {new Date(product.created_at).toLocaleDateString()}
