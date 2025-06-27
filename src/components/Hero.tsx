@@ -16,12 +16,12 @@ export const Hero = () => {
   return (
     <section className="relative floral-gradient-hero text-white overflow-hidden min-h-[90vh] flex items-center">
       <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-floral-deep-violet/30"></div>
-      
+
       {/* Floating floral elements */}
       <div className="absolute top-20 right-20 w-32 h-32 border-2 border-white/20 rounded-full animate-float hidden lg:block"></div>
       <div className="absolute bottom-32 right-40 w-16 h-16 bg-white/10 rounded-full animate-float delay-1000 hidden lg:block"></div>
       <div className="absolute top-40 left-20 w-24 h-24 border border-floral-cream/30 rounded-full animate-float delay-500 hidden lg:block"></div>
-      
+
       {/* Hero Content */}
       <div className="relative container mx-auto px-4 py-24 md:py-32">
         <div className="max-w-3xl">
@@ -30,7 +30,7 @@ export const Hero = () => {
               ✨ Floral Luxury Collection ✨
             </span>
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-6 leading-tight">
             Timeless
             <span className="block text-floral-cream bg-gradient-to-r from-floral-cream via-white to-floral-peach bg-clip-text text-transparent animate-pulse">
@@ -40,32 +40,32 @@ export const Hero = () => {
               in Full Bloom
             </span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed font-elegant max-w-2xl">
-            Discover our curated collection of exquisite jewelry pieces, 
-            each crafted with the delicate beauty of nature and the 
-            precision of master artisans to celebrate life's 
+            Discover our curated collection of exquisite jewelry pieces,
+            each crafted with the delicate beauty of nature and the
+            precision of master artisans to celebrate life's
             most precious moments.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-white text-floral-deep-violet hover:bg-floral-cream font-elegant px-8 py-4 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               onClick={handleShopCollection}
             >
               Shop Collection
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-2 border-white text-white hover:bg-white hover:text-floral-deep-violet px-8 py-4 text-lg font-elegant rounded-full backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 hover:scale-105"
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-floral-deep-violet border-2 border-white text-white hover:bg-white hover:text-floral-deep-violet px-8 py-4 text-lg font-elegant rounded-full backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 hover:scale-105"
               onClick={handleOurStory}
             >
               Our Story
             </Button>
           </div>
-          
+
           <div className="mt-12 flex items-center space-x-8 text-white/80">
             <div className="text-center">
               <div className="text-2xl font-display font-bold text-white">30+</div>
