@@ -19,7 +19,7 @@ const Cart = () => {
             <p className="text-xl text-slate-600 mb-8">Add some beautiful jewelry to get started!</p>
             <Button
               onClick={() => window.location.href = '/shop'}
-              className="bg-puce-red hover:bg-puce-red/80 text-white"
+              className="bg-coral-peach hover:bg-coral-peach/80"
             >
               Continue Shopping
             </Button>

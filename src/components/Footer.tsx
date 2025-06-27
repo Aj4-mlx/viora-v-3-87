@@ -21,31 +21,29 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="bg-pastel-purple border-t border-slate-200">
+    <footer className="bg-slate-50 border-t border-slate-200">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <img 
-              src="/lovable-uploads/bdeee921-691c-475f-bbef-ce45c0eecd46.png" 
-              alt="VIORA" 
-              className="h-10 w-auto mb-4"
-            />
+            <h3 className="text-2xl font-serif font-bold text-slate-900 mb-4">
+              VIORA
+            </h3>
             <p className="text-slate-600 mb-4">
               Timeless jewelry crafted with passion and precision for life's 
               most treasured moments.
             </p>
             <div className="flex space-x-4">
               <Facebook 
-                className="w-5 h-5 text-slate-600 hover:text-rust cursor-pointer transition-colors" 
+                className="w-5 h-5 text-slate-600 hover:text-yellow-600 cursor-pointer transition-colors" 
                 onClick={() => handleSocialClick("Facebook")}
               />
               <Instagram 
-                className="w-5 h-5 text-slate-600 hover:text-rust cursor-pointer transition-colors" 
+                className="w-5 h-5 text-slate-600 hover:text-yellow-600 cursor-pointer transition-colors" 
                 onClick={() => handleSocialClick("Instagram")}
               />
               <Youtube 
-                className="w-5 h-5 text-slate-600 hover:text-rust cursor-pointer transition-colors" 
+                className="w-5 h-5 text-slate-600 hover:text-yellow-600 cursor-pointer transition-colors" 
                 onClick={() => handleSocialClick("YouTube")}
               />
             </div>
@@ -53,30 +51,30 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-puce-red mb-4">Shop</h4>
+            <h4 className="font-semibold text-slate-900 mb-4">Shop</h4>
             <ul className="space-y-2 text-slate-600">
               <li>
-                <Link to="/shop" className="hover:text-rust transition-colors">
+                <Link to="/shop" className="hover:text-yellow-600 transition-colors">
                   Rings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-rust transition-colors">
+                <Link to="/shop" className="hover:text-yellow-600 transition-colors">
                   Necklaces
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-rust transition-colors">
+                <Link to="/shop" className="hover:text-yellow-600 transition-colors">
                   Earrings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-rust transition-colors">
+                <Link to="/shop" className="hover:text-yellow-600 transition-colors">
                   Bracelets
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-rust transition-colors">
+                <Link to="/shop" className="hover:text-yellow-600 transition-colors">
                   New Arrivals
                 </Link>
               </li>
@@ -85,30 +83,30 @@ export const Footer = () => {
 
           {/* Customer Care */}
           <div>
-            <h4 className="font-semibold text-puce-red mb-4">Customer Care</h4>
+            <h4 className="font-semibold text-slate-900 mb-4">Customer Care</h4>
             <ul className="space-y-2 text-slate-600">
               <li>
-                <Link to="/size-guide" className="hover:text-rust transition-colors">
+                <Link to="/size-guide" className="hover:text-yellow-600 transition-colors">
                   Size Guide
                 </Link>
               </li>
               <li>
-                <Link to="/shipping-info" className="hover:text-rust transition-colors">
+                <Link to="/shipping-info" className="hover:text-yellow-600 transition-colors">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-rust transition-colors">
+                <Link to="/returns" className="hover:text-yellow-600 transition-colors">
                   Returns
                 </Link>
               </li>
               <li>
-                <Link to="/care-instructions" className="hover:text-rust transition-colors">
+                <Link to="/care-instructions" className="hover:text-yellow-600 transition-colors">
                   Care Instructions
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-rust transition-colors">
+                <Link to="/contact" className="hover:text-yellow-600 transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -117,17 +115,17 @@ export const Footer = () => {
 
           {/* About */}
           <div>
-            <h4 className="font-semibold text-puce-red mb-4">About Viora</h4>
+            <h4 className="font-semibold text-slate-900 mb-4">About Viora</h4>
             <ul className="space-y-2 text-slate-600">
               <li>
-                <Link to="/about" className="hover:text-rust transition-colors">
+                <Link to="/about" className="hover:text-yellow-600 transition-colors">
                   Our Story
                 </Link>
               </li>
               <li>
                 <button 
                   onClick={() => handleComingSoon("Craftsmanship")}
-                  className="hover:text-rust transition-colors text-left"
+                  className="hover:text-yellow-600 transition-colors text-left"
                 >
                   Craftsmanship
                 </button>
@@ -135,7 +133,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Sustainability")}
-                  className="hover:text-rust transition-colors text-left"
+                  className="hover:text-yellow-600 transition-colors text-left"
                 >
                   Sustainability
                 </button>
@@ -143,7 +141,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Press")}
-                  className="hover:text-rust transition-colors text-left"
+                  className="hover:text-yellow-600 transition-colors text-left"
                 >
                   Press
                 </button>
@@ -151,7 +149,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Careers")}
-                  className="hover:text-rust transition-colors text-left"
+                  className="hover:text-yellow-600 transition-colors text-left"
                 >
                   Careers
                 </button>
@@ -165,13 +163,13 @@ export const Footer = () => {
             © 2024 Viora Jewelry. All rights reserved. | 
             <button 
               onClick={() => handleComingSoon("Privacy Policy")}
-              className="hover:text-rust transition-colors ml-1"
+              className="hover:text-yellow-600 transition-colors ml-1"
             >
               Privacy Policy
             </button> | 
             <button 
               onClick={() => handleComingSoon("Terms of Service")}
-              className="hover:text-rust transition-colors ml-1"
+              className="hover:text-yellow-600 transition-colors ml-1"
             >
               Terms of Service
             </button>

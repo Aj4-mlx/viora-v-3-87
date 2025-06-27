@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import { mapDatabaseProductToProduct, type DatabaseProduct } from "@/types/product";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,14 +47,7 @@ export const Header = () => {
         .from("products")
         .select("*")
         .ilike("name", `%${query}%`);
-      
-      if (data) {
-        // Convert database products to UI products
-        const uiProducts = (data as DatabaseProduct[]).map(mapDatabaseProductToProduct);
-        setSearchResults(uiProducts);
-      } else {
-        setSearchResults([]);
-      }
+      setSearchResults(data || []);
       // Navigate to shop with search results
       navigate('/shop');
     } else {
@@ -83,7 +74,7 @@ export const Header = () => {
     <header className="bg-white shadow-sm border-b border-slate-200">
       <div className="container mx-auto px-4">
         {/* Top banner */}
-        <div className="bg-puce-red text-white text-center py-2 text-sm -mx-4 mb-4">
+        <div className="bg-slate-900 text-white text-center py-2 text-sm -mx-4 mb-4">
           Free shipping on orders over 1,000 EGP
         </div>
 
@@ -92,26 +83,24 @@ export const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/">
-              <img 
-                src="/lovable-uploads/bdeee921-691c-475f-bbef-ce45c0eecd46.png" 
-                alt="VIORA" 
-                className="h-12 w-auto transition-opacity hover:opacity-80"
-              />
+              <h1 className="text-3xl font-serif font-bold text-slate-900 tracking-wide hover:text-coral-peach transition-colors">
+                VIORA
+              </h1>
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/shop" className="text-slate-700 hover:text-royal-orange transition-colors font-medium">
+            <Link to="/shop" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               Shop
             </Link>
-            <Link to="/collections" className="text-slate-700 hover:text-royal-orange transition-colors font-medium">
+            <Link to="/collections" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               Collections
             </Link>
-            <Link to="/about" className="text-slate-700 hover:text-royal-orange transition-colors font-medium">
+            <Link to="/about" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               About
             </Link>
-            <Link to="/contact" className="text-slate-700 hover:text-royal-orange transition-colors font-medium">
+            <Link to="/contact" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
               Contact
             </Link>
           </nav>
@@ -123,23 +112,23 @@ export const Header = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
                 placeholder="Search jewelry..."
-                className="pl-10 w-64 border-slate-200 focus:border-royal-orange"
+                className="pl-10 w-64 border-slate-200 focus:border-coral-peach"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </form>
 
             {/* Wishlist */}
-            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-royal-orange">
+            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach">
               <Star className="w-5 h-5" />
             </Button>
 
             {/* Cart */}
             <Link to="/cart">
-              <Button variant="ghost" size="sm" className="text-slate-700 hover:text-royal-orange relative">
+              <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach relative">
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-royal-orange text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-coral-peach text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -150,14 +139,14 @@ export const Header = () => {
             {isSignedIn && (
               <>
                 <Link to="/account">
-                  <Button variant="outline" size="sm" className="border-slate-200 hover:border-royal-orange hover:text-royal-orange">
+                  <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
                     Account
                   </Button>
                 </Link>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-200 hover:border-royal-orange hover:text-royal-orange"
+                  className="border-slate-200 hover:border-coral-peach hover:text-coral-peach"
                   onClick={handleSignOut}
                 >
                   Sign Out
@@ -167,7 +156,7 @@ export const Header = () => {
             {/* Sign In (desktop, only if not signed in) */}
             {!isSignedIn && (
               <Link to="/sign-in">
-                <Button variant="outline" size="sm" className="border-slate-200 hover:border-royal-orange hover:text-royal-orange">
+                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
                   Sign In
                 </Button>
               </Link>
@@ -194,7 +183,7 @@ export const Header = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <Input
                   placeholder="Search jewelry..."
-                  className="pl-10 border-slate-200 focus:border-royal-orange"
+                  className="pl-10 border-slate-200 focus:border-coral-peach"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                 />
@@ -202,49 +191,49 @@ export const Header = () => {
 
               <Link
                 to="/shop"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Shop
               </Link>
               <Link
                 to="/collections"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Collections
               </Link>
               <Link
                 to="/about"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
               <Link
                 to="/cart"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cart ({cartCount})
               </Link>
               <Link
                 to="/account"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Account
               </Link>
               <Link
                 to="/sign-in"
-                className="text-slate-700 hover:text-royal-orange transition-colors font-medium"
+                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign In

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -47,69 +48,135 @@ const Collections = () => {
       setLoading(true);
       setError(null);
 
-      // Since the collections table doesn't exist yet, use default collections
-      const defaultCollections = [
-        {
-          id: "1",
-          name: "Summer Essentials",
-          description: "Our Summer Essentials collection features light, vibrant pieces perfect for the season.",
-          theme: "Summer",
-          image_url: "https://images.unsplash.com/photo-1523268755815-fe7c372a0349?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-        },
-        {
-          id: "2",
-          name: "Elegant Evening",
-          description: "Sophisticated jewelry designed for special occasions and evening events.",
-          theme: "Elegance",
-          image_url: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-        },
-        {
-          id: "3",
-          name: "Minimalist",
-          description: "Clean, simple designs for everyday wear with a modern aesthetic.",
-          theme: "Minimalism",
-          image_url: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-        },
-        {
-          id: "4",
-          name: "Vintage Inspired",
-          description: "Timeless pieces inspired by classic designs from past eras.",
-          theme: "Vintage",
-          image_url: "https://images.unsplash.com/photo-1570891836654-32f91104c324?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+      // Fetch collections
+      const { data: collectionsData, error: collectionsError } = await supabase
+        .from('collections')
+        .select('*');
+
+      if (collectionsError) {
+        console.error("Collections error:", collectionsError);
+
+        // If the table doesn't exist, use default collections
+        if (collectionsError.message.includes("does not exist")) {
+          const defaultCollections = [
+            {
+              id: "1",
+              name: "Summer Essentials",
+              description: "Our Summer Essentials collection features light, vibrant pieces perfect for the season.",
+              theme: "Summer",
+              image_url: "https://images.unsplash.com/photo-1523268755815-fe7c372a0349?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            },
+            {
+              id: "2",
+              name: "Elegant Evening",
+              description: "Sophisticated jewelry designed for special occasions and evening events.",
+              theme: "Elegance",
+              image_url: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            },
+            {
+              id: "3",
+              name: "Minimalist",
+              description: "Clean, simple designs for everyday wear with a modern aesthetic.",
+              theme: "Minimalism",
+              image_url: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            },
+            {
+              id: "4",
+              name: "Vintage Inspired",
+              description: "Timeless pieces inspired by classic designs from past eras.",
+              theme: "Vintage",
+              image_url: "https://images.unsplash.com/photo-1570891836654-32f91104c324?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+            }
+          ];
+
+          // Fetch some products to associate with these collections
+          const { data: products } = await supabase
+            .from('products')
+            .select('*')
+            .limit(20);
+
+          const collectionsWithItems = defaultCollections.map(collection => {
+            // Randomly assign some products to each collection
+            const collectionProducts = products ? products.filter(() => Math.random() > 0.7) : [];
+
+            // Add a random rating between 4-5 for display purposes
+            const itemsWithRating = collectionProducts.map(product => ({
+              ...product,
+              rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
+            }));
+
+            return {
+              ...collection,
+              items: itemsWithRating
+            };
+          });
+
+          setCollections(collectionsWithItems);
+          if (collectionsWithItems.length > 0) {
+            setSelectedCollection(collectionsWithItems[0]);
+          }
+          setLoading(false);
+          return;
+        } else {
+          throw collectionsError;
         }
-      ];
+      }
 
-      // Fetch some products to associate with these collections
-      const { data: products } = await supabase
-        .from('products')
-        .select('*')
-        .limit(20);
+      if (!collectionsData || collectionsData.length === 0) {
+        setError("No collections found");
+        setLoading(false);
+        return;
+      }
 
-      const collectionsWithItems = defaultCollections.map(collection => {
-        // Randomly assign some products to each collection
-        const collectionProducts = products ? products.filter(() => Math.random() > 0.7) : [];
+      // For each collection, fetch its products
+      const collectionsWithItems = await Promise.all(
+        collectionsData.map(async (collection) => {
+          // Get product IDs for this collection
+          const { data: productRelations, error: relationsError } = await supabase
+            .from('product_collections')
+            .select('product_id')
+            .eq('collection_id', collection.id);
 
-        // Add a random rating between 4-5 for display purposes
-        const itemsWithRating = collectionProducts.map(product => ({
-          ...product,
-          rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
-        }));
+          if (relationsError) throw relationsError;
 
-        return {
-          ...collection,
-          items: itemsWithRating
-        };
-      });
+          if (!productRelations || productRelations.length === 0) {
+            return {
+              ...collection,
+              items: []
+            };
+          }
+
+          // Get product details
+          const productIds = productRelations.map(relation => relation.product_id);
+          const { data: products, error: productsError } = await supabase
+            .from('products')
+            .select('*')
+            .in('id', productIds);
+
+          if (productsError) throw productsError;
+
+          // Add a random rating between 4-5 for display purposes
+          const itemsWithRating = (products || []).map(product => ({
+            ...product,
+            rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
+          }));
+
+          return {
+            ...collection,
+            items: itemsWithRating
+          };
+        })
+      );
 
       setCollections(collectionsWithItems);
       if (collectionsWithItems.length > 0) {
         setSelectedCollection(collectionsWithItems[0]);
       }
-      setLoading(false);
 
     } catch (err: any) {
       console.error("Error fetching collections:", err);
       setError(err.message || "Failed to load collections");
+    } finally {
       setLoading(false);
     }
   };

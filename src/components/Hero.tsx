@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +13,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-puce-red via-rust to-puce-red text-white overflow-hidden">
+    <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
       <div className="absolute inset-0 bg-black/20"></div>
       
       {/* Hero Content */}
@@ -22,7 +21,7 @@ export const Hero = () => {
         <div className="max-w-2xl">
           <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight">
             Timeless
-            <span className="block text-royal-orange">Elegance</span>
+            <span className="block text-coral-peach">Elegance</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
             Discover our curated collection of exquisite jewelry pieces, 
@@ -32,7 +31,7 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
               size="lg" 
-              className="bg-royal-orange hover:bg-royal-orange/80 text-white px-8 py-3 text-lg font-medium"
+              className="bg-coral-peach hover:bg-coral-peach/80 text-white px-8 py-3 text-lg font-medium"
               onClick={handleShopCollection}
             >
               Shop Collection
@@ -40,7 +39,7 @@ export const Hero = () => {
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-white text-white hover:bg-orange-yellow hover:text-puce-red px-8 py-3 text-lg font-medium"
+              className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3 text-lg"
               onClick={handleOurStory}
             >
               Our Story
@@ -50,8 +49,8 @@ export const Hero = () => {
       </div>
 
       {/* Decorative elements */}
-      <div className="absolute top-20 right-20 w-32 h-32 border border-royal-orange/20 rounded-full hidden lg:block"></div>
-      <div className="absolute bottom-20 right-40 w-16 h-16 bg-royal-orange/10 rounded-full hidden lg:block"></div>
+      <div className="absolute top-20 right-20 w-32 h-32 border border-coral-peach/20 rounded-full hidden lg:block"></div>
+      <div className="absolute bottom-20 right-40 w-16 h-16 bg-coral-peach/10 rounded-full hidden lg:block"></div>
     </section>
   );
 };
