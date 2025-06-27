@@ -51,7 +51,7 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
               size="lg"
-              className="bg-white text-floral-deep-violet hover:bg-floral-cream font-elegant px-8 py-4 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="bg-white text-floral-deep-violet hover:bg-floral-deep-violet hover:text-white font-elegant px-8 py-4 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               onClick={handleShopCollection}
             >
               Shop Collection
