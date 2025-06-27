@@ -96,7 +96,7 @@ export const Hero = () => {
       /> */}
 
       {/* Floating Product Image Overlay */}
-      <img
+      {/* <img
         src="/lovable-uploads/ring.png"
         alt="Floating Jewelry Piece"
         className="
@@ -112,8 +112,30 @@ export const Hero = () => {
     pointer-events-none 
     animate-float-slow
   "
-      />
+      /> */}
 
+
+
+      <img
+        src="/lovable-uploads/ring.png"
+        alt="Floating Jewelry Piece"
+        className="
+    lg:absolute 
+    lg:right-24 
+    lg:bottom-24 
+    mx-auto 
+    mt-12 
+    lg:mt-0 
+    w-full 
+    max-w-[280px] 
+    sm:max-w-[320px] 
+    md:max-w-[360px] 
+    lg:max-w-[400px] 
+    z-10 
+    pointer-events-none 
+    animate-float-slow
+  "
+      />
 
 
 
