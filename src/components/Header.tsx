@@ -88,7 +88,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-black via-floral-deep-violet/95 to-black shadow-lg border-b border-white/20 relative">
+    <header className="bg-black shadow-lg border-b border-white/20 relative">
       <div className="container mx-auto px-4">
         {/* Top banner */}
         <div className="bg-floral-deep-violet text-white text-center py-2 text-sm -mx-4 mb-4">
