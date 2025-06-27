@@ -89,15 +89,16 @@ export const Header = () => {
 
   return (
     <header className="bg-black shadow-lg border-b border-white/20 relative">
-      <div className="container mx-auto px-4">
-        {/* Top banner */}
-        <div className="bg-floral-deep-violet text-white text-center py-2 text-sm -mx-4 mb-4">
-          <div className="flex items-center justify-center space-x-2">
-            <span className="animate-pulse">✨</span>
-            <span>Free shipping on orders over 1,000 EGP</span>
-            <span className="animate-pulse">✨</span>
-          </div>
+      {/* Top banner - full width */}
+      <div className="bg-floral-deep-violet text-white text-center py-2 text-sm w-full">
+        <div className="flex items-center justify-center space-x-2">
+          <span className="animate-pulse">✨</span>
+          <span>Free shipping on orders over 1,000 EGP</span>
+          <span className="animate-pulse">✨</span>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 mt-4">
 
         {/* Main header */}
         <div className="flex items-center justify-between py-6">
