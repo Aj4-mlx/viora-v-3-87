@@ -1,94 +1,91 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Floral-inspired design system with dreamy, luxurious aesthetics */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 45 50% 98%;
+    --foreground: 260 15% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 260 15% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 260 15% 25%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 270 50% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 280 35% 92%;
+    --secondary-foreground: 260 15% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 280 35% 95%;
+    --muted-foreground: 260 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 350 45% 90%;
+    --accent-foreground: 260 15% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 345 75% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 280 35% 88%;
+    --input: 280 35% 88%;
+    --ring: 270 50% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Custom Viora Color Palette */
-    --coral-peach: 10 72% 69%;
-    --pale-peach: 25 100% 84%;
-    --muted-mustard: 40 35% 66%;
-    --cream-beige: 35 55% 89%;
+    --sidebar-background: 280 35% 96%;
+    --sidebar-foreground: 260 15% 25%;
+    --sidebar-primary: 270 50% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 280 35% 92%;
+    --sidebar-accent-foreground: 260 15% 25%;
+    --sidebar-border: 280 35% 88%;
+    --sidebar-ring: 270 50% 60%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 260 20% 8%;
+    --foreground: 280 35% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 20% 10%;
+    --card-foreground: 280 35% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 20% 10%;
+    --popover-foreground: 280 35% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 270 50% 70%;
+    --primary-foreground: 260 20% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 260 15% 15%;
+    --secondary-foreground: 280 35% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 260 15% 15%;
+    --muted-foreground: 280 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 260 15% 15%;
+    --accent-foreground: 280 35% 95%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 345 75% 60%;
+    --destructive-foreground: 280 35% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 260 15% 15%;
+    --input: 260 15% 15%;
+    --ring: 270 50% 70%;
+    
+    --sidebar-background: 260 20% 8%;
+    --sidebar-foreground: 280 35% 95%;
+    --sidebar-primary: 270 50% 70%;
+    --sidebar-primary-foreground: 260 20% 8%;
+    --sidebar-accent: 260 15% 15%;
+    --sidebar-accent-foreground: 280 35% 95%;
+    --sidebar-border: 260 15% 15%;
+    --sidebar-ring: 270 50% 70%;
   }
 }
 
@@ -98,46 +95,67 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-br from-floral-cream via-floral-blush/30 to-floral-lavender/20 text-foreground;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
-/* Custom utility classes for Viora colors */
+/* Floral design utilities */
 @layer utilities {
-  .text-coral-peach {
-    color: hsl(var(--coral-peach));
+  .floral-gradient {
+    background: linear-gradient(135deg, 
+      hsl(280, 35%, 95%) 0%, 
+      hsl(350, 45%, 92%) 25%, 
+      hsl(25, 55%, 88%) 50%, 
+      hsl(145, 40%, 90%) 75%, 
+      hsl(270, 30%, 92%) 100%);
   }
-  .bg-coral-peach {
-    background-color: hsl(var(--coral-peach));
+  
+  .floral-gradient-hero {
+    background: linear-gradient(135deg, 
+      hsl(270, 50%, 60%) 0%, 
+      hsl(340, 65%, 65%) 25%, 
+      hsl(30, 70%, 70%) 50%, 
+      hsl(260, 60%, 45%) 75%, 
+      hsl(280, 50%, 50%) 100%);
   }
-  .border-coral-peach {
-    border-color: hsl(var(--coral-peach));
+
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
-  .text-pale-peach {
-    color: hsl(var(--pale-peach));
+
+  .floral-shadow {
+    box-shadow: 0 8px 32px rgba(270, 50%, 60%, 0.1);
   }
-  .bg-pale-peach {
-    background-color: hsl(var(--pale-peach));
+
+  .text-floral-gradient {
+    background: linear-gradient(135deg, hsl(270, 50%, 60%), hsl(340, 65%, 65%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .border-pale-peach {
-    border-color: hsl(var(--pale-peach));
-  }
-  .text-muted-mustard {
-    color: hsl(var(--muted-mustard));
-  }
-  .bg-muted-mustard {
-    background-color: hsl(var(--muted-mustard));
-  }
-  .border-muted-mustard {
-    border-color: hsl(var(--muted-mustard));
-  }
-  .text-cream-beige {
-    color: hsl(var(--cream-beige));
-  }
-  .bg-cream-beige {
-    background-color: hsl(var(--cream-beige));
-  }
-  .border-cream-beige {
-    border-color: hsl(var(--cream-beige));
-  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(280, 35%, 95%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(270, 50%, 60%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(260, 60%, 45%);
 }

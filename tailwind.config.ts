@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,20 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Floral-inspired color palette
+				'floral-lavender': 'hsl(280, 35%, 85%)',
+				'floral-blush': 'hsl(350, 45%, 88%)',
+				'floral-peach': 'hsl(25, 55%, 82%)',
+				'floral-mint': 'hsl(145, 40%, 85%)',
+				'floral-cream': 'hsl(45, 50%, 92%)',
+				'floral-coral': 'hsl(15, 60%, 75%)',
+				'floral-violet': 'hsl(270, 50%, 60%)',
+				'floral-rose': 'hsl(340, 65%, 65%)',
+				'floral-sage': 'hsl(150, 25%, 70%)',
+				'floral-sunset': 'hsl(30, 70%, 70%)',
+				'floral-deep-violet': 'hsl(260, 60%, 45%)',
+				'floral-deep-rose': 'hsl(345, 75%, 50%)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +98,20 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'float': 'float 3s ease-in-out infinite'
+			},
+			fontFamily: {
+				'display': ['Playfair Display', 'serif'],
+				'elegant': ['Cormorant Garamond', 'serif']
 			}
 		}
 	},

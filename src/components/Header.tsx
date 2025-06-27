@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,13 +43,11 @@ export const Header = () => {
     setSearchQuery(query);
     if (query.trim()) {
       setIsSearching(true);
-      // Search products in Supabase
       const { data, error } = await supabase
         .from("products")
         .select("*")
         .ilike("name", `%${query}%`);
       setSearchResults(data || []);
-      // Navigate to shop with search results
       navigate('/shop');
     } else {
       setIsSearching(false);
@@ -71,36 +70,43 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-slate-200">
+    <header className="bg-gradient-to-r from-floral-lavender via-floral-blush to-floral-peach shadow-lg border-b border-white/20 relative">
       <div className="container mx-auto px-4">
         {/* Top banner */}
-        <div className="bg-slate-900 text-white text-center py-2 text-sm -mx-4 mb-4">
-          Free shipping on orders over 1,000 EGP
+        <div className="bg-floral-deep-violet text-white text-center py-2 text-sm -mx-4 mb-4">
+          <div className="flex items-center justify-center space-x-2">
+            <span className="animate-pulse">✨</span>
+            <span>Free shipping on orders over 1,000 EGP</span>
+            <span className="animate-pulse">✨</span>
+          </div>
         </div>
 
         {/* Main header */}
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-6">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/">
-              <h1 className="text-3xl font-serif font-bold text-slate-900 tracking-wide hover:text-coral-peach transition-colors">
+            <Link to="/" className="group">
+              <h1 className="text-4xl font-display font-bold text-white tracking-wider hover:scale-105 transition-transform duration-300 drop-shadow-lg group-hover:drop-shadow-xl">
                 VIORA
+                <span className="block text-xs font-normal text-white/80 tracking-[0.2em] mt-1">
+                  LUXURY JEWELRY
+                </span>
               </h1>
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/shop" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
+            <Link to="/shop" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
               Shop
             </Link>
-            <Link to="/collections" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
+            <Link to="/collections" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
               Collections
             </Link>
-            <Link to="/about" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
+            <Link to="/about" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
               About
             </Link>
-            <Link to="/contact" className="text-slate-700 hover:text-coral-peach transition-colors font-medium">
+            <Link to="/contact" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
               Contact
             </Link>
           </nav>
@@ -109,26 +115,26 @@ export const Header = () => {
           <div className="flex items-center space-x-4">
             {/* Search */}
             <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-floral-violet w-4 h-4" />
               <Input
                 placeholder="Search jewelry..."
-                className="pl-10 w-64 border-slate-200 focus:border-coral-peach"
+                className="pl-10 w-64 glass-effect border-white/30 focus:border-floral-violet placeholder:text-floral-violet/70 text-floral-deep-violet"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </form>
 
             {/* Wishlist */}
-            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach">
+            <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300">
               <Star className="w-5 h-5" />
             </Button>
 
             {/* Cart */}
             <Link to="/cart">
-              <Button variant="ghost" size="sm" className="text-slate-700 hover:text-coral-peach relative">
+              <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 relative transition-all duration-300">
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-coral-peach text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {cartCount}
                   </span>
                 )}
@@ -139,14 +145,18 @@ export const Header = () => {
             {isSignedIn && (
               <>
                 <Link to="/account">
-                  <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
+                  >
                     Account
                   </Button>
                 </Link>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-200 hover:border-coral-peach hover:text-coral-peach"
+                  className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
                   onClick={handleSignOut}
                 >
                   Sign Out
@@ -156,7 +166,11 @@ export const Header = () => {
             {/* Sign In (desktop, only if not signed in) */}
             {!isSignedIn && (
               <Link to="/sign-in">
-                <Button variant="outline" size="sm" className="border-slate-200 hover:border-coral-peach hover:text-coral-peach">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
+                >
                   Sign In
                 </Button>
               </Link>
@@ -166,7 +180,7 @@ export const Header = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden text-slate-700"
+              className="md:hidden text-white hover:bg-white/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -176,14 +190,14 @@ export const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 py-4">
+          <div className="md:hidden border-t border-white/20 py-4 bg-white/10 backdrop-blur-md rounded-lg mb-4">
             <nav className="flex flex-col space-y-4">
               {/* Mobile Search */}
               <form onSubmit={handleSearchSubmit} className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-floral-violet w-4 h-4" />
                 <Input
                   placeholder="Search jewelry..."
-                  className="pl-10 border-slate-200 focus:border-coral-peach"
+                  className="pl-10 glass-effect border-white/30 focus:border-floral-violet placeholder:text-floral-violet/70"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                 />
@@ -191,56 +205,56 @@ export const Header = () => {
 
               <Link
                 to="/shop"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Shop
               </Link>
               <Link
                 to="/collections"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Collections
               </Link>
               <Link
                 to="/about"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
               <Link
                 to="/cart"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cart ({cartCount})
               </Link>
               <Link
                 to="/account"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Account
               </Link>
               <Link
                 to="/sign-in"
-                className="text-slate-700 hover:text-coral-peach transition-colors font-medium"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign In
               </Link>
               {isSignedIn && (
                 <button
-                  className="text-red-600 text-left px-4 py-2 hover:bg-slate-100 rounded transition-colors font-medium"
+                  className="text-floral-coral text-left px-4 py-2 hover:bg-white/10 rounded transition-colors font-medium font-elegant"
                   onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                 >
                   Sign Out
@@ -250,6 +264,10 @@ export const Header = () => {
           </div>
         )}
       </div>
+      
+      {/* Decorative floral accent */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/10 to-transparent rounded-full blur-xl"></div>
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-floral-deep-rose/20 to-transparent rounded-full blur-lg"></div>
     </header>
   );
 };
