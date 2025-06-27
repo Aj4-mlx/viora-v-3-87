@@ -62,7 +62,7 @@ export const Header = () => {
         .from("products")
         .select("*")
         .ilike("name", `%${query}%`);
-      
+
       // Convert Supabase products to search result format
       const adaptedProducts = (data || []).map(adaptProductForSearch);
       setSearchResults(adaptedProducts);
@@ -88,7 +88,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-floral-deep-violet via-floral-coral to-floral-rose shadow-lg border-b border-white/20 relative">
+    <header className="bg-gradient-to-r from-floral-deep-violet/90 via-floral-deep-violet/80 to-floral-deep-rose/90 shadow-lg border-b border-white/20 relative">
       <div className="container mx-auto px-4">
         {/* Top banner */}
         <div className="bg-floral-deep-violet text-white text-center py-2 text-sm -mx-4 mb-4">
@@ -163,9 +163,9 @@ export const Header = () => {
             {isSignedIn && (
               <>
                 <Link to="/account">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
                   >
                     Account
@@ -184,9 +184,9 @@ export const Header = () => {
             {/* Sign In (desktop, only if not signed in) */}
             {!isSignedIn && (
               <Link to="/sign-in">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
                 >
                   Sign In
@@ -282,7 +282,7 @@ export const Header = () => {
           </div>
         )}
       </div>
-      
+
       {/* Decorative floral accent */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/10 to-transparent rounded-full blur-xl"></div>
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-floral-deep-rose/20 to-transparent rounded-full blur-lg"></div>
