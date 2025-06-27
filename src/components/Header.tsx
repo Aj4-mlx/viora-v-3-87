@@ -133,10 +133,10 @@ export const Header = () => {
           <div className="flex items-center space-x-4">
             {/* Search */}
             <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-floral-violet w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
               <Input
                 placeholder="Search jewelry..."
-                className="pl-10 w-64 glass-effect border-white/30 focus:border-floral-violet placeholder:text-floral-violet/70 text-floral-deep-violet"
+                className="pl-10 w-64 glass-effect border-white/30 focus:border-floral-violet placeholder:text-gray-600 text-black"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
               />
@@ -166,7 +166,7 @@ export const Header = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
+                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors"
                   >
                     Account
                   </Button>
@@ -174,7 +174,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
+                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors"
                   onClick={handleSignOut}
                 >
                   Sign Out
@@ -187,7 +187,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/30 text-white hover:bg-white/10 hover:border-white backdrop-blur-sm"
+                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors"
                 >
                   Sign In
                 </Button>
@@ -212,10 +212,10 @@ export const Header = () => {
             <nav className="flex flex-col space-y-4">
               {/* Mobile Search */}
               <form onSubmit={handleSearchSubmit} className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-floral-violet w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
                 <Input
                   placeholder="Search jewelry..."
-                  className="pl-10 glass-effect border-white/30 focus:border-floral-violet placeholder:text-floral-violet/70"
+                  className="pl-10 glass-effect border-white/30 focus:border-floral-violet placeholder:text-gray-600 text-black"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                 />
