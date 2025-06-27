@@ -99,11 +99,18 @@ const Shop = () => {
     if (isSearching && searchResults.length >= 0) {
       // Convert search results to display products
       return searchResults.map(product => {
-        // Check if it's a Supabase product by looking for Supabase-specific properties
-        if ('stock' in product && 'image_url' in product && typeof product.created_at === 'string') {
+        // Check if it's a Supabase product by checking for required Supabase properties
+        const hasSupabaseProperties = 
+          'stock' in product && 
+          'image_url' in product && 
+          'created_at' in product &&
+          typeof (product as any).created_at === 'string';
+        
+        if (hasSupabaseProperties) {
           return adaptSupabaseProduct(product as SupabaseProduct);
         }
-        // Otherwise it's from the local products data (remove any extra properties)
+        
+        // Otherwise it's from the local products data
         const localProduct: Product = {
           id: product.id,
           name: product.name,
