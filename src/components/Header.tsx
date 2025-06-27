@@ -7,6 +7,21 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type SupabaseProduct = Database["public"]["Tables"]["products"]["Row"];
+
+// Adapter function to convert Supabase product to search result
+const adaptProductForSearch = (product: SupabaseProduct) => ({
+  id: parseInt(product.id),
+  name: product.name,
+  price: `${product.price} EGP`,
+  image: product.image_url || '',
+  category: product.category,
+  rating: 5, // Default rating
+  isNew: true, // Default to new
+  description: product.description || ''
+});
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,7 +62,10 @@ export const Header = () => {
         .from("products")
         .select("*")
         .ilike("name", `%${query}%`);
-      setSearchResults(data || []);
+      
+      // Convert Supabase products to search result format
+      const adaptedProducts = (data || []).map(adaptProductForSearch);
+      setSearchResults(adaptedProducts);
       navigate('/shop');
     } else {
       setIsSearching(false);

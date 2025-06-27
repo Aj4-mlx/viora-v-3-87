@@ -1,4 +1,6 @@
 
+import { Button } from "@/components/ui/button";
+
 export const BrandStory = () => {
   return (
     <section className="py-20 bg-gradient-to-br from-white via-floral-blush/20 to-floral-lavender/30 relative overflow-hidden">

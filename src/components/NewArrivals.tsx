@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
@@ -8,14 +9,37 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
-type Product = Database["public"]["Tables"]["products"]["Row"];
+type SupabaseProduct = Database["public"]["Tables"]["products"]["Row"];
+
+interface DisplayProduct {
+  id: number;
+  name: string;
+  price: string;
+  originalPrice?: string;
+  image: string;
+  category: string;
+  rating: number;
+  isNew: boolean;
+}
+
+// Adapter function to convert Supabase product to display product
+const adaptSupabaseProduct = (product: SupabaseProduct): DisplayProduct => ({
+  id: parseInt(product.id),
+  name: product.name,
+  price: `${product.price} EGP`,
+  originalPrice: undefined, // Not available in Supabase schema
+  image: product.image_url || '',
+  category: product.category,
+  rating: 5, // Default rating since not available in Supabase schema
+  isNew: true // Default to new since not available in Supabase schema
+});
 
 export const NewArrivals = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart } = useCart();
   const [wishlistItems, setWishlistItems] = useState<number[]>([]);
-  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [newArrivals, setNewArrivals] = useState<DisplayProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +56,9 @@ export const NewArrivals = () => {
         setError("Failed to load new arrivals");
         setNewArrivals([]);
       } else {
-        setNewArrivals(data || []);
+        // Convert Supabase products to display products
+        const displayProducts = (data || []).map(adaptSupabaseProduct);
+        setNewArrivals(displayProducts);
       }
       setLoading(false);
     };
@@ -61,12 +87,12 @@ export const NewArrivals = () => {
     navigate('/shop');
   };
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: DisplayProduct) => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
-      image: product.image_url || ''
+      price: parseFloat(product.price.replace(' EGP', '')),
+      image: product.image
     });
   };
 
@@ -109,7 +135,7 @@ export const NewArrivals = () => {
                     </span>
                   )}
                   <img
-                    src={product.image_url || ''}
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
