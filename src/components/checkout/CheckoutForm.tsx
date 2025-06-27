@@ -89,7 +89,7 @@ export const CheckoutForm = () => {
 
     // Generate default shipping rates
     generateDefaultShippingRates();
-    
+
     if (user) {
       setCustomerInfo(prev => ({ ...prev, email: user.email || "" }));
     }
@@ -272,7 +272,7 @@ export const CheckoutForm = () => {
 
       clearCart();
       toast.success("Order placed successfully!");
-      
+
       // Navigate to a simple success page since OrderConfirmation might not exist
       navigate('/');
       toast.success(`Order ${orderNumber} placed successfully! We'll contact you shortly.`);
@@ -405,10 +405,10 @@ export const CheckoutForm = () => {
         </CardHeader>
         <CardContent>
           <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <RadioGroupItem value="cod" id="cod" />
               <Label htmlFor="cod">Cash on Delivery</Label>
-            </div>
+            </div> */}
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="card" id="card" />
               <Label htmlFor="card">Credit/Debit Card</Label>
