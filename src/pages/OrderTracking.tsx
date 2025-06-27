@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -43,7 +44,6 @@ const OrderTracking = () => {
                 .from("orders")
                 .select(`
           *,
-          order_history(status, created_at),
           customers(name, email)
         `)
                 .eq("id", id)
@@ -55,10 +55,9 @@ const OrderTracking = () => {
                     .from("orders")
                     .select(`
             *,
-            order_history(status, created_at),
             customers(name, email)
           `)
-                    .eq("order_number", id)
+                    .eq("id", id)
                     .single();
 
                 if (numberError || !orderByNumber) {
@@ -110,7 +109,7 @@ const OrderTracking = () => {
             },
             {
                 status: "processing",
-                date: getStatusDate(order, "processing"),
+                date: "",
                 description: "Processing order",
                 icon: <Package className="h-6 w-6" />,
                 completed: currentStatusIndex > 1 || isCancelled,
@@ -118,7 +117,7 @@ const OrderTracking = () => {
             },
             {
                 status: "confirmed",
-                date: getStatusDate(order, "confirmed"),
+                date: "",
                 description: "Order confirmed",
                 icon: <CheckCircle2 className="h-6 w-6" />,
                 completed: currentStatusIndex > 2 || isCancelled,
@@ -126,7 +125,7 @@ const OrderTracking = () => {
             },
             {
                 status: "shipped",
-                date: getStatusDate(order, "shipped"),
+                date: "",
                 description: "Order shipped",
                 icon: <Truck className="h-6 w-6" />,
                 completed: currentStatusIndex > 3 || isCancelled,
@@ -134,7 +133,7 @@ const OrderTracking = () => {
             },
             {
                 status: "delivered",
-                date: getStatusDate(order, "delivered"),
+                date: "",
                 description: "Order delivered",
                 icon: <CheckCircle2 className="h-6 w-6" />,
                 completed: currentStatusIndex > 4 || isCancelled,
@@ -146,7 +145,7 @@ const OrderTracking = () => {
         if (isCancelled) {
             steps.push({
                 status: "cancelled",
-                date: getStatusDate(order, "cancelled"),
+                date: "",
                 description: "Order cancelled",
                 icon: <XCircle className="h-6 w-6" />,
                 completed: true,
@@ -155,15 +154,6 @@ const OrderTracking = () => {
         }
 
         return steps;
-    };
-
-    const getStatusDate = (order: any, status: string): string => {
-        if (!order.order_history || !Array.isArray(order.order_history)) {
-            return "";
-        }
-
-        const statusEntry = order.order_history.find((h: any) => h.status === status);
-        return statusEntry ? new Date(statusEntry.created_at).toLocaleDateString() : "";
     };
 
     return (
@@ -207,23 +197,11 @@ const OrderTracking = () => {
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div>
                                             <h3 className="text-lg font-semibold mb-2">Order Information</h3>
-                                            <p className="text-sm text-slate-600">Order Number: <span className="font-mono">{order.order_number || order.id}</span></p>
+                                            <p className="text-sm text-slate-600">Order Number: <span className="font-mono">{order.id}</span></p>
                                             <p className="text-sm text-slate-600">Date: {new Date(order.created_at).toLocaleDateString()}</p>
                                             <p className="text-sm text-slate-600">Status: <span className="capitalize">{order.status}</span></p>
                                             <p className="text-sm text-slate-600">Total: {order.total} EGP</p>
                                         </div>
-                                        {order.tracking_number && (
-                                            <div>
-                                                <h3 className="text-lg font-semibold mb-2">Shipping Information</h3>
-                                                <p className="text-sm text-slate-600">Tracking Number: <span className="font-mono">{order.tracking_number}</span></p>
-                                                <p className="text-sm text-slate-600">Shipping Provider: {order.shipping_provider}</p>
-                                                {order.estimated_delivery_date && (
-                                                    <p className="text-sm text-slate-600">
-                                                        Estimated Delivery: {new Date(order.estimated_delivery_date).toLocaleDateString()}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
                                     </div>
 
                                     <div className="mt-8">

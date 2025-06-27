@@ -12,7 +12,37 @@ import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
-type Product = Database["public"]["Tables"]["products"]["Row"];
+type SupabaseProduct = Database["public"]["Tables"]["products"]["Row"];
+
+// Unified product interface for display
+interface DisplayProduct {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image_url: string;
+  category: string;
+  rating: number;
+  isNew: boolean;
+  description?: string;
+  stock: number;
+  created_at: string;
+}
+
+// Adapter function to convert Supabase product to display product
+const adaptSupabaseProduct = (product: SupabaseProduct): DisplayProduct => ({
+  id: product.id,
+  name: product.name,
+  price: product.price,
+  originalPrice: undefined,
+  image_url: product.image_url || '',
+  category: product.category,
+  rating: 5, // Default rating since it's not in Supabase schema
+  isNew: false, // Default to false since it's not in Supabase schema
+  description: product.description || '',
+  stock: product.stock,
+  created_at: product.created_at
+});
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -25,7 +55,7 @@ const Shop = () => {
 
   const categories = ["All", "Rings", "Necklaces", "Earrings", "Bracelets"];
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<DisplayProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +70,8 @@ const Shop = () => {
         setError("Failed to load products");
         setProducts([]);
       } else {
-        setProducts(data || []);
+        const displayProducts = (data || []).map(adaptSupabaseProduct);
+        setProducts(displayProducts);
       }
       setLoading(false);
     };
@@ -50,7 +81,27 @@ const Shop = () => {
   // Determine which products to show
   const getDisplayProducts = () => {
     if (isSearching && searchResults.length >= 0) {
-      return searchResults;
+      // Convert search results to display products
+      return searchResults.map(product => {
+        // Check if it's already a Supabase product
+        if ('created_at' in product) {
+          return adaptSupabaseProduct(product as SupabaseProduct);
+        }
+        // Otherwise it's from the local products data
+        return {
+          id: product.id.toString(),
+          name: product.name,
+          price: parseFloat(product.price.replace(/[^\d.-]/g, '')),
+          originalPrice: product.originalPrice ? parseFloat(product.originalPrice.replace(/[^\d.-]/g, '')) : undefined,
+          image_url: product.image,
+          category: product.category,
+          rating: product.rating,
+          isNew: product.isNew,
+          description: product.description,
+          stock: 10, // Default stock for local products
+          created_at: new Date().toISOString()
+        } as DisplayProduct;
+      });
     }
 
     if (selectedCategory === "All") {
@@ -66,21 +117,22 @@ const Shop = () => {
   const sortedProducts = [...displayProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
-        return (a.price ?? 0) - (b.price ?? 0);
+        return a.price - b.price;
       case 'price-high':
-        return (b.price ?? 0) - (a.price ?? 0);
-      // 'popular' and 'newest' require extra fields, fallback to name
+        return b.price - a.price;
+      case 'newest':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       default:
         return a.name.localeCompare(b.name);
     }
   });
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: DisplayProduct) => {
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image_url || ''
+      image: product.image_url
     });
   };
 
@@ -231,7 +283,7 @@ const Shop = () => {
                         </span>
                       )}
                       <img
-                        src={product.image_url || ''}
+                        src={product.image_url}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -252,11 +304,11 @@ const Shop = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <span className="text-lg font-semibold text-slate-900">
-                            {product.price}
+                            {product.price.toLocaleString()} EGP
                           </span>
                           {product.originalPrice && (
                             <span className="text-sm text-slate-500 line-through">
-                              {product.originalPrice}
+                              {product.originalPrice.toLocaleString()} EGP
                             </span>
                           )}
                         </div>
