@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
@@ -6,15 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type Product = Database["public"]["Tables"]["products"]["Row"];
+import { mapDatabaseProductToProduct, type DatabaseProduct, type Product } from "@/types/product";
 
 export const NewArrivals = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const [wishlistItems, setWishlistItems] = useState<number[]>([]);
+  const [wishlistItems, setWishlistItems] = useState<string[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,14 +31,15 @@ export const NewArrivals = () => {
         setError("Failed to load new arrivals");
         setNewArrivals([]);
       } else {
-        setNewArrivals(data || []);
+        const uiProducts = (data || []).map(mapDatabaseProductToProduct);
+        setNewArrivals(uiProducts);
       }
       setLoading(false);
     };
     fetchNewArrivals();
   }, []);
 
-  const handleWishlistToggle = (productId: number, productName: string) => {
+  const handleWishlistToggle = (productId: string, productName: string) => {
     const isInWishlist = wishlistItems.includes(productId);
 
     if (isInWishlist) {
@@ -138,7 +138,7 @@ export const NewArrivals = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-semibold text-slate-900">
-                        {product.price}
+                        {product.price.toLocaleString()} EGP
                       </span>
                       {product.originalPrice && (
                         <span className="text-sm text-slate-500 line-through">

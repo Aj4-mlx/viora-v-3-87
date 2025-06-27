@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
+import { mapDatabaseProductToProduct } from "@/types/product";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,7 +48,14 @@ export const Header = () => {
         .from("products")
         .select("*")
         .ilike("name", `%${query}%`);
-      setSearchResults(data || []);
+      
+      if (data) {
+        // Convert database products to UI products
+        const uiProducts = data.map(mapDatabaseProductToProduct);
+        setSearchResults(uiProducts);
+      } else {
+        setSearchResults([]);
+      }
       // Navigate to shop with search results
       navigate('/shop');
     } else {
