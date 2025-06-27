@@ -65,7 +65,7 @@ const Collections = () => {
 
       // Group products by category to create collections
       const categoriesMap = new Map<string, CollectionItem[]>();
-      
+
       products.forEach(product => {
         const item: CollectionItem = {
           id: product.id,
@@ -311,7 +311,7 @@ const Collections = () => {
                           </span>
                           <Button
                             size="sm"
-                            className="bg-coral-peach hover:bg-coral-peach/80 text-white"
+                            className="bg-floral-deep-violet hover:bg-floral-violet text-white transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddToCart(item);

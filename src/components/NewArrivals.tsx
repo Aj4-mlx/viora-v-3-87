@@ -173,7 +173,7 @@ export const NewArrivals = () => {
                     </div>
                     <Button
                       size="sm"
-                      className="bg-coral-peach hover:bg-coral-peach/80 text-white"
+                      className="bg-floral-deep-violet hover:bg-floral-violet text-white transition-colors"
                       onClick={() => handleAddToCart(product)}
                     >
                       Add to Cart

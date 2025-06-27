@@ -70,7 +70,7 @@ const ProductDetail = () => {
                         </div>
                         <Button
                             size="lg"
-                            className="bg-coral-peach hover:bg-coral-peach/80 text-white font-bold text-lg mt-4"
+                            className="bg-floral-deep-violet hover:bg-floral-violet text-white font-bold text-lg mt-4 transition-colors"
                             onClick={() => addToCart({
                                 id: product.id,
                                 name: product.name,

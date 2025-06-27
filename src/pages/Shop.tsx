@@ -100,17 +100,17 @@ const Shop = () => {
       // Convert search results to display products
       return searchResults.map(product => {
         // Check if it's a Supabase product by checking for required Supabase properties
-        const hasSupabaseProperties = 
-          'stock' in product && 
-          'image_url' in product && 
+        const hasSupabaseProperties =
+          'stock' in product &&
+          'image_url' in product &&
           'created_at' in product &&
           typeof (product as any).created_at === 'string';
-        
+
         if (hasSupabaseProperties) {
           // Cast to unknown first, then to SupabaseProduct to handle type conversion
           return adaptSupabaseProduct(product as unknown as SupabaseProduct);
         }
-        
+
         // Otherwise it's from the local products data
         return adaptLocalProduct(product as Product);
       });
@@ -326,7 +326,7 @@ const Shop = () => {
                         </div>
                         <Button
                           size="sm"
-                          className="bg-coral-peach hover:bg-coral-peach/80 text-white"
+                          className="bg-floral-deep-violet hover:bg-floral-violet text-white transition-colors"
                           onClick={e => { e.stopPropagation(); handleAddToCart(product); }}
                         >
                           Add to Cart

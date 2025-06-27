@@ -149,8 +149,8 @@ export const Header = () => {
 
             {/* Cart */}
             <Link to="/cart">
-              <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 relative transition-all duration-300">
-                <ShoppingCart className="w-5 h-5" />
+              <Button variant="outline" size="sm" className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white relative transition-all duration-300">
+                <ShoppingCart className="w-5 h-5 mr-1" /> Cart
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {cartCount}
@@ -187,7 +187,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors"
+                  className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white backdrop-blur-sm transition-colors"
                 >
                   Sign In
                 </Button>
