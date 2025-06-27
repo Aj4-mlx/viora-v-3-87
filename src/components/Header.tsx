@@ -104,12 +104,13 @@ export const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="group">
-              <h1 className="text-4xl font-display font-bold text-white tracking-wider hover:scale-105 transition-transform duration-300 drop-shadow-lg group-hover:drop-shadow-xl">
-                VIORA
-                <span className="block text-xs font-normal text-white/80 tracking-[0.2em] mt-1">
-                  LUXURY JEWELRY
-                </span>
-              </h1>
+              <div className="hover:scale-105 transition-transform duration-300">
+                <img
+                  src="/lovable-uploads/Viora Logo Transparent.png"
+                  alt="Viora Luxury Jewelry"
+                  className="h-16 drop-shadow-lg group-hover:drop-shadow-xl"
+                />
+              </div>
             </Link>
           </div>
 
