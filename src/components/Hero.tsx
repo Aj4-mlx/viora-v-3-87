@@ -59,7 +59,7 @@ export const Hero = () => {
             <Button
               variant="outline"
               size="lg"
-              className="bg-floral-deep-violet border-2 border-white text-white hover:bg-white hover:text-floral-deep-violet px-8 py-4 text-lg font-elegant rounded-full backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 hover:scale-105"
+              className=" border-2 border-white text-floral-deep-violet hover:bg-floral-deep-violet hover:text-white px-8 py-4 text-lg font-elegant rounded-full backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 hover:scale-105"
               onClick={handleOurStory}
             >
               Our Story
