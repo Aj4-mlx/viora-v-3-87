@@ -105,12 +105,13 @@ export const Header = () => {
           <div className="flex items-center">
             <Link to="/" className="group block hover:scale-105 transition-transform duration-300">
               <img
-                src="/lovable-uploads/Viora Logo Transparent.png"
+                src={`${process.env.PUBLIC_URL}/lovable-uploads/Viora Logo Transparent.png`}
                 alt="Viora Luxury Jewelry"
                 className="h-16 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
               />
             </Link>
           </div>
+
 
 
           {/* Navigation */}
