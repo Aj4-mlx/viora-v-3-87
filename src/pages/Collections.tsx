@@ -48,129 +48,76 @@ const Collections = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch collections
-      const { data: collectionsData, error: collectionsError } = await supabase
-        .from('collections')
+      // Since we don't have collections table, create collections based on product categories
+      const { data: products, error: productsError } = await supabase
+        .from('products')
         .select('*');
 
-      if (collectionsError) {
-        console.error("Collections error:", collectionsError);
-
-        // If the table doesn't exist, use default collections
-        if (collectionsError.message.includes("does not exist")) {
-          const defaultCollections = [
-            {
-              id: "1",
-              name: "Summer Essentials",
-              description: "Our Summer Essentials collection features light, vibrant pieces perfect for the season.",
-              theme: "Summer",
-              image_url: "https://images.unsplash.com/photo-1523268755815-fe7c372a0349?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-            },
-            {
-              id: "2",
-              name: "Elegant Evening",
-              description: "Sophisticated jewelry designed for special occasions and evening events.",
-              theme: "Elegance",
-              image_url: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-            },
-            {
-              id: "3",
-              name: "Minimalist",
-              description: "Clean, simple designs for everyday wear with a modern aesthetic.",
-              theme: "Minimalism",
-              image_url: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-            },
-            {
-              id: "4",
-              name: "Vintage Inspired",
-              description: "Timeless pieces inspired by classic designs from past eras.",
-              theme: "Vintage",
-              image_url: "https://images.unsplash.com/photo-1570891836654-32f91104c324?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-            }
-          ];
-
-          // Fetch some products to associate with these collections
-          const { data: products } = await supabase
-            .from('products')
-            .select('*')
-            .limit(20);
-
-          const collectionsWithItems = defaultCollections.map(collection => {
-            // Randomly assign some products to each collection
-            const collectionProducts = products ? products.filter(() => Math.random() > 0.7) : [];
-
-            // Add a random rating between 4-5 for display purposes
-            const itemsWithRating = collectionProducts.map(product => ({
-              ...product,
-              rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
-            }));
-
-            return {
-              ...collection,
-              items: itemsWithRating
-            };
-          });
-
-          setCollections(collectionsWithItems);
-          if (collectionsWithItems.length > 0) {
-            setSelectedCollection(collectionsWithItems[0]);
-          }
-          setLoading(false);
-          return;
-        } else {
-          throw collectionsError;
-        }
+      if (productsError) {
+        throw productsError;
       }
 
-      if (!collectionsData || collectionsData.length === 0) {
-        setError("No collections found");
+      if (!products || products.length === 0) {
+        setError("No products found");
         setLoading(false);
         return;
       }
 
-      // For each collection, fetch its products
-      const collectionsWithItems = await Promise.all(
-        collectionsData.map(async (collection) => {
-          // Get product IDs for this collection
-          const { data: productRelations, error: relationsError } = await supabase
-            .from('product_collections')
-            .select('product_id')
-            .eq('collection_id', collection.id);
+      // Group products by category to create collections
+      const categoriesMap = new Map<string, CollectionItem[]>();
+      
+      products.forEach(product => {
+        const item: CollectionItem = {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          category: product.category,
+          image_url: product.image_url || '',
+          rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
+        };
 
-          if (relationsError) throw relationsError;
+        if (!categoriesMap.has(product.category)) {
+          categoriesMap.set(product.category, []);
+        }
+        categoriesMap.get(product.category)!.push(item);
+      });
 
-          if (!productRelations || productRelations.length === 0) {
-            return {
-              ...collection,
-              items: []
-            };
-          }
+      // Create collections from categories
+      const collectionsData: Collection[] = Array.from(categoriesMap.entries()).map(([category, items], index) => {
+        const collectionImages = [
+          "https://images.unsplash.com/photo-1523268755815-fe7c372a0349?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+          "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+          "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+          "https://images.unsplash.com/photo-1570891836654-32f91104c324?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+        ];
 
-          // Get product details
-          const productIds = productRelations.map(relation => relation.product_id);
-          const { data: products, error: productsError } = await supabase
-            .from('products')
-            .select('*')
-            .in('id', productIds);
+        const descriptions = {
+          'Rings': 'Elegant rings that symbolize eternal love and commitment.',
+          'Necklaces': 'Stunning necklaces that add grace to any outfit.',
+          'Earrings': 'Beautiful earrings that frame your face perfectly.',
+          'Bracelets': 'Delicate bracelets that complement your style.',
+        };
 
-          if (productsError) throw productsError;
+        const themes = {
+          'Rings': 'Elegance',
+          'Necklaces': 'Grace',
+          'Earrings': 'Beauty',
+          'Bracelets': 'Style',
+        };
 
-          // Add a random rating between 4-5 for display purposes
-          const itemsWithRating = (products || []).map(product => ({
-            ...product,
-            rating: Math.floor(Math.random() * 2) + 4 // Random rating between 4-5
-          }));
+        return {
+          id: `collection-${index}`,
+          name: category,
+          description: descriptions[category as keyof typeof descriptions] || `Beautiful ${category.toLowerCase()} collection featuring exquisite designs.`,
+          theme: themes[category as keyof typeof themes] || 'Luxury',
+          image_url: collectionImages[index % collectionImages.length],
+          items
+        };
+      });
 
-          return {
-            ...collection,
-            items: itemsWithRating
-          };
-        })
-      );
-
-      setCollections(collectionsWithItems);
-      if (collectionsWithItems.length > 0) {
-        setSelectedCollection(collectionsWithItems[0]);
+      setCollections(collectionsData);
+      if (collectionsData.length > 0) {
+        setSelectedCollection(collectionsData[0]);
       }
 
     } catch (err: any) {
@@ -387,7 +334,7 @@ const Collections = () => {
               About {selectedCollection.name}
             </h3>
             <p className="text-slate-600 leading-relaxed">
-              {selectedCollection.description}. Each piece in this collection has been carefully
+              {selectedCollection.description} Each piece in this collection has been carefully
               selected to embody the essence of {selectedCollection.theme.toLowerCase()}.
               From delicate rings to statement necklaces, every item tells a story of craftsmanship
               and beauty that will accompany you through life's most precious moments.

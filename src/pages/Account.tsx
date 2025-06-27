@@ -16,8 +16,8 @@ const Account = () => {
     const { user, signOut, loading } = useAuth();
     const [profile, setProfile] = useState<any>(null);
     const [orders, setOrders] = useState<any[]>([]);
-    const [phone, setPhone] = useState("");
-    const [editingPhone, setEditingPhone] = useState(false);
+    const [editingName, setEditingName] = useState(false);
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -49,7 +49,7 @@ const Account = () => {
 
         if (profile) {
             setProfile(profile);
-            setPhone(profile.phone || "");
+            setName(profile.name || "");
         }
     };
 
@@ -58,13 +58,7 @@ const Account = () => {
 
         const { data: orders } = await supabase
             .from("orders")
-            .select(`
-                *,
-                order_items(
-                    *,
-                    products(name, image_url)
-                )
-            `)
+            .select("*")
             .eq("customer_id", user.id)
             .order("created_at", { ascending: false });
 
@@ -77,22 +71,22 @@ const Account = () => {
         navigate("/");
     };
 
-    const handlePhoneSave = async () => {
-        if (!/^01[0-9]{9}$/.test(phone)) {
-            toast.error("Please enter a valid Egyptian phone number.");
+    const handleNameSave = async () => {
+        if (!name.trim()) {
+            toast.error("Please enter a valid name.");
             return;
         }
 
         const { error } = await supabase
             .from('customers')
-            .update({ phone })
+            .update({ name })
             .eq('id', user?.id);
 
         if (error) {
-            toast.error("Failed to update phone number.");
+            toast.error("Failed to update name.");
         } else {
-            toast.success("Phone number updated.");
-            setEditingPhone(false);
+            toast.success("Name updated.");
+            setEditingName(false);
             fetchProfile();
         }
     };
@@ -132,17 +126,27 @@ const Account = () => {
         try {
             setIsReordering(true);
 
-            // Get order items
-            const { data: orderItems } = await supabase
-                .from('order_items')
-                .select(`
-                    *,
-                    products(id, name, price, image_url, stock_quantity)
-                `)
-                .eq('order_id', orderId);
+            // Get order by ID to access product_ids
+            const { data: order } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('id', orderId)
+                .single();
 
-            if (!orderItems || orderItems.length === 0) {
+            if (!order || !order.product_ids || order.product_ids.length === 0) {
                 toast.error("No items found in this order");
+                setIsReordering(false);
+                return;
+            }
+
+            // Get products for this order
+            const { data: products } = await supabase
+                .from('products')
+                .select('*')
+                .in('id', order.product_ids);
+
+            if (!products || products.length === 0) {
+                toast.error("Products from this order are no longer available");
                 setIsReordering(false);
                 return;
             }
@@ -152,17 +156,17 @@ const Account = () => {
 
             // Add items to cart if they're still available
             let unavailableItems = [];
-            for (const item of orderItems) {
-                if (item.products && item.products.stock_quantity > 0) {
+            for (const product of products) {
+                if (product.stock > 0) {
                     addToCart({
-                        id: item.products.id,
-                        name: item.products.name,
-                        price: item.products.price,
-                        image: item.products.image_url,
-                        quantity: item.quantity
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image_url,
+                        quantity: 1
                     });
                 } else {
-                    unavailableItems.push(item.products?.name || 'Unknown product');
+                    unavailableItems.push(product.name);
                 }
             }
 
@@ -189,7 +193,7 @@ const Account = () => {
     }
 
     if (!user) {
-        return null; // Will redirect in useEffect
+        return null;
     }
 
     return (
@@ -202,27 +206,26 @@ const Account = () => {
                             <CardTitle>Profile Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div><b>Name:</b> {profile?.name || user?.email?.split('@')[0]}</div>
-                            <div><b>Email:</b> {user.email}</div>
                             <div>
-                                <b>Phone:</b> {editingPhone ? (
+                                <b>Name:</b> {editingName ? (
                                     <span className="ml-2">
                                         <Input
-                                            value={phone}
-                                            onChange={e => setPhone(e.target.value)}
+                                            value={name}
+                                            onChange={e => setName(e.target.value)}
                                             className="inline w-48 mr-2"
-                                            placeholder="01XXXXXXXXX"
+                                            placeholder="Enter your name"
                                         />
-                                        <Button size="sm" onClick={handlePhoneSave}>Save</Button>
-                                        <Button size="sm" variant="ghost" onClick={() => setEditingPhone(false)} className="ml-2">Cancel</Button>
+                                        <Button size="sm" onClick={handleNameSave}>Save</Button>
+                                        <Button size="sm" variant="ghost" onClick={() => setEditingName(false)} className="ml-2">Cancel</Button>
                                     </span>
                                 ) : (
                                     <span className="ml-2">
-                                        {phone || <span className="text-slate-400">Not set</span>}
-                                        <Button size="sm" variant="ghost" onClick={() => setEditingPhone(true)} className="ml-2">Edit</Button>
+                                        {profile?.name || <span className="text-slate-400">Not set</span>}
+                                        <Button size="sm" variant="ghost" onClick={() => setEditingName(true)} className="ml-2">Edit</Button>
                                     </span>
                                 )}
                             </div>
+                            <div><b>Email:</b> {user.email}</div>
                             
                             <div className="mt-4">
                                 {changingPassword ? (
@@ -244,11 +247,7 @@ const Account = () => {
                                                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                                                     onClick={() => setShowPassword(!showPassword)}
                                                 >
-                                                    {showPassword ? (
-                                                        <Eye className="h-4 w-4" />
-                                                    ) : (
-                                                        <Eye className="h-4 w-4" />
-                                                    )}
+                                                    <Eye className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                             {password && password.length < 6 && (
@@ -320,7 +319,7 @@ const Account = () => {
                                         <li key={order.id} className="border rounded-lg p-4">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <div className="font-semibold">Order #{order.order_number}</div>
+                                                    <div className="font-semibold">Order #{order.id.slice(0, 8)}</div>
                                                     <div className="text-sm text-slate-600">
                                                         {new Date(order.created_at).toLocaleDateString()}
                                                     </div>
@@ -337,22 +336,15 @@ const Account = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {order.order_items && order.order_items.length > 0 && (
-                                                <div className="text-sm text-slate-600">
-                                                    Items: {order.order_items.map((item: any) =>
-                                                        item.products?.name || 'Unknown Product'
-                                                    ).join(', ')}
-                                                </div>
-                                            )}
                                             <div className="text-sm text-slate-600">
-                                                Payment: {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Card Payment'}
+                                                Items: {order.product_ids ? order.product_ids.length : 0} products
                                             </div>
                                             <div className="mt-3 flex space-x-2">
                                                 <Button 
                                                     size="sm" 
                                                     variant="outline"
                                                     className="flex items-center"
-                                                    onClick={() => navigate(`/order-tracking/${order.order_number || order.id}`)}
+                                                    onClick={() => navigate(`/order-tracking/${order.id}`)}
                                                 >
                                                     <Truck className="h-3 w-3 mr-1" />
                                                     Track Order

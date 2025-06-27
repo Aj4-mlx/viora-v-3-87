@@ -12,7 +12,7 @@ import type { Database } from "@/integrations/supabase/types";
 type SupabaseProduct = Database["public"]["Tables"]["products"]["Row"];
 
 interface DisplayProduct {
-  id: number;
+  id: string;
   name: string;
   price: string;
   originalPrice?: string;
@@ -24,21 +24,21 @@ interface DisplayProduct {
 
 // Adapter function to convert Supabase product to display product
 const adaptSupabaseProduct = (product: SupabaseProduct): DisplayProduct => ({
-  id: parseInt(product.id),
+  id: product.id,
   name: product.name,
   price: `${product.price} EGP`,
-  originalPrice: undefined, // Not available in Supabase schema
+  originalPrice: undefined,
   image: product.image_url || '',
   category: product.category,
-  rating: 5, // Default rating since not available in Supabase schema
-  isNew: true // Default to new since not available in Supabase schema
+  rating: 5,
+  isNew: true
 });
 
 export const NewArrivals = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const [wishlistItems, setWishlistItems] = useState<number[]>([]);
+  const [wishlistItems, setWishlistItems] = useState<string[]>([]);
   const [newArrivals, setNewArrivals] = useState<DisplayProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,6 @@ export const NewArrivals = () => {
         setError("Failed to load new arrivals");
         setNewArrivals([]);
       } else {
-        // Convert Supabase products to display products
         const displayProducts = (data || []).map(adaptSupabaseProduct);
         setNewArrivals(displayProducts);
       }
@@ -65,7 +64,7 @@ export const NewArrivals = () => {
     fetchNewArrivals();
   }, []);
 
-  const handleWishlistToggle = (productId: number, productName: string) => {
+  const handleWishlistToggle = (productId: string, productName: string) => {
     const isInWishlist = wishlistItems.includes(productId);
 
     if (isInWishlist) {
