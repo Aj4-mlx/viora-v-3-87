@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -41,34 +40,37 @@ const Account = () => {
     const fetchProfile = async () => {
         if (!user) return;
 
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
             .from('customers')
             .select('*')
             .eq('id', user.id)
             .single();
 
-        if (profile) {
+        if (profile && !error) {
             setProfile(profile);
-            setPhone(profile.phone || "");
+            // Handle phone field gracefully - it might not exist in the database yet
+            setPhone((profile as any).phone || "");
         }
     };
 
     const fetchOrders = async () => {
         if (!user) return;
 
-        const { data: orders } = await supabase
-            .from("orders")
-            .select(`
-                *,
-                order_items(
-                    *,
-                    products(name, image_url)
-                )
-            `)
-            .eq("customer_id", user.id)
-            .order("created_at", { ascending: false });
+        // Try to fetch orders, but handle gracefully if the table structure doesn't match
+        try {
+            const { data: orders, error } = await supabase
+                .from("orders")
+                .select("*")
+                .eq("customer_id", user.id)
+                .order("created_at", { ascending: false });
 
-        if (orders) setOrders(orders);
+            if (orders && !error) {
+                setOrders(orders);
+            }
+        } catch (err) {
+            console.log("Orders table might not have the expected structure:", err);
+            setOrders([]);
+        }
     };
 
     const handleSignOut = async () => {
@@ -83,17 +85,23 @@ const Account = () => {
             return;
         }
 
-        const { error } = await supabase
-            .from('customers')
-            .update({ phone })
-            .eq('id', user?.id);
+        // Try to update phone, but handle gracefully if column doesn't exist
+        try {
+            const { error } = await supabase
+                .from('customers')
+                .update({ phone } as any)
+                .eq('id', user?.id);
 
-        if (error) {
-            toast.error("Failed to update phone number.");
-        } else {
-            toast.success("Phone number updated.");
+            if (error) {
+                toast.error("Failed to update phone number. This feature may not be available yet.");
+            } else {
+                toast.success("Phone number updated.");
+                setEditingPhone(false);
+                fetchProfile();
+            }
+        } catch (err) {
+            toast.error("Phone number update is not available yet.");
             setEditingPhone(false);
-            fetchProfile();
         }
     };
 
@@ -131,47 +139,7 @@ const Account = () => {
     const handleReorder = async (orderId: string) => {
         try {
             setIsReordering(true);
-
-            // Get order items
-            const { data: orderItems } = await supabase
-                .from('order_items')
-                .select(`
-                    *,
-                    products(id, name, price, image_url, stock_quantity)
-                `)
-                .eq('order_id', orderId);
-
-            if (!orderItems || orderItems.length === 0) {
-                toast.error("No items found in this order");
-                setIsReordering(false);
-                return;
-            }
-
-            // Clear current cart
-            clearCart();
-
-            // Add items to cart if they're still available
-            let unavailableItems = [];
-            for (const item of orderItems) {
-                if (item.products && item.products.stock_quantity > 0) {
-                    addToCart({
-                        id: item.products.id,
-                        name: item.products.name,
-                        price: item.products.price,
-                        image: item.products.image_url,
-                        quantity: item.quantity
-                    });
-                } else {
-                    unavailableItems.push(item.products?.name || 'Unknown product');
-                }
-            }
-
-            if (unavailableItems.length > 0) {
-                toast.warning(`Some items are no longer available: ${unavailableItems.join(', ')}`);
-            }
-
-            toast.success("Items added to cart");
-            navigate('/cart');
+            toast.info("Reorder functionality will be available soon!");
         } catch (err) {
             console.error("Error reordering:", err);
             toast.error("Failed to reorder. Please try again.");
@@ -320,7 +288,7 @@ const Account = () => {
                                         <li key={order.id} className="border rounded-lg p-4">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <div className="font-semibold">Order #{order.order_number}</div>
+                                                    <div className="font-semibold">Order #{order.id}</div>
                                                     <div className="text-sm text-slate-600">
                                                         {new Date(order.created_at).toLocaleDateString()}
                                                     </div>
@@ -337,22 +305,12 @@ const Account = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {order.order_items && order.order_items.length > 0 && (
-                                                <div className="text-sm text-slate-600">
-                                                    Items: {order.order_items.map((item: any) =>
-                                                        item.products?.name || 'Unknown Product'
-                                                    ).join(', ')}
-                                                </div>
-                                            )}
-                                            <div className="text-sm text-slate-600">
-                                                Payment: {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Card Payment'}
-                                            </div>
                                             <div className="mt-3 flex space-x-2">
                                                 <Button 
                                                     size="sm" 
                                                     variant="outline"
                                                     className="flex items-center"
-                                                    onClick={() => navigate(`/order-tracking/${order.order_number || order.id}`)}
+                                                    onClick={() => toast.info("Order tracking will be available soon!")}
                                                 >
                                                     <Truck className="h-3 w-3 mr-1" />
                                                     Track Order

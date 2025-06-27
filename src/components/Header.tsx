@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import { mapDatabaseProductToProduct } from "@/types/product";
+import { mapDatabaseProductToProduct, type DatabaseProduct } from "@/types/product";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -51,7 +52,7 @@ export const Header = () => {
       
       if (data) {
         // Convert database products to UI products
-        const uiProducts = data.map(mapDatabaseProductToProduct);
+        const uiProducts = (data as DatabaseProduct[]).map(mapDatabaseProductToProduct);
         setSearchResults(uiProducts);
       } else {
         setSearchResults([]);
