@@ -87,6 +87,15 @@ export const Hero = () => {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-floral-cream/20 to-transparent"></div>
+
+      {/* Floating Product Image Overlay */}
+      <img
+        src="/lovable-uploads/ring.png"
+        alt="Floating Jewelry Piece"
+        className="absolute right-4 bottom-16 w-64 max-w-[40%] lg:right-24 lg:bottom-24 lg:w-[400px] z-10 pointer-events-none animate-float-slow"
+      />
+
+
     </section>
   );
 };
