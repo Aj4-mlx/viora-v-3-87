@@ -107,22 +107,12 @@ const Shop = () => {
           typeof (product as any).created_at === 'string';
         
         if (hasSupabaseProperties) {
-          return adaptSupabaseProduct(product as SupabaseProduct);
+          // Cast to unknown first, then to SupabaseProduct to handle type conversion
+          return adaptSupabaseProduct(product as unknown as SupabaseProduct);
         }
         
         // Otherwise it's from the local products data
-        const localProduct: Product = {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          originalPrice: product.originalPrice,
-          image: product.image,
-          category: product.category,
-          rating: product.rating,
-          isNew: product.isNew,
-          description: product.description
-        };
-        return adaptLocalProduct(localProduct);
+        return adaptLocalProduct(product as Product);
       });
     }
 
