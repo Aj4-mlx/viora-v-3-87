@@ -107,7 +107,7 @@ export const Header = () => {
               <img
                 src="/lovable-uploads/logo_2.png"
                 alt="Viora Luxury Jewelry"
-                className="h-16 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
+                className="h-14 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
               />
             </Link>
           </div>
