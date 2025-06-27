@@ -103,16 +103,15 @@ export const Header = () => {
         <div className="flex items-center justify-between py-6">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="group">
-              <div className="hover:scale-105 transition-transform duration-300">
-                <img
-                  src="/lovable-uploads/Viora Logo Transparent.png"
-                  alt="Viora Luxury Jewelry"
-                  className="h-16 drop-shadow-lg group-hover:drop-shadow-xl"
-                />
-              </div>
+            <Link to="/" className="group block hover:scale-105 transition-transform duration-300">
+              <img
+                src="/lovable-uploads/Viora Logo Transparent.png"
+                alt="Viora Luxury Jewelry"
+                className="h-16 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
+              />
             </Link>
           </div>
+
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
