@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import type { Product } from "@/data/products";
 
 type SupabaseProduct = Database["public"]["Tables"]["products"]["Row"];
 
@@ -42,6 +43,21 @@ const adaptSupabaseProduct = (product: SupabaseProduct): DisplayProduct => ({
   description: product.description || '',
   stock: product.stock,
   created_at: product.created_at
+});
+
+// Adapter function to convert local Product to display product
+const adaptLocalProduct = (product: Product): DisplayProduct => ({
+  id: product.id.toString(),
+  name: product.name,
+  price: parseFloat(product.price.replace(/[^\d.-]/g, '')),
+  originalPrice: product.originalPrice ? parseFloat(product.originalPrice.replace(/[^\d.-]/g, '')) : undefined,
+  image_url: product.image,
+  category: product.category,
+  rating: product.rating,
+  isNew: product.isNew,
+  description: product.description || '',
+  stock: 10, // Default stock for local products
+  created_at: new Date().toISOString()
 });
 
 const Shop = () => {
@@ -88,19 +104,7 @@ const Shop = () => {
           return adaptSupabaseProduct(product as SupabaseProduct);
         }
         // Otherwise it's from the local products data
-        return {
-          id: product.id.toString(),
-          name: product.name,
-          price: parseFloat(product.price.replace(/[^\d.-]/g, '')),
-          originalPrice: product.originalPrice ? parseFloat(product.originalPrice.replace(/[^\d.-]/g, '')) : undefined,
-          image_url: product.image,
-          category: product.category,
-          rating: product.rating,
-          isNew: product.isNew,
-          description: product.description,
-          stock: 10, // Default stock for local products
-          created_at: new Date().toISOString()
-        } as DisplayProduct;
+        return adaptLocalProduct(product as Product);
       });
     }
 
