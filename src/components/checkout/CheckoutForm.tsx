@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,7 +51,7 @@ export const CheckoutForm = () => {
     governorate: ""
   });
 
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState("card");
   const [isLoading, setIsLoading] = useState(false);
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
   const [shippingProviders, setShippingProviders] = useState<ShippingProvider[]>([]);
@@ -330,15 +329,14 @@ export const CheckoutForm = () => {
           product_ids: cartItems.map(item => item.id),
           total: total,
           status: "pending",
-          payment_status: paymentMethod === 'cod' ? 'pending' : 'pending',
+          payment_status: paymentMethod === 'card' ? 'pending' : 'pending',
           payment_method: paymentMethod,
           shipping_address: customerInfo,
           shipping_cost: shipping,
           shipping_provider: providerName,
           order_number: orderNumber,
           estimated_delivery_date: deliveryDate.toISOString().split('T')[0],
-          note: `Payment: ${paymentMethod === 'cod' ? 'Cash on Delivery' :
-              paymentMethod === 'card' ? 'Card Payment' :
+          note: `Payment: ${paymentMethod === 'card' ? 'Card Payment' :
                 paymentMethod === 'instapay' ? 'Instapay' :
                   paymentMethod === 'vodafone' ? 'Vodafone Cash' :
                     paymentMethod === 'fawry' ? 'Fawry' : 'Unknown'
@@ -557,10 +555,6 @@ export const CheckoutForm = () => {
         <CardContent>
           <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="cod" id="cod" />
-              <Label htmlFor="cod">Cash on Delivery</Label>
-            </div>
-            <div className="flex items-center space-x-2">
               <RadioGroupItem value="card" id="card" />
               <Label htmlFor="card">Credit/Debit Card</Label>
             </div>
@@ -701,12 +695,12 @@ export const CheckoutForm = () => {
 
           <Button
             type="submit"
-            className="w-full bg-coral-peach hover:bg-coral-peach/80 mt-6"
+            className="w-full bg-puce-red hover:bg-puce-red/80 text-white mt-6"
             disabled={isLoading || cartItems.length === 0}
           >
             {isLoading ? 'Placing Order...' :
               showGuestCheckout && !user ? 'Create Account & Place Order' :
-                (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
+                'Proceed to Payment'}
           </Button>
         </CardContent>
       </Card>

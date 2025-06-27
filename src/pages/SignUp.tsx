@@ -68,7 +68,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pastel-purple to-slate-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Create account</CardTitle>
@@ -212,7 +212,7 @@ const SignUp = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-coral-peach hover:bg-coral-peach/90"
+                className="w-full bg-puce-red hover:bg-puce-red/90 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating account..." : "Create Account"}
@@ -225,7 +225,7 @@ const SignUp = () => {
               Already have an account?{" "}
               <Link
                 to="/sign-in"
-                className="text-coral-peach hover:underline font-medium"
+                className="text-royal-orange hover:underline font-medium"
               >
                 Sign in
               </Link>

@@ -46,11 +46,18 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Custom Viora Color Palette */
-    --coral-peach: 10 72% 69%;
-    --pale-peach: 25 100% 84%;
-    --muted-mustard: 40 35% 66%;
-    --cream-beige: 35 55% 89%;
+    /* Updated VIORA Brand Color Palette */
+    --puce-red: 350 49% 31%;
+    --rust: 15 83% 40%;
+    --royal-orange: 25 80% 63%;
+    --orange-yellow: 41 87% 70%;
+    --pastel-purple: 316 22% 73%;
+    
+    /* Keep old coral-peach for backward compatibility during transition */
+    --coral-peach: var(--royal-orange);
+    --pale-peach: var(--orange-yellow);
+    --muted-mustard: var(--orange-yellow);
+    --cream-beige: var(--pastel-purple);
   }
 
   .dark {
@@ -102,8 +109,55 @@
   }
 }
 
-/* Custom utility classes for Viora colors */
+/* Updated utility classes for VIORA brand colors */
 @layer utilities {
+  .text-puce-red {
+    color: hsl(var(--puce-red));
+  }
+  .bg-puce-red {
+    background-color: hsl(var(--puce-red));
+  }
+  .border-puce-red {
+    border-color: hsl(var(--puce-red));
+  }
+  .text-rust {
+    color: hsl(var(--rust));
+  }
+  .bg-rust {
+    background-color: hsl(var(--rust));
+  }
+  .border-rust {
+    border-color: hsl(var(--rust));
+  }
+  .text-royal-orange {
+    color: hsl(var(--royal-orange));
+  }
+  .bg-royal-orange {
+    background-color: hsl(var(--royal-orange));
+  }
+  .border-royal-orange {
+    border-color: hsl(var(--royal-orange));
+  }
+  .text-orange-yellow {
+    color: hsl(var(--orange-yellow));
+  }
+  .bg-orange-yellow {
+    background-color: hsl(var(--orange-yellow));
+  }
+  .border-orange-yellow {
+    border-color: hsl(var(--orange-yellow));
+  }
+  .text-pastel-purple {
+    color: hsl(var(--pastel-purple));
+  }
+  .bg-pastel-purple {
+    background-color: hsl(var(--pastel-purple));
+  }
+  .border-pastel-purple {
+    border-color: hsl(var(--pastel-purple));
+  }
+  
+  /* Keep existing coral-peach classes for backward compatibility */
   .text-coral-peach {
     color: hsl(var(--coral-peach));
   }
