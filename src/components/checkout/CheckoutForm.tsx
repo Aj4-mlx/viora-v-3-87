@@ -550,7 +550,7 @@ export const CheckoutForm = () => {
 
           <Button
             type="submit"
-            className="w-full bg-coral-peach hover:bg-coral-peach/80 mt-6"
+            className="w-full bg-coral-peach hover:bg-purple-600 hover:text-white mt-6 text-black border border-black"
             disabled={isLoading || cartItems.length === 0}
           >
             {isLoading ? 'Placing Order...' :
