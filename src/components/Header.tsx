@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -92,28 +91,24 @@ export const Header = () => {
       {/* Top banner - full width */}
       <div className="bg-floral-deep-violet text-white text-center py-2 text-sm w-full">
         <div className="flex items-center justify-center space-x-2">
-          <span className="animate-pulse">✨</span>
           <span>Free shipping on orders over 1,000 EGP</span>
-          <span className="animate-pulse">✨</span>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 mt-4">
+      <div className="container mx-auto px-4 mt-2 sm:mt-4">
 
         {/* Main header */}
-        <div className="flex items-center justify-between py-6">
+        <div className="flex items-center justify-between py-4 sm:py-6">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="group block hover:scale-105 transition-transform duration-300">
               <img
                 src="/lovable-uploads/logo_2.png"
                 alt="Viora Luxury Jewelry"
-                className="h-14 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
+                className="h-10 sm:h-14 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
               />
             </Link>
           </div>
-
-
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -132,7 +127,7 @@ export const Header = () => {
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Search */}
             <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
@@ -146,13 +141,14 @@ export const Header = () => {
 
             {/* Wishlist */}
             <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300">
-              <Star className="w-5 h-5" />
+              <Star className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
 
             {/* Cart */}
             <Link to="/cart">
-              <Button variant="outline" size="sm" className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white relative transition-all duration-300">
-                <ShoppingCart className="w-5 h-5 mr-1" /> Cart
+              <Button variant="outline" size="sm" className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white relative transition-all duration-300 text-xs sm:text-sm">
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1" /> 
+                <span className="hidden sm:inline">Cart</span>
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {cartCount}
@@ -168,7 +164,7 @@ export const Header = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors"
+                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex"
                   >
                     Account
                   </Button>
@@ -176,7 +172,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors"
+                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex"
                   onClick={handleSignOut}
                 >
                   Sign Out
@@ -189,7 +185,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white backdrop-blur-sm transition-colors"
+                  className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white backdrop-blur-sm transition-colors hidden sm:inline-flex"
                 >
                   Sign In
                 </Button>
@@ -211,7 +207,7 @@ export const Header = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-white/20 py-4 bg-white/10 backdrop-blur-md rounded-lg mb-4">
-            <nav className="flex flex-col space-y-4">
+            <nav className="flex flex-col space-y-3">
               {/* Mobile Search */}
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
@@ -225,56 +221,56 @@ export const Header = () => {
 
               <Link
                 to="/shop"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Shop
               </Link>
               <Link
                 to="/collections"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Collections
               </Link>
               <Link
                 to="/about"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
               <Link
                 to="/cart"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cart ({cartCount})
               </Link>
               <Link
                 to="/account"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Account
               </Link>
               <Link
                 to="/sign-in"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign In
               </Link>
               {isSignedIn && (
                 <button
-                  className="text-floral-coral text-left px-4 py-2 hover:bg-white/10 rounded transition-colors font-medium font-elegant"
+                  className="text-floral-coral text-left py-2 hover:bg-white/10 rounded transition-colors font-medium font-elegant"
                   onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                 >
                   Sign Out

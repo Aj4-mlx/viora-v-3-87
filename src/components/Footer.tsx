@@ -1,5 +1,4 @@
-
-import { Facebook, Instagram, Youtube } from "lucide-react";
+import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -26,19 +25,19 @@ export const Footer = () => {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-floral-violet/5 to-floral-deep-violet/10"></div>
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-floral-peach/20 to-transparent rounded-full blur-3xl"></div>
       
-      <div className="container mx-auto px-4 py-16 relative">
-        <div className="grid md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-12 sm:py-16 relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <h3 className="text-3xl font-display font-bold text-floral-deep-violet mb-2">
+              <h3 className="text-2xl sm:text-3xl font-display font-bold text-floral-deep-violet mb-2">
                 VIORA
               </h3>
               <span className="text-xs font-elegant text-floral-violet tracking-[0.2em]">
                 LUXURY JEWELRY
               </span>
             </div>
-            <p className="text-gray-700 leading-relaxed font-elegant">
+            <p className="text-gray-700 leading-relaxed font-elegant text-sm sm:text-base">
               Timeless jewelry crafted with passion and precision for life's 
               most treasured moments. Where floral beauty meets eternal elegance.
             </p>
@@ -49,25 +48,27 @@ export const Footer = () => {
               >
                 <Facebook className="w-5 h-5" />
               </button>
-              <button
-                onClick={() => handleSocialClick("Instagram")}
+              <a
+                href="https://www.instagram.com/viora.aj4?igsh=MXUyY210NXAyMTd2bA%3D%3D&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
                 <Instagram className="w-5 h-5" />
-              </button>
+              </a>
               <button
-                onClick={() => handleSocialClick("YouTube")}
+                onClick={() => handleSocialClick("WhatsApp")}
                 className="w-10 h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
-                <Youtube className="w-5 h-5" />
+                <MessageCircle className="w-5 h-5" />
               </button>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 text-lg">Shop</h4>
-            <ul className="space-y-3 text-gray-700 font-elegant">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-4 sm:mb-6 text-base sm:text-lg">Shop</h4>
+            <ul className="space-y-2 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
               <li>
                 <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
                   Rings
@@ -98,8 +99,8 @@ export const Footer = () => {
 
           {/* Customer Care */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 text-lg">Customer Care</h4>
-            <ul className="space-y-3 text-gray-700 font-elegant">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-4 sm:mb-6 text-base sm:text-lg">Customer Care</h4>
+            <ul className="space-y-2 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
               <li>
                 <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
                   Size Guide
@@ -130,8 +131,8 @@ export const Footer = () => {
 
           {/* About */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 text-lg">About Viora</h4>
-            <ul className="space-y-3 text-gray-700 font-elegant">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-4 sm:mb-6 text-base sm:text-lg">About Viora</h4>
+            <ul className="space-y-2 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
               <li>
                 <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
                   Our Story
@@ -173,8 +174,8 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-floral-violet/20 mt-12 pt-8 text-center">
-          <p className="text-gray-600 font-elegant">
+        <div className="border-t border-floral-violet/20 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center">
+          <p className="text-gray-600 font-elegant text-sm sm:text-base">
             © 2024 Viora Jewelry. All rights reserved. | 
             <button 
               onClick={() => handleComingSoon("Privacy Policy")}
@@ -189,8 +190,8 @@ export const Footer = () => {
               Terms of Service
             </button>
           </p>
-          <div className="mt-4 text-sm text-floral-violet font-elegant">
-            ✨ Where floral dreams meet timeless elegance ✨
+          <div className="mt-4 text-xs sm:text-sm text-floral-violet font-elegant">
+            Where floral dreams meet timeless elegance
           </div>
         </div>
       </div>

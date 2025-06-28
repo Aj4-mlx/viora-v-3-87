@@ -1,88 +1,71 @@
-
 import { Button } from "@/components/ui/button";
 
 export const BrandStory = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-white via-floral-blush/20 to-floral-lavender/30 relative overflow-hidden">
+    <section className="py-12 sm:py-20 bg-gradient-to-br from-white via-floral-blush/20 to-floral-lavender/30 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-floral-peach/20 to-transparent rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-tl from-floral-lavender/20 to-transparent rounded-full blur-3xl"></div>
       
       <div className="container mx-auto px-4 relative">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-16 items-center">
+          <div className="space-y-6 sm:space-y-8">
             <div>
-              <span className="inline-block px-4 py-2 bg-floral-violet/10 text-floral-deep-violet rounded-full text-sm font-elegant tracking-wide mb-6">
+              <span className="inline-block px-3 sm:px-4 py-2 bg-floral-violet/10 text-floral-deep-violet rounded-full text-xs sm:text-sm font-elegant tracking-wide mb-4 sm:mb-6">
                 Our Heritage
               </span>
-              <h2 className="text-4xl md:text-5xl font-display font-bold text-floral-deep-violet mb-6 leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-floral-deep-violet mb-4 sm:mb-6 leading-tight">
                 Crafted with Passion, 
                 <span className="block text-floral-gradient">Born from Love</span>
               </h2>
             </div>
             
-            <div className="space-y-6">
-              <p className="text-lg text-gray-700 leading-relaxed font-elegant">
-                For over three decades, Viora has been synonymous with exceptional 
-                craftsmanship and timeless elegance. Each piece in our collection 
-                tells a story of dedication, artistry, and the pursuit of perfection.
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed font-elegant">
-                From sourcing the finest materials to the delicate finishing touches, 
-                our master craftsmen ensure that every Viora creation becomes a 
-                treasured heirloom for generations to come.
-              </p>
-            </div>
+            <p className="text-base sm:text-lg text-gray-700 leading-relaxed font-elegant">
+              For over three decades, Viora has been the embodiment of timeless elegance 
+              and exceptional craftsmanship. Our journey began with a simple dream: to create 
+              jewelry that tells stories, celebrates love, and becomes cherished heirlooms 
+              passed down through generations.
+            </p>
             
-            <div className="grid grid-cols-3 gap-8 py-8">
-              <div className="text-center group">
-                <div className="text-4xl font-display font-bold text-floral-gradient mb-2 group-hover:scale-110 transition-transform duration-300">
-                  30+
-                </div>
-                <div className="text-sm text-gray-600 font-elegant">Years of Excellence</div>
-              </div>
-              <div className="text-center group">
-                <div className="text-4xl font-display font-bold text-floral-gradient mb-2 group-hover:scale-110 transition-transform duration-300">
-                  10k+
-                </div>
-                <div className="text-sm text-gray-600 font-elegant">Happy Customers</div>
-              </div>
-              <div className="text-center group">
-                <div className="text-4xl font-display font-bold text-floral-gradient mb-2 group-hover:scale-110 transition-transform duration-300">
-                  500+
-                </div>
-                <div className="text-sm text-gray-600 font-elegant">Unique Designs</div>
-              </div>
-            </div>
+            <p className="text-base sm:text-lg text-gray-700 leading-relaxed font-elegant">
+              Every piece in our collection is meticulously crafted by master artisans who 
+              pour their passion into every detail. From the initial design concept to the 
+              final polish, we ensure that each creation meets our exacting standards of 
+              quality and beauty.
+            </p>
             
-            <div className="flex flex-wrap gap-4">
-              <Button className="bg-floral-violet hover:bg-floral-deep-violet text-white font-elegant px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-                Discover Our Craft
-              </Button>
-              <Button variant="outline" className="border-floral-violet text-floral-violet hover:bg-floral-violet hover:text-white font-elegant px-6 py-3 rounded-full transition-all duration-300">
-                Watch Our Story
+            <div className="pt-4">
+              <Button 
+                className="bg-floral-deep-violet hover:bg-floral-violet text-white font-elegant px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              >
+                Discover Our Story
               </Button>
             </div>
           </div>
           
           <div className="relative">
-            <div className="aspect-square glass-effect rounded-3xl overflow-hidden floral-shadow relative group">
+            <div className="aspect-square bg-gradient-to-br from-floral-peach/20 to-floral-lavender/30 rounded-2xl overflow-hidden">
               <img 
-                src="/lovable-uploads/8ba3cc12-b98f-46c9-805a-310f57f274ed.png" 
-                alt="Viora Floral Inspiration"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80"
+                alt="Viora Craftsmanship"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-floral-deep-violet/20 to-transparent"></div>
             </div>
             
-            {/* Floating logo accent */}
-            <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-floral-violet to-floral-deep-violet rounded-full flex items-center justify-center text-white font-display font-bold text-2xl shadow-xl animate-float">
-              V
+            {/* Floating stats */}
+            <div className="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 shadow-lg">
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-floral-deep-violet">30+</div>
+                <div className="text-xs sm:text-sm font-elegant text-gray-600">Years of Excellence</div>
+              </div>
             </div>
             
-            {/* Decorative elements */}
-            <div className="absolute -top-4 -right-4 w-16 h-16 border-2 border-floral-peach rounded-full animate-pulse"></div>
-            <div className="absolute top-1/2 -left-6 w-12 h-12 bg-floral-coral/30 rounded-full blur-sm animate-float delay-1000"></div>
+            <div className="absolute -top-6 -right-6 bg-white/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 shadow-lg">
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-floral-deep-violet">500+</div>
+                <div className="text-xs sm:text-sm font-elegant text-gray-600">Unique Designs</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
