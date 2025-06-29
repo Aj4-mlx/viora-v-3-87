@@ -95,7 +95,7 @@ export const Header = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 mt-2 sm:mt-4">
+      <div className="container mx-auto px-6 sm:px-4 mt-2 sm:mt-4">
 
         {/* Main header */}
         <div className="flex items-center justify-between py-4 sm:py-6">
@@ -105,29 +105,29 @@ export const Header = () => {
               <img
                 src="/lovable-uploads/logo_2.png"
                 alt="Viora Luxury Jewelry"
-                className="h-10 sm:h-14 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
+                className="h-12 sm:h-14 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
               />
             </Link>
           </div>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/shop" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
+            <Link to="/shop" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
               Shop
             </Link>
-            <Link to="/collections" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
+            <Link to="/collections" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
               Collections
             </Link>
-            <Link to="/about" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
+            <Link to="/about" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
               About
             </Link>
-            <Link to="/contact" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200">
+            <Link to="/contact" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
               Contact
             </Link>
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             {/* Search */}
             <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
@@ -140,14 +140,14 @@ export const Header = () => {
             </form>
 
             {/* Wishlist */}
-            <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300">
-              <Star className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300 min-h-[44px] min-w-[44px] p-2">
+              <Star className="w-5 h-5" />
             </Button>
 
             {/* Cart */}
             <Link to="/cart">
-              <Button variant="outline" size="sm" className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white relative transition-all duration-300 text-xs sm:text-sm">
-                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1" /> 
+              <Button variant="outline" size="sm" className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white relative transition-all duration-300 text-sm min-h-[44px] px-3 sm:px-4">
+                <ShoppingCart className="w-5 h-5 mr-1" /> 
                 <span className="hidden sm:inline">Cart</span>
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
@@ -164,7 +164,7 @@ export const Header = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex"
+                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
                   >
                     Account
                   </Button>
@@ -172,7 +172,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex"
+                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
                   onClick={handleSignOut}
                 >
                   Sign Out
@@ -185,7 +185,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white backdrop-blur-sm transition-colors hidden sm:inline-flex"
+                  className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
                 >
                   Sign In
                 </Button>
@@ -196,18 +196,20 @@ export const Header = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden text-white hover:bg-white/10"
+              className="md:hidden text-white hover:bg-white/10 min-h-[48px] min-w-[48px] p-3 relative z-50 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-white/50 mobile-menu-button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle mobile menu"
+              aria-expanded={isMenuOpen}
             >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </Button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-white/20 py-4 bg-white/10 backdrop-blur-md rounded-lg mb-4">
-            <nav className="flex flex-col space-y-3">
+          <div className="md:hidden border-t border-white/20 py-6 bg-white/10 backdrop-blur-md rounded-lg mb-4 relative z-40 mobile-menu-dropdown">
+            <nav className="flex flex-col space-y-4">
               {/* Mobile Search */}
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
@@ -221,56 +223,56 @@ export const Header = () => {
 
               <Link
                 to="/shop"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Shop
               </Link>
               <Link
                 to="/collections"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Collections
               </Link>
               <Link
                 to="/about"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
               <Link
                 to="/cart"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cart ({cartCount})
               </Link>
               <Link
                 to="/account"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Account
               </Link>
               <Link
                 to="/sign-in"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-2"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign In
               </Link>
               {isSignedIn && (
                 <button
-                  className="text-floral-coral text-left py-2 hover:bg-white/10 rounded transition-colors font-medium font-elegant"
+                  className="text-floral-coral text-left py-3 px-4 hover:bg-white/10 rounded-lg transition-colors font-medium font-elegant min-h-[48px] flex items-center mobile-menu-item"
                   onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                 >
                   Sign Out

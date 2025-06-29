@@ -100,6 +100,8 @@
     -webkit-overflow-scrolling: touch;
     /* Prevent horizontal scroll on mobile */
     overflow-x: hidden;
+    /* Ensure proper touch behavior */
+    touch-action: manipulation;
   }
 
   h1,
@@ -111,20 +113,39 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* Improve touch targets on mobile */
-  button, a, [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
+  /* Improve touch targets on mobile - Google's 48dp guideline */
+  button, a, [role="button"], input[type="button"], input[type="submit"], input[type="reset"] {
+    min-height: 48px;
+    min-width: 48px;
+    /* Ensure proper touch behavior */
+    touch-action: manipulation;
   }
 
   /* Improve form elements on mobile */
   input, textarea, select {
     font-size: 16px; /* Prevents zoom on iOS */
+    /* Ensure proper touch behavior */
+    touch-action: manipulation;
   }
 
   /* Smooth scrolling for mobile */
   html {
     scroll-behavior: smooth;
+    /* Improve mobile performance */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  /* Ensure proper focus states for accessibility */
+  button:focus, a:focus, input:focus, textarea:focus, select:focus {
+    outline: 2px solid hsl(270, 50%, 60%);
+    outline-offset: 2px;
+  }
+
+  /* Improve mobile performance */
+  img, video {
+    max-width: 100%;
+    height: auto;
   }
 }
 
@@ -167,11 +188,12 @@
 
   /* Mobile-specific utilities */
   .mobile-touch-target {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 48px;
+    min-width: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
+    touch-action: manipulation;
   }
 
   .mobile-safe-area {
@@ -179,6 +201,25 @@
     padding-right: env(safe-area-inset-right);
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Improved button styles for mobile */
+  .mobile-button {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 16px;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent text selection on buttons */
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 }
 
@@ -228,5 +269,84 @@
 @media (max-width: 768px) {
   .animate-float-slow {
     animation: floatSlow 8s ease-in-out infinite;
+  }
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* Improve touch response */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Ensure proper viewport behavior */
+  body {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* Mobile menu button specific styles */
+  .mobile-menu-button {
+    position: relative;
+    z-index: 50;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .mobile-menu-button:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+    outline-offset: 2px;
+  }
+
+  .mobile-menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Mobile menu dropdown styles */
+  .mobile-menu-dropdown {
+    position: relative;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    margin-top: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Ensure mobile menu items are easily tappable */
+  .mobile-menu-item {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .mobile-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-menu-item:active {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(0.98);
   }
 }

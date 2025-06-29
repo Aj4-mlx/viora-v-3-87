@@ -25,10 +25,10 @@ export const Footer = () => {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-floral-violet/5 to-floral-deep-violet/10"></div>
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-floral-peach/20 to-transparent rounded-full blur-3xl"></div>
       
-      <div className="container mx-auto px-4 py-12 sm:py-16 relative">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-6 sm:px-4 py-16 sm:py-16 relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8">
           {/* Brand */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-6 sm:space-y-6">
             <div>
               <h3 className="text-2xl sm:text-3xl font-display font-bold text-floral-deep-violet mb-2">
                 VIORA
@@ -41,56 +41,59 @@ export const Footer = () => {
               Timeless jewelry crafted with passion and precision for life's 
               most treasured moments. Where floral beauty meets eternal elegance.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex justify-center sm:justify-start space-x-4">
               <button
                 onClick={() => handleSocialClick("Facebook")}
-                className="w-10 h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                className="w-12 h-12 sm:w-10 sm:h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                aria-label="Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <Facebook className="w-6 h-6 sm:w-5 sm:h-5" />
               </button>
               <a
                 href="https://www.instagram.com/viora.aj4?igsh=MXUyY210NXAyMTd2bA%3D%3D&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                className="w-12 h-12 sm:w-10 sm:h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                aria-label="Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-6 h-6 sm:w-5 sm:h-5" />
               </a>
               <button
                 onClick={() => handleSocialClick("WhatsApp")}
-                className="w-10 h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                className="w-12 h-12 sm:w-10 sm:h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                aria-label="WhatsApp"
               >
-                <MessageCircle className="w-5 h-5" />
+                <MessageCircle className="w-6 h-6 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-4 sm:mb-6 text-base sm:text-lg">Shop</h4>
-            <ul className="space-y-2 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 sm:mb-6 text-lg sm:text-lg">Shop</h4>
+            <ul className="space-y-4 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Rings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Necklaces
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Earrings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Bracelets
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   New Arrivals
                 </Link>
               </li>
@@ -99,30 +102,30 @@ export const Footer = () => {
 
           {/* Customer Care */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-4 sm:mb-6 text-base sm:text-lg">Customer Care</h4>
-            <ul className="space-y-2 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 sm:mb-6 text-lg sm:text-lg">Customer Care</h4>
+            <ul className="space-y-4 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
               <li>
-                <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Size Guide
                 </Link>
               </li>
               <li>
-                <Link to="/shipping-info" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/shipping-info" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/returns" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Returns
                 </Link>
               </li>
               <li>
-                <Link to="/care-instructions" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/care-instructions" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Care Instructions
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/contact" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Contact Us
                 </Link>
               </li>
@@ -131,17 +134,17 @@ export const Footer = () => {
 
           {/* About */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-4 sm:mb-6 text-base sm:text-lg">About Viora</h4>
-            <ul className="space-y-2 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 sm:mb-6 text-lg sm:text-lg">About Viora</h4>
+            <ul className="space-y-4 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
               <li>
-                <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block">
+                <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
                   Our Story
                 </Link>
               </li>
               <li>
                 <button 
                   onClick={() => handleComingSoon("Craftsmanship")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
                 >
                   Craftsmanship
                 </button>
@@ -149,7 +152,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Sustainability")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
                 >
                   Sustainability
                 </button>
@@ -157,7 +160,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Press")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
                 >
                   Press
                 </button>
@@ -165,7 +168,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Careers")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
                 >
                   Careers
                 </button>
@@ -174,18 +177,18 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-floral-violet/20 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center">
+        <div className="border-t border-floral-violet/20 mt-12 sm:mt-12 pt-8 sm:pt-8 text-center">
           <p className="text-gray-600 font-elegant text-sm sm:text-base">
             © 2024 Viora Jewelry. All rights reserved. | 
             <button 
               onClick={() => handleComingSoon("Privacy Policy")}
-              className="hover:text-floral-violet transition-colors ml-1"
+              className="hover:text-floral-violet transition-colors ml-1 py-2"
             >
               Privacy Policy
             </button> | 
             <button 
               onClick={() => handleComingSoon("Terms of Service")}
-              className="hover:text-floral-violet transition-colors ml-1"
+              className="hover:text-floral-violet transition-colors ml-1 py-2"
             >
               Terms of Service
             </button>
