@@ -31,7 +31,7 @@ export const Footer = () => {
           <div className="space-y-3 sm:space-y-3">
             <div>
               <img 
-                src="/lovable-uploads/viora-footer-logo.png" 
+                src="/lovable-uploads/ChatGPT Image Jun 29, 2025, 05_52_45 AM.png" 
                 alt="Viora Logo" 
                 className="w-36 sm:w-40 md:w-44 lg:w-48 xl:w-52 h-auto mx-auto sm:mx-0 mb-1"
                 style={{ maxWidth: '100%', height: 'auto' }}
