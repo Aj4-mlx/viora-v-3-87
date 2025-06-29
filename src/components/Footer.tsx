@@ -74,29 +74,29 @@ export const Footer = () => {
           {/* Quick Links */}
           <div>
             <h4 className="font-display font-semibold text-floral-deep-violet mb-3 sm:mb-3 text-base sm:text-base tracking-tight leading-none">Shop</h4>
-            <ul className="space-y-1 sm:space-y-1 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
+            <ul className="space-y-4 sm:space-y-4 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Rings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Necklaces
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Earrings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Bracelets
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   New Arrivals
                 </Link>
               </li>
@@ -106,30 +106,25 @@ export const Footer = () => {
           {/* Customer Care */}
           <div>
             <h4 className="font-display font-semibold text-floral-deep-violet mb-3 sm:mb-3 text-base sm:text-base tracking-tight leading-none">Customer Care</h4>
-            <ul className="space-y-1 sm:space-y-1 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
+            <ul className="space-y-4 sm:space-y-4 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
               <li>
-                <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Size Guide
                 </Link>
               </li>
               <li>
-                <Link to="/shipping-info" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/shipping-info" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/returns" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Returns
                 </Link>
               </li>
               <li>
-                <Link to="/care-instructions" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/care-instructions" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Care Instructions
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
-                  Contact Us
                 </Link>
               </li>
             </ul>
@@ -138,43 +133,16 @@ export const Footer = () => {
           {/* About */}
           <div>
             <h4 className="font-display font-semibold text-floral-deep-violet mb-3 sm:mb-3 text-base sm:text-base tracking-tight leading-none">About Viora</h4>
-            <ul className="space-y-1 sm:space-y-1 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
+            <ul className="space-y-4 sm:space-y-4 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
               <li>
-                <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
+                <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
                   Our Story
                 </Link>
               </li>
               <li>
-                <button 
-                  onClick={() => handleComingSoon("Craftsmanship")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
-                >
-                  Craftsmanship
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleComingSoon("Sustainability")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
-                >
-                  Sustainability
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleComingSoon("Press")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
-                >
-                  Press
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleComingSoon("Careers")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
-                >
-                  Careers
-                </button>
+                <Link to="/contact" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200">
+                  Contact Us
+                </Link>
               </li>
             </ul>
           </div>
