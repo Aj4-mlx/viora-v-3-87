@@ -21,6 +21,49 @@ export const Hero = () => {
       <div className="absolute bottom-32 right-40 w-16 h-16 bg-white/10 rounded-full animate-float delay-1000 hidden lg:block"></div>
       <div className="absolute top-40 left-20 w-24 h-24 border border-floral-cream/30 rounded-full animate-float delay-500 hidden lg:block"></div>
 
+      {/* Floating Product Image - Top-left positioning */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <img
+          src="/lovable-uploads/ring.png"
+          alt="Floating Jewelry Piece"
+          className="
+            absolute
+            w-24
+            h-24
+            sm:w-28
+            sm:h-28
+            md:w-32
+            md:h-32
+            lg:w-36
+            lg:h-36
+            xl:w-40
+            xl:h-40
+            top-8
+            left-6
+            sm:top-12
+            sm:left-8
+            md:top-16
+            md:left-12
+            lg:top-20
+            lg:left-16
+            xl:top-24
+            xl:left-20
+            z-10
+            animate-float-slow
+            opacity-90
+            sm:opacity-95
+            md:opacity-100
+            drop-shadow-2xl
+            filter
+            brightness-125
+            contrast-110
+            hover:scale-110
+            transition-transform
+            duration-300
+          "
+        />
+      </div>
+
       {/* Hero Content */}
       <div className="relative container mx-auto px-6 sm:px-4 py-20 sm:py-24 md:py-32">
         <div className="max-w-3xl relative z-10">
@@ -86,48 +129,6 @@ export const Hero = () => {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-floral-cream/20 to-transparent"></div>
-
-      {/* Floating Product Image - Responsive positioning */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/lovable-uploads/ring.png"
-          alt="Floating Jewelry Piece"
-          className="
-            absolute
-            w-24
-            h-24
-            sm:w-32
-            sm:h-32
-            md:w-40
-            md:h-40
-            lg:w-56
-            lg:h-56
-            xl:w-64
-            xl:h-64
-            bottom-8
-            right-4
-            sm:bottom-16
-            sm:right-8
-            md:bottom-20
-            md:right-12
-            lg:bottom-24
-            lg:right-16
-            xl:bottom-32
-            xl:right-24
-            z-10
-            animate-float-slow
-            opacity-70
-            sm:opacity-80
-            md:opacity-85
-            lg:opacity-90
-            xl:opacity-100
-            drop-shadow-lg
-            filter
-            brightness-110
-            contrast-110
-          "
-        />
-      </div>
     </section>
   );
 };

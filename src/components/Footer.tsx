@@ -25,75 +25,78 @@ export const Footer = () => {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-floral-violet/5 to-floral-deep-violet/10"></div>
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-floral-peach/20 to-transparent rounded-full blur-3xl"></div>
       
-      <div className="container mx-auto px-6 sm:px-4 py-16 sm:py-16 relative">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8">
+      <div className="container mx-auto px-6 sm:px-4 py-8 sm:py-10 relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6">
           {/* Brand */}
-          <div className="space-y-6 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-3">
             <div>
-              <h3 className="text-2xl sm:text-3xl font-display font-bold text-floral-deep-violet mb-2">
-                VIORA
-              </h3>
-              <span className="text-xs font-elegant text-floral-violet tracking-[0.2em]">
+              <img 
+                src="/lovable-uploads/viora-footer-logo.png" 
+                alt="Viora Logo" 
+                className="w-36 sm:w-40 md:w-44 lg:w-48 xl:w-52 h-auto mx-auto sm:mx-0 mb-1"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+              <span className="text-sm font-elegant text-floral-violet tracking-[0.1em] leading-none block text-center sm:text-left">
                 LUXURY JEWELRY
               </span>
             </div>
-            <p className="text-gray-700 leading-relaxed font-elegant text-sm sm:text-base">
+            <p className="text-gray-700 leading-tight font-elegant text-base tracking-tight">
               Timeless jewelry crafted with passion and precision for life's 
               most treasured moments. Where floral beauty meets eternal elegance.
             </p>
-            <div className="flex justify-center sm:justify-start space-x-4">
+            <div className="flex justify-center sm:justify-start space-x-3">
               <button
                 onClick={() => handleSocialClick("Facebook")}
-                className="w-12 h-12 sm:w-10 sm:h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                className="w-10 h-10 sm:w-9 sm:h-9 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                 aria-label="Facebook"
               >
-                <Facebook className="w-6 h-6 sm:w-5 sm:h-5" />
+                <Facebook className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
               <a
                 href="https://www.instagram.com/viora.aj4?igsh=MXUyY210NXAyMTd2bA%3D%3D&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 sm:w-10 sm:h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                className="w-10 h-10 sm:w-9 sm:h-9 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                 aria-label="Instagram"
               >
-                <Instagram className="w-6 h-6 sm:w-5 sm:h-5" />
+                <Instagram className="w-5 h-5 sm:w-4 sm:h-4" />
               </a>
               <button
                 onClick={() => handleSocialClick("WhatsApp")}
-                className="w-12 h-12 sm:w-10 sm:h-10 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                className="w-10 h-10 sm:w-9 sm:h-9 bg-floral-violet/10 hover:bg-floral-violet text-floral-violet hover:text-white rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                 aria-label="WhatsApp"
               >
-                <MessageCircle className="w-6 h-6 sm:w-5 sm:h-5" />
+                <MessageCircle className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 sm:mb-6 text-lg sm:text-lg">Shop</h4>
-            <ul className="space-y-4 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-3 sm:mb-3 text-base sm:text-base tracking-tight leading-none">Shop</h4>
+            <ul className="space-y-1 sm:space-y-1 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Rings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Necklaces
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Earrings
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Bracelets
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/shop" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   New Arrivals
                 </Link>
               </li>
@@ -102,30 +105,30 @@ export const Footer = () => {
 
           {/* Customer Care */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 sm:mb-6 text-lg sm:text-lg">Customer Care</h4>
-            <ul className="space-y-4 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-3 sm:mb-3 text-base sm:text-base tracking-tight leading-none">Customer Care</h4>
+            <ul className="space-y-1 sm:space-y-1 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
               <li>
-                <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/size-guide" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Size Guide
                 </Link>
               </li>
               <li>
-                <Link to="/shipping-info" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/shipping-info" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link to="/returns" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/returns" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Returns
                 </Link>
               </li>
               <li>
-                <Link to="/care-instructions" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/care-instructions" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Care Instructions
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/contact" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Contact Us
                 </Link>
               </li>
@@ -134,17 +137,17 @@ export const Footer = () => {
 
           {/* About */}
           <div>
-            <h4 className="font-display font-semibold text-floral-deep-violet mb-6 sm:mb-6 text-lg sm:text-lg">About Viora</h4>
-            <ul className="space-y-4 sm:space-y-3 text-gray-700 font-elegant text-sm sm:text-base">
+            <h4 className="font-display font-semibold text-floral-deep-violet mb-3 sm:mb-3 text-base sm:text-base tracking-tight leading-none">About Viora</h4>
+            <ul className="space-y-1 sm:space-y-1 text-gray-700 font-elegant text-sm tracking-tight leading-tight">
               <li>
-                <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-2">
+                <Link to="/about" className="hover:text-floral-violet transition-colors hover:translate-x-1 transform duration-200 inline-block py-0.5">
                   Our Story
                 </Link>
               </li>
               <li>
                 <button 
                   onClick={() => handleComingSoon("Craftsmanship")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
                 >
                   Craftsmanship
                 </button>
@@ -152,7 +155,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Sustainability")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
                 >
                   Sustainability
                 </button>
@@ -160,7 +163,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Press")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
                 >
                   Press
                 </button>
@@ -168,7 +171,7 @@ export const Footer = () => {
               <li>
                 <button 
                   onClick={() => handleComingSoon("Careers")}
-                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-2"
+                  className="hover:text-floral-violet transition-colors text-left hover:translate-x-1 transform duration-200 inline-block py-0.5"
                 >
                   Careers
                 </button>
@@ -177,23 +180,23 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-floral-violet/20 mt-12 sm:mt-12 pt-8 sm:pt-8 text-center">
-          <p className="text-gray-600 font-elegant text-sm sm:text-base">
+        <div className="border-t border-floral-violet/20 mt-6 sm:mt-6 pt-4 sm:pt-4 text-center">
+          <p className="text-gray-600 font-elegant text-sm tracking-tight leading-tight">
             © 2024 Viora Jewelry. All rights reserved. | 
             <button 
               onClick={() => handleComingSoon("Privacy Policy")}
-              className="hover:text-floral-violet transition-colors ml-1 py-2"
+              className="hover:text-floral-violet transition-colors ml-1 py-0.5"
             >
               Privacy Policy
             </button> | 
             <button 
               onClick={() => handleComingSoon("Terms of Service")}
-              className="hover:text-floral-violet transition-colors ml-1 py-2"
+              className="hover:text-floral-violet transition-colors ml-1 py-0.5"
             >
               Terms of Service
             </button>
           </p>
-          <div className="mt-4 text-xs sm:text-sm text-floral-violet font-elegant">
+          <div className="mt-2 text-xs text-floral-violet font-elegant tracking-tight leading-none">
             Where floral dreams meet timeless elegance
           </div>
         </div>
