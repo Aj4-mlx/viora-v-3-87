@@ -89,7 +89,7 @@ export const Header = () => {
   return (
     <header className="bg-black shadow-lg border-b border-white/20 relative">
       {/* Top banner - full width */}
-      <div className="bg-floral-deep-violet text-white text-center py-2 text-sm w-full">
+      <div className="text-center py-2 text-sm w-full" style={{ backgroundColor: '#f94500', color: '#fff' }}>
         <div className="flex items-center justify-center space-x-2">
           <span>Free shipping on orders over 1,000 EGP</span>
         </div>
@@ -103,9 +103,9 @@ export const Header = () => {
           <div className="flex items-center">
             <Link to="/" className="group block hover:scale-105 transition-transform duration-300">
               <img
-                src="/lovable-uploads/logo_2.png"
+                src="/lovable-uploads/ChatGPT Image Jun 29, 2025, 05_52_45 AM.png"
                 alt="Viora Luxury Jewelry"
-                className="h-12 sm:h-14 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
+                className="h-17 sm:h-20 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
               />
             </Link>
           </div>
