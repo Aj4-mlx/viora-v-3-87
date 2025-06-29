@@ -1,9 +1,13 @@
-
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Award, Users, Gem, Heart } from "lucide-react";
+import { useEffect } from "react";
 
 const About = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const values = [
     {
       icon: <Gem className="w-8 h-8" />,

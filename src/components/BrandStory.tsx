@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export const BrandStory = () => {
   return (
@@ -35,11 +36,13 @@ export const BrandStory = () => {
             </p>
             
             <div className="pt-4">
-              <Button 
-                className="bg-floral-deep-violet hover:bg-floral-violet text-white font-elegant px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                Discover Our Story
-              </Button>
+              <Link to="/about">
+                <Button 
+                  className="bg-floral-deep-violet hover:bg-floral-violet text-white font-elegant px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Discover Our Story
+                </Button>
+              </Link>
             </div>
           </div>
           
