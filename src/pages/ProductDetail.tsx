@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { Heart } from "lucide-react";
 
 const ProductDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -13,6 +15,7 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { addToCart } = useCart();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,18 +71,45 @@ const ProductDetail = () => {
                                 <p className="text-slate-700 mb-6 whitespace-pre-line">{product.description}</p>
                             )}
                         </div>
-                        <Button
-                            size="lg"
-                            className="bg-floral-deep-violet hover:bg-floral-violet text-white font-bold text-lg mt-4 transition-colors"
-                            onClick={() => addToCart({
-                                id: product.id,
-                                name: product.name,
-                                price: product.price,
-                                image: product.image_url || '',
-                            })}
-                        >
-                            Add to Cart
-                        </Button>
+                        <div className="flex gap-4">
+                            <Button
+                                size="lg"
+                                className="flex-1 bg-floral-deep-violet hover:bg-floral-violet text-white font-bold text-lg mt-4 transition-colors"
+                                onClick={() => addToCart({
+                                    id: product.id,
+                                    name: product.name,
+                                    price: product.price,
+                                    image: product.image_url || '',
+                                })}
+                            >
+                                Add to Cart
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className={`mt-4 transition-colors ${
+                                    isInWishlist(product.id) 
+                                        ? 'border-red-500 text-red-500 hover:bg-red-50' 
+                                        : 'border-slate-300 text-slate-600 hover:border-red-500 hover:text-red-500'
+                                }`}
+                                onClick={() => {
+                                    if (isInWishlist(product.id)) {
+                                        removeFromWishlist(product.id);
+                                    } else {
+                                        addToWishlist({
+                                            id: product.id,
+                                            name: product.name,
+                                            price: product.price,
+                                            image: product.image_url || '',
+                                            category: product.category
+                                        });
+                                    }
+                                }}
+                            >
+                                <Heart className={`w-5 h-5 mr-2 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                                {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </main>

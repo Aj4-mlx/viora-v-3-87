@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -26,6 +27,7 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { searchQuery, setSearchQuery, setSearchResults, setIsSearching } = useSearch();
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
@@ -140,9 +142,16 @@ export const Header = () => {
             </form>
 
             {/* Wishlist */}
-            <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300 min-h-[44px] min-w-[44px] p-2">
-              <Star className="w-5 h-5" />
-            </Button>
+            <Link to="/wishlist">
+              <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300 min-h-[44px] min-w-[44px] p-2 relative">
+                <Star className="w-5 h-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
 
             {/* Cart */}
             <Link to="/cart">
@@ -255,6 +264,13 @@ export const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cart ({cartCount})
+              </Link>
+              <Link
+                to="/wishlist"
+                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Wishlist ({wishlistCount})
               </Link>
               <Link
                 to="/account"

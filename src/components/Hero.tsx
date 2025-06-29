@@ -16,69 +16,15 @@ export const Hero = () => {
     <section className="relative floral-gradient-hero text-white overflow-hidden min-h-[85vh] sm:min-h-[90vh] flex items-center">
       <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-floral-deep-violet/30"></div>
 
-      {/* Floating floral elements */}
-      <div className="absolute top-20 right-20 w-32 h-32 border-2 border-white/20 rounded-full animate-float hidden lg:block"></div>
-      <div className="absolute bottom-32 right-40 w-16 h-16 bg-white/10 rounded-full animate-float delay-1000 hidden lg:block"></div>
-      <div className="absolute top-40 left-20 w-24 h-24 border border-floral-cream/30 rounded-full animate-float delay-500 hidden lg:block"></div>
-
-      {/* Floating Product Image - Top-left positioning */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/lovable-uploads/ring.png"
-          alt="Floating Jewelry Piece"
-          className="
-            absolute
-            w-24
-            h-24
-            sm:w-28
-            sm:h-28
-            md:w-32
-            md:h-32
-            lg:w-36
-            lg:h-36
-            xl:w-40
-            xl:h-40
-            top-8
-            left-6
-            sm:top-12
-            sm:left-8
-            md:top-16
-            md:left-12
-            lg:top-20
-            lg:left-16
-            xl:top-24
-            xl:left-20
-            z-10
-            animate-float-slow
-            opacity-90
-            sm:opacity-95
-            md:opacity-100
-            drop-shadow-2xl
-            filter
-            brightness-125
-            contrast-110
-            hover:scale-110
-            transition-transform
-            duration-300
-          "
-        />
-      </div>
-
       {/* Hero Content */}
       <div className="relative container mx-auto px-6 sm:px-4 py-20 sm:py-24 md:py-32">
         <div className="max-w-3xl relative z-10">
-          <div className="mb-6 sm:mb-8">
-            <span className="inline-block px-4 sm:px-4 py-3 sm:py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm sm:text-sm font-elegant tracking-wide border border-white/20 mb-6 sm:mb-6">
-              Floral Luxury Collection
-            </span>
-          </div>
-
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold mb-6 sm:mb-6 leading-tight">
             Timeless
             <span className="block text-floral-cream bg-gradient-to-r from-floral-cream via-white to-floral-peach bg-clip-text text-transparent animate-pulse">
               Elegance
             </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-elegant font-light mt-4 sm:mt-4 text-white/90">
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sinera font-light mt-4 sm:mt-4 text-white/90">
               in Full Bloom
             </span>
           </h1>
@@ -99,9 +45,8 @@ export const Hero = () => {
               Shop Collection
             </Button>
             <Button
-              variant="outline"
               size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-floral-deep-violet px-8 sm:px-8 py-4 sm:py-4 text-lg sm:text-lg font-elegant rounded-full backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 hover:scale-105 min-h-[48px] sm:min-h-[52px]"
+              className="bg-white text-floral-deep-violet hover:bg-floral-deep-violet hover:text-white font-elegant px-8 sm:px-8 py-4 sm:py-4 text-lg sm:text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 min-h-[48px] sm:min-h-[52px]"
               onClick={handleOurStory}
             >
               Our Story

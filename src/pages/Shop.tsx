@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Star, Grid3X3, List } from "lucide-react";
+import { Star, Grid3X3, List, Heart } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useSearch } from "@/contexts/SearchContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
@@ -67,6 +68,7 @@ const Shop = () => {
 
   const { searchQuery, searchResults, isSearching } = useSearch();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
 
   const categories = ["All", "Rings", "Necklaces", "Earrings", "Bracelets"];
@@ -146,6 +148,20 @@ const Shop = () => {
       price: product.price,
       image: product.image_url
     });
+  };
+
+  const handleAddToWishlist = (product: DisplayProduct) => {
+    addToWishlist({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url,
+      category: product.category
+    });
+  };
+
+  const handleRemoveFromWishlist = (productId: string) => {
+    removeFromWishlist(productId);
   };
 
   const handleLoadMore = () => {
@@ -294,6 +310,23 @@ const Shop = () => {
                           NEW
                         </span>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`absolute top-3 right-3 bg-white/80 hover:bg-red-500 hover:text-white transition-all duration-300 z-10 ${
+                          isInWishlist(product.id) ? 'text-red-500' : 'text-slate-400'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isInWishlist(product.id)) {
+                            handleRemoveFromWishlist(product.id);
+                          } else {
+                            handleAddToWishlist(product);
+                          }
+                        }}
+                      >
+                        <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                      </Button>
                       <img
                         src={product.image_url}
                         alt={product.name}
