@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 @font-face {
-  font-family: 'Sinera';
-  src: url('/fonts/Sinera.ttf') format('truetype');
+  font-family: 'FS Ostro';
+  src: url('/fonts/FS-Ostro.woff2') format('woff2'),
+       url('/fonts/FS-Ostro.woff') format('woff'),
+       url('/fonts/FS-Ostro.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

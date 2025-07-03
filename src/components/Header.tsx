@@ -91,7 +91,7 @@ export const Header = () => {
   return (
     <header className="bg-black shadow-lg border-b border-white/20 relative">
       {/* Top banner - full width */}
-      <div className="text-center py-2 text-sm w-full" style={{ backgroundColor: '#f94500', color: '#fff' }}>
+      <div className="text-center py-2 text-sm w-full" style={{ backgroundColor: '#FCF951FF', color: '#543787' }}>
         <div className="flex items-center justify-center space-x-2">
           <span>Free shipping on orders over 1,000 EGP</span>
         </div>

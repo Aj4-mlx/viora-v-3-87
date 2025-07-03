@@ -24,7 +24,7 @@ export const Hero = () => {
             <span className="block text-floral-cream bg-gradient-to-r from-floral-cream via-white to-floral-peach bg-clip-text text-transparent animate-pulse">
               Elegance
             </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sinera font-light mt-4 sm:mt-4 text-white/90">
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-fs-ostro font-light mt-4 sm:mt-4 text-white/90">
               in Full Bloom
             </span>
           </h1>

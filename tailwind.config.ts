@@ -128,7 +128,7 @@ export default {
 			fontFamily: {
 				'display': ['Roboto', 'sans-serif'],
 				'elegant': ['Roboto', 'sans-serif'],
-				'sinera': ['Sinera', 'serif']
+				'fs-ostro': ['FS Ostro', 'serif']
 			},
 			spacing: {
 				'18': '4.5rem',
