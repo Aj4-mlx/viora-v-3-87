@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -143,7 +144,7 @@ const SignIn = () => {
               <div className="flex items-center justify-between">
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-coral-peach hover:underline"
+                  className="text-sm text-slate-600 hover:text-slate-900 hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -151,7 +152,7 @@ const SignIn = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-coral-peach hover:bg-purple-600 hover:text-white text-black border border-black"
+                className="w-full bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-900"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
@@ -164,7 +165,7 @@ const SignIn = () => {
               Don't have an account?{" "}
               <Link
                 to="/sign-up"
-                className="text-coral-peach hover:underline font-medium"
+                className="text-slate-900 hover:underline font-medium"
               >
                 Sign up
               </Link>

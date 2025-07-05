@@ -47,7 +47,7 @@ const AdminLogin = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <ShieldCheck className="h-12 w-12 text-coral-peach" />
+            <ShieldCheck className="h-12 w-12 text-slate-600" />
           </div>
           <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
           <CardDescription>
@@ -120,7 +120,7 @@ const AdminLogin = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-coral-peach hover:bg-coral-peach/90"
+                className="w-full bg-slate-900 text-white hover:bg-slate-800 border-2 border-slate-900"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
