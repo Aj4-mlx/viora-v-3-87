@@ -19,8 +19,6 @@ interface SearchContextType {
   setSearchResults: (results: Product[]) => void;
   isSearching: boolean;
   setIsSearching: (searching: boolean) => void;
-  isSearchVisible: boolean;
-  setIsSearchVisible: (visible: boolean) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -41,7 +39,6 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   return (
     <SearchContext.Provider
@@ -52,8 +49,6 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
         setSearchResults,
         isSearching,
         setIsSearching,
-        isSearchVisible,
-        setIsSearchVisible,
       }}
     >
       {children}

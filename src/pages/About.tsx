@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Award, Users, Gem, Heart } from "lucide-react";
 import { useEffect } from "react";
