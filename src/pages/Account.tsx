@@ -1,411 +1,340 @@
+
 import { useEffect, useState } from "react";
-import { useCart } from "@/contexts/CartContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useNavigate, Link } from "react-router-dom";
-import { Header } from "@/components/Header";
+import { Label } from "@/components/ui/label";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Eye, RefreshCw, Truck } from "lucide-react";
-
-interface OrderItem {
-  id: string;
-  product_id: string;
-  quantity: number;
-  price_at_order: number;
-}
-
-interface Order {
-  id: string;
-  customer_id: string;
-  total: number;
-  status: string;
-  created_at: string;
-  order_items: OrderItem[];
-}
+import { User, Package, Settings, LogOut } from "lucide-react";
+import { toast } from "sonner";
 
 const Account = () => {
-    const { user, signOut, loading } = useAuth();
-    const [profile, setProfile] = useState<any>(null);
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [editingName, setEditingName] = useState(false);
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [changingPassword, setChangingPassword] = useState(false);
-    const [isReordering, setIsReordering] = useState(false);
-    const { cartItems, addToCart, clearCart } = useCart();
-    const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [profile, setProfile] = useState({
+    fullName: '',
+    phone: '',
+    address: '',
+    city: '',
+    governorate: ''
+  });
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!loading && !user) {
-            navigate('/sign-in');
-            return;
-        }
+  useEffect(() => {
+    checkUser();
+    fetchOrders();
+  }, []);
 
-        if (user) {
-            fetchProfile();
-            fetchOrders();
-        }
-    }, [user, loading, navigate]);
-
-    const fetchProfile = async () => {
-        if (!user) return;
-
-        const { data: profile } = await supabase
-            .from('customers')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
-        if (profile) {
-            setProfile(profile);
-            setName(profile.name || "");
-        }
-    };
-
-    const fetchOrders = async () => {
-        if (!user) return;
-
-        const { data: orders } = await supabase
-            .from("orders")
-            .select(`
-                *,
-                order_items (
-                    id,
-                    product_id,
-                    quantity,
-                    price_at_order
-                )
-            `)
-            .eq("customer_id", user.id)
-            .order("created_at", { ascending: false });
-
-        if (orders) setOrders(orders);
-    };
-
-    const handleSignOut = async () => {
-        await signOut();
-        toast.success("Signed out successfully.");
-        navigate("/");
-    };
-
-    const handleNameSave = async () => {
-        if (!name.trim()) {
-            toast.error("Please enter a valid name.");
-            return;
-        }
-
-        const { error } = await supabase
-            .from('customers')
-            .update({ name })
-            .eq('id', user?.id);
-
-        if (error) {
-            toast.error("Failed to update name.");
-        } else {
-            toast.success("Name updated.");
-            setEditingName(false);
-            fetchProfile();
-        }
-    };
-
-    const handlePasswordChange = async () => {
-        if (password.length < 6) {
-            toast.error("Password must be at least 6 characters long");
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            toast.error("Passwords don't match");
-            return;
-        }
-
-        try {
-            const { error } = await supabase.auth.updateUser({
-                password: password
-            });
-
-            if (error) {
-                toast.error(error.message || "Failed to update password");
-                return;
-            }
-
-            toast.success("Password updated successfully");
-            setPassword("");
-            setConfirmPassword("");
-            setChangingPassword(false);
-        } catch (err) {
-            console.error("Error updating password:", err);
-            toast.error("An error occurred while updating your password");
-        }
-    };
-
-    const handleReorder = async (orderId: string) => {
-        try {
-            setIsReordering(true);
-
-            // Get order with order items
-            const { data: order } = await supabase
-                .from('orders')
-                .select(`
-                    *,
-                    order_items (
-                        product_id,
-                        quantity
-                    )
-                `)
-                .eq('id', orderId)
-                .single();
-
-            if (!order || !order.order_items || order.order_items.length === 0) {
-                toast.error("No items found in this order");
-                setIsReordering(false);
-                return;
-            }
-
-            // Get product IDs from order items
-            const productIds = order.order_items.map(item => item.product_id);
-
-            // Get products for this order
-            const { data: products } = await supabase
-                .from('products')
-                .select('*')
-                .in('id', productIds);
-
-            if (!products || products.length === 0) {
-                toast.error("Products from this order are no longer available");
-                setIsReordering(false);
-                return;
-            }
-
-            // Clear current cart
-            clearCart();
-
-            // Add items to cart if they're still available
-            let unavailableItems = [];
-            for (const orderItem of order.order_items) {
-                const product = products.find(p => p.id === orderItem.product_id);
-                if (product && product.stock > 0) {
-                    // Add the quantity from the original order
-                    for (let i = 0; i < orderItem.quantity; i++) {
-                        addToCart({
-                            id: product.id,
-                            name: product.name,
-                            price: product.price,
-                            image: product.image_url || ''
-                        });
-                    }
-                } else if (product) {
-                    unavailableItems.push(product.name);
-                }
-            }
-
-            if (unavailableItems.length > 0) {
-                toast.warning(`Some items are no longer available: ${unavailableItems.join(', ')}`);
-            }
-
-            toast.success("Items added to cart");
-            navigate('/cart');
-        } catch (err) {
-            console.error("Error reordering:", err);
-            toast.error("Failed to reorder. Please try again.");
-        } finally {
-            setIsReordering(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div>Loading...</div>
-            </div>
-        );
-    }
-
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
     if (!user) {
-        return null;
+      navigate('/login');
+      return;
     }
 
+    setUser(user);
+    
+    // Fetch user profile if exists
+    const { data: profileData } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (profileData) {
+      setProfile({
+        fullName: profileData.name || '',
+        phone: profileData.phone || '',
+        address: profileData.address || '',
+        city: profileData.city || '',
+        governorate: profileData.governorate || ''
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const fetchOrders = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('customer_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setOrders(data);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+    toast.success("Signed out successfully");
+  };
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('customers')
+      .upsert({
+        id: user.id,
+        name: profile.fullName,
+        email: user.email,
+        phone: profile.phone,
+        address: profile.address,
+        city: profile.city,
+        governorate: profile.governorate
+      });
+
+    if (error) {
+      toast.error("Failed to update profile");
+    } else {
+      toast.success("Profile updated successfully");
+    }
+  };
+
+  if (loading) {
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col">
-            <Header />
-            <main className="flex-1 py-8 px-2 md:px-0">
-                <div className="max-w-3xl mx-auto space-y-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Profile Details</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <b>Name:</b> {editingName ? (
-                                    <span className="ml-2">
-                                        <Input
-                                            value={name}
-                                            onChange={e => setName(e.target.value)}
-                                            className="inline w-48 mr-2"
-                                            placeholder="Enter your name"
-                                        />
-                                        <Button size="sm" onClick={handleNameSave}>Save</Button>
-                                        <Button size="sm" variant="ghost" onClick={() => setEditingName(false)} className="ml-2">Cancel</Button>
-                                    </span>
-                                ) : (
-                                    <span className="ml-2">
-                                        {profile?.name || <span className="text-slate-400">Not set</span>}
-                                        <Button size="sm" variant="ghost" onClick={() => setEditingName(true)} className="ml-2">Edit</Button>
-                                    </span>
-                                )}
-                            </div>
-                            <div><b>Email:</b> {user.email}</div>
-                            
-                            <div className="mt-4">
-                                {changingPassword ? (
-                                    <div className="space-y-3 border p-3 rounded-md">
-                                        <h3 className="font-medium">Change Password</h3>
-                                        <div>
-                                            <label className="text-sm text-slate-600">New Password</label>
-                                            <div className="relative">
-                                                <Input 
-                                                    type={showPassword ? "text" : "password"}
-                                                    value={password} 
-                                                    onChange={e => setPassword(e.target.value)} 
-                                                    placeholder="Enter new password"
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                >
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            {password && password.length < 6 && (
-                                                <p className="text-xs text-red-500 mt-1">Password must be at least 6 characters</p>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <label className="text-sm text-slate-600">Confirm Password</label>
-                                            <Input 
-                                                type="password"
-                                                value={confirmPassword} 
-                                                onChange={e => setConfirmPassword(e.target.value)} 
-                                                placeholder="Confirm new password"
-                                            />
-                                            {confirmPassword && password !== confirmPassword && (
-                                                <p className="text-xs text-red-500 mt-1">Passwords don't match</p>
-                                            )}
-                                        </div>
-                                        <div className="flex space-x-2">
-                                            <Button size="sm" onClick={handlePasswordChange}>Update Password</Button>
-                                            <Button size="sm" variant="ghost" onClick={() => {
-                                                setChangingPassword(false);
-                                                setPassword("");
-                                                setConfirmPassword("");
-                                            }}>Cancel</Button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <Button variant="outline" onClick={() => setChangingPassword(true)}>Change Password</Button>
-                                )}
-                            </div>
-                            
-                            <div className="mt-4">
-                                <Button variant="outline" onClick={handleSignOut}>Sign Out</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Current Cart</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {cartItems.length === 0 ? (
-                                <div>Your cart is empty.</div>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {cartItems.map(item => (
-                                        <li key={item.id} className="flex justify-between border-b pb-1">
-                                            <span>{item.name} x{item.quantity}</span>
-                                            <span>{item.price.toLocaleString()} EGP</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Order History</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {orders.length === 0 ? (
-                                <div>No previous orders found.</div>
-                            ) : (
-                                <ul className="space-y-4">
-                                    {orders.map(order => (
-                                        <li key={order.id} className="border rounded-lg p-4">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div>
-                                                    <div className="font-semibold">Order #{order.id.slice(0, 8)}</div>
-                                                    <div className="text-sm text-slate-600">
-                                                        {new Date(order.created_at).toLocaleDateString()}
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="font-semibold">{order.total} EGP</div>
-                                                    <div className={`text-sm px-2 py-1 rounded ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                        order.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
-                                                            order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
-                                                                order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                                                                    'bg-gray-100 text-gray-800'
-                                                        }`}>
-                                                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="text-sm text-slate-600">
-                                                Items: {order.order_items ? order.order_items.length : 0} products
-                                            </div>
-                                            <div className="mt-3 flex space-x-2">
-                                                <Button 
-                                                    size="sm" 
-                                                    variant="outline"
-                                                    className="flex items-center"
-                                                    onClick={() => navigate(`/order-tracking/${order.id}`)}
-                                                >
-                                                    <Truck className="h-3 w-3 mr-1" />
-                                                    Track Order
-                                                </Button>
-                                                <Button 
-                                                    size="sm" 
-                                                    variant="outline"
-                                                    className="flex items-center"
-                                                    onClick={() => handleReorder(order.id)}
-                                                    disabled={isReordering}
-                                                >
-                                                    <RefreshCw className="h-3 w-3 mr-1" />
-                                                    {isReordering ? 'Processing...' : 'Reorder'}
-                                                </Button>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-            </main>
-            <Footer />
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl text-slate-600">Loading your account...</p>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Header />
+      
+      {/* Hero Section */}
+      <section className="py-16 bg-gradient-to-r from-coral-peach/10 to-pale-peach/20">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">
+              My Account
+            </h1>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Manage your profile, orders, and preferences
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Account Content */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <Tabs defaultValue="profile" className="w-full max-w-4xl mx-auto">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Profile
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                Orders
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Settings
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>
+                    Update your personal information and delivery address
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleProfileUpdate} className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="fullName">Full Name</Label>
+                        <Input
+                          id="fullName"
+                          value={profile.fullName}
+                          onChange={(e) => setProfile({...profile, fullName: e.target.value})}
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          value={user?.email || ''}
+                          disabled
+                          className="bg-slate-100"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                          id="phone"
+                          value={profile.phone}
+                          onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                          placeholder="Enter your phone number"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="city">City</Label>
+                        <Input
+                          id="city"
+                          value={profile.city}
+                          onChange={(e) => setProfile({...profile, city: e.target.value})}
+                          placeholder="Enter your city"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="governorate">Governorate</Label>
+                        <Input
+                          id="governorate"
+                          value={profile.governorate}
+                          onChange={(e) => setProfile({...profile, governorate: e.target.value})}
+                          placeholder="Enter your governorate"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Address</Label>
+                      <Input
+                        id="address"
+                        value={profile.address}
+                        onChange={(e) => setProfile({...profile, address: e.target.value})}
+                        placeholder="Enter your full address"
+                      />
+                    </div>
+                    <Button type="submit" className="bg-coral-peach hover:bg-coral-peach/80">
+                      Update Profile
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="orders">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order History</CardTitle>
+                  <CardDescription>
+                    View and track your recent orders
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {orders.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">No orders yet</h3>
+                      <p className="text-slate-600 mb-4">You haven't placed any orders yet.</p>
+                      <Button 
+                        onClick={() => navigate('/shop')}
+                        className="bg-coral-peach hover:bg-coral-peach/80"
+                      >
+                        Start Shopping
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.map((order) => (
+                        <div key={order.id} className="border border-slate-200 rounded-lg p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-semibold">Order #{order.id}</h4>
+                              <p className="text-sm text-slate-600">
+                                {new Date(order.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold">{order.total} EGP</p>
+                              <span className={`text-sm px-2 py-1 rounded capitalize ${
+                                order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                                order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                                order.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+                                'bg-slate-100 text-slate-700'
+                              }`}>
+                                {order.status}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate(`/order-tracking/${order.id}`)}
+                          >
+                            Track Order
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Settings</CardTitle>
+                  <CardDescription>
+                    Manage your account preferences and security
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold">Email Notifications</h4>
+                        <p className="text-sm text-slate-600">Receive updates about your orders</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        Manage
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold">Password</h4>
+                        <p className="text-sm text-slate-600">Change your account password</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        Change
+                      </Button>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <Button 
+                        onClick={handleSignOut}
+                        variant="destructive"
+                        className="flex items-center gap-2"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
 };
 
 export default Account;

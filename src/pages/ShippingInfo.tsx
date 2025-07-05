@@ -1,5 +1,5 @@
 
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Truck, Package, Shield, Clock } from "lucide-react";
