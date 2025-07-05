@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ interface ProductFormData {
 
 const categories = [
   "Rings",
-  "Necklaces", 
+  "Necklaces",
   "Earrings",
   "Bracelets",
   "Watches",
@@ -132,28 +131,13 @@ const AddProductForm = () => {
         }
       }
 
-      // Get the category_id from the categories table
-      const { data: categoryData, error: categoryError } = await supabase
-        .from('categories')
-        .select('id')
-        .eq('name', data.category)
-        .single();
-
-      if (categoryError) {
-        console.error('Category lookup error:', categoryError);
-        toast.error('Failed to find category');
-        setIsLoading(false);
-        return;
-      }
-
       const { error } = await supabase
         .from('products')
         .insert({
           name: data.name,
           description: data.description,
           price: data.price,
-          category: data.category, // Store as text for compatibility
-          category_id: categoryData.id, // Store foreign key reference
+          category: data.category,
           stock: data.stock,
           image_url: imageUrl,
         });
@@ -279,7 +263,7 @@ const AddProductForm = () => {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price (EGP)</FormLabel>
+                <FormLabel>Price ($)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"

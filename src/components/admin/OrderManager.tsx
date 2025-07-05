@@ -10,6 +10,7 @@ import { toast } from "sonner";
 interface Order {
   id: string;
   customer_id: string;
+  product_ids: string[];
   total: number;
   status: string;
   created_at: string;
@@ -17,12 +18,6 @@ interface Order {
     name: string;
     email: string;
   };
-  order_items: {
-    id: string;
-    product_id: string;
-    quantity: number;
-    price_at_order: number;
-  }[];
 }
 
 const OrderManager = () => {
@@ -42,12 +37,6 @@ const OrderManager = () => {
           customers (
             name,
             email
-          ),
-          order_items (
-            id,
-            product_id,
-            quantity,
-            price_at_order
           )
         `)
         .order('created_at', { ascending: false });
@@ -128,7 +117,6 @@ const OrderManager = () => {
                 <TableRow>
                   <TableHead>Order ID</TableHead>
                   <TableHead>Customer</TableHead>
-                  <TableHead>Items</TableHead>
                   <TableHead>Total</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
@@ -146,9 +134,6 @@ const OrderManager = () => {
                         <div className="font-medium">{order.customers.name}</div>
                         <div className="text-sm text-slate-500">{order.customers.email}</div>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {order.order_items.length} items
                     </TableCell>
                     <TableCell>${order.total.toFixed(2)}</TableCell>
                     <TableCell>
