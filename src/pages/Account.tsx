@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,10 +11,26 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Eye, RefreshCw, Truck } from "lucide-react";
 
+interface OrderItem {
+  id: string;
+  product_id: string;
+  quantity: number;
+  price_at_order: number;
+}
+
+interface Order {
+  id: string;
+  customer_id: string;
+  total: number;
+  status: string;
+  created_at: string;
+  order_items: OrderItem[];
+}
+
 const Account = () => {
     const { user, signOut, loading } = useAuth();
     const [profile, setProfile] = useState<any>(null);
-    const [orders, setOrders] = useState<any[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [editingName, setEditingName] = useState(false);
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
@@ -58,7 +73,15 @@ const Account = () => {
 
         const { data: orders } = await supabase
             .from("orders")
-            .select("*")
+            .select(`
+                *,
+                order_items (
+                    id,
+                    product_id,
+                    quantity,
+                    price_at_order
+                )
+            `)
             .eq("customer_id", user.id)
             .order("created_at", { ascending: false });
 
@@ -126,24 +149,33 @@ const Account = () => {
         try {
             setIsReordering(true);
 
-            // Get order by ID to access product_ids
+            // Get order with order items
             const { data: order } = await supabase
                 .from('orders')
-                .select('*')
+                .select(`
+                    *,
+                    order_items (
+                        product_id,
+                        quantity
+                    )
+                `)
                 .eq('id', orderId)
                 .single();
 
-            if (!order || !order.product_ids || order.product_ids.length === 0) {
+            if (!order || !order.order_items || order.order_items.length === 0) {
                 toast.error("No items found in this order");
                 setIsReordering(false);
                 return;
             }
 
+            // Get product IDs from order items
+            const productIds = order.order_items.map(item => item.product_id);
+
             // Get products for this order
             const { data: products } = await supabase
                 .from('products')
                 .select('*')
-                .in('id', order.product_ids);
+                .in('id', productIds);
 
             if (!products || products.length === 0) {
                 toast.error("Products from this order are no longer available");
@@ -156,15 +188,19 @@ const Account = () => {
 
             // Add items to cart if they're still available
             let unavailableItems = [];
-            for (const product of products) {
-                if (product.stock > 0) {
-                    addToCart({
-                        id: product.id,
-                        name: product.name,
-                        price: product.price,
-                        image: product.image_url || ''
-                    });
-                } else {
+            for (const orderItem of order.order_items) {
+                const product = products.find(p => p.id === orderItem.product_id);
+                if (product && product.stock > 0) {
+                    // Add the quantity from the original order
+                    for (let i = 0; i < orderItem.quantity; i++) {
+                        addToCart({
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            image: product.image_url || ''
+                        });
+                    }
+                } else if (product) {
                     unavailableItems.push(product.name);
                 }
             }
@@ -336,7 +372,7 @@ const Account = () => {
                                                 </div>
                                             </div>
                                             <div className="text-sm text-slate-600">
-                                                Items: {order.product_ids ? order.product_ids.length : 0} products
+                                                Items: {order.order_items ? order.order_items.length : 0} products
                                             </div>
                                             <div className="mt-3 flex space-x-2">
                                                 <Button 
