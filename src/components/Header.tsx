@@ -1,307 +1,276 @@
-import { useState, useEffect, useRef } from "react";
-import { Search, ShoppingCart, Star, Menu, X } from "lucide-react";
+
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Heart, Search, ShoppingCart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
-import { useSearch } from "@/contexts/SearchContext";
+import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSearch } from "@/contexts/SearchContext";
 
-type SupabaseProduct = Database["public"]["Tables"]["products"]["Row"];
-
-// Adapter function to convert Supabase product to search result
-const adaptProductForSearch = (product: SupabaseProduct) => ({
-  id: parseInt(product.id),
-  name: product.name,
-  price: `${product.price} EGP`,
-  image: product.image_url || '',
-  category: product.category,
-  rating: 5, // Default rating
-  isNew: true, // Default to new
-  description: product.description || ''
-});
-
-export const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { searchQuery, setSearchQuery, setSearchResults, setIsSearching } = useSearch();
-  const { cartCount } = useCart();
-  const { wishlistCount } = useWishlist();
+const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
+  const { user, signOut } = useAuth();
+  const { searchQuery, setSearchQuery, isSearchVisible, setIsSearchVisible } = useSearch();
   const navigate = useNavigate();
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [showAccountMenu, setShowAccountMenu] = useState(false);
-  const accountMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    async function checkAuth() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsSignedIn(!!user);
-    }
-    checkAuth();
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
-    });
-    return () => { listener.subscription.unsubscribe(); };
-  }, []);
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
-        setShowAccountMenu(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-    if (query.trim()) {
-      setIsSearching(true);
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .ilike("name", `%${query}%`);
-
-      // Convert Supabase products to search result format
-      const adaptedProducts = (data || []).map(adaptProductForSearch);
-      setSearchResults(adaptedProducts);
-      navigate('/shop');
-    } else {
-      setIsSearching(false);
-      setSearchResults([]);
-    }
-  };
-
-  const handleSearchSubmit = async (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      await handleSearch(searchQuery);
+      navigate('/shop');
+      setIsSearchVisible(false);
     }
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setIsSignedIn(false);
-    setShowAccountMenu(false);
+    await signOut();
     navigate('/');
   };
 
   return (
-    <header className="bg-black shadow-lg border-b border-white/20 relative">
-      {/* Top banner - full width */}
-      <div className="text-center py-2 text-sm w-full" style={{ backgroundColor: '#FCF951FF', color: '#543787' }}>
-        <div className="flex items-center justify-center space-x-2">
-          <span>Free shipping on orders over 1,000 EGP</span>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-6 sm:px-4 mt-2 sm:mt-4">
-
-        {/* Main header */}
-        <div className="flex items-center justify-between py-4 sm:py-6">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="group block hover:scale-105 transition-transform duration-300">
-              <img
-                src="/lovable-uploads/ChatGPT Image Jun 29, 2025, 05_52_45 AM.png"
-                alt="Viora Luxury Jewelry"
-                className="h-17 sm:h-20 w-auto object-contain drop-shadow-lg group-hover:drop-shadow-xl"
-              />
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/lovable-uploads/Viora_Logo_Transparent.png" 
+              alt="VIORA" 
+              className="h-8 w-auto"
+              onError={(e) => {
+                const img = e.target as HTMLImageElement;
+                img.style.display = 'none';
+                // Fallback to text logo if image fails to load
+                const textFallback = document.createElement('span');
+                textFallback.className = 'text-2xl font-bold text-floral-violet';
+                textFallback.textContent = 'VIORA';
+                img.parentNode?.appendChild(textFallback);
+              }}
+            />
+            <span className="text-2xl font-bold text-floral-violet">VIORA</span>
+          </Link>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/shop" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
+            <Link to="/" className="text-slate-700 hover:text-floral-violet transition-colors">
+              Home
+            </Link>
+            <Link to="/shop" className="text-slate-700 hover:text-floral-violet transition-colors">
               Shop
             </Link>
-            <Link to="/collections" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
+            <Link to="/collections" className="text-slate-700 hover:text-floral-violet transition-colors">
               Collections
             </Link>
-            <Link to="/about" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
+            <Link to="/about" className="text-slate-700 hover:text-floral-violet transition-colors">
               About
             </Link>
-            <Link to="/contact" className="text-white/90 hover:text-white transition-colors font-medium text-lg font-elegant hover:scale-105 transform duration-200 py-2">
+            <Link to="/contact" className="text-slate-700 hover:text-floral-violet transition-colors">
               Contact
             </Link>
           </nav>
 
-          {/* Right side actions */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            {/* Search */}
-            <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
-              <Input
-                placeholder="Search jewelry..."
-                className="pl-10 w-64 glass-effect border-white/30 focus:border-floral-violet placeholder:text-gray-600 text-black"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-            </form>
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchVisible(!isSearchVisible)}
+              className="text-slate-700 hover:text-floral-violet"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
 
-            {/* Wishlist */}
-            <Link to="/wishlist">
-              <Button variant="ghost" size="sm" className="text-white hover:text-floral-cream hover:bg-white/10 transition-all duration-300 min-h-[44px] min-w-[44px] p-2 relative">
-                <Star className="w-5 h-5" />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
-            {/* Cart */}
-            <Link to="/cart">
-              <Button variant="outline" size="sm" className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white relative transition-all duration-300 text-sm min-h-[44px] px-3 sm:px-4">
-                <ShoppingCart className="w-5 h-5 mr-1" /> 
-                <span className="hidden sm:inline">Cart</span>
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-floral-deep-rose text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
-            {/* Account and Sign Out (desktop) */}
-            {isSignedIn && (
-              <>
+            {user ? (
+              <div className="flex items-center space-x-2">
                 <Link to="/account">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
-                  >
-                    Account
+                  <Button variant="ghost" size="icon" className="text-slate-700 hover:text-floral-violet">
+                    <User className="h-5 w-5" />
                   </Button>
                 </Link>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
+                  variant="ghost"
                   onClick={handleSignOut}
+                  className="text-slate-700 hover:text-floral-violet text-sm"
                 >
                   Sign Out
                 </Button>
-              </>
-            )}
-            {/* Sign In (desktop, only if not signed in) */}
-            {!isSignedIn && (
+              </div>
+            ) : (
               <Link to="/sign-in">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
-                >
-                  Sign In
+                <Button variant="ghost" size="icon" className="text-slate-700 hover:text-floral-violet">
+                  <User className="h-5 w-5" />
                 </Button>
               </Link>
             )}
 
-            {/* Mobile menu button */}
+            <Link to="/wishlist" className="relative">
+              <Button variant="ghost" size="icon" className="text-slate-700 hover:text-floral-violet">
+                <Heart className="h-5 w-5" />
+                {wishlistItems.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-floral-violet text-white">
+                    {wishlistItems.length}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
+            <Link to="/cart" className="relative">
+              <Button variant="ghost" size="icon" className="text-slate-700 hover:text-floral-violet">
+                <ShoppingCart className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-floral-violet text-white">
+                    {totalItems}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
             <Button
               variant="ghost"
-              size="sm"
-              className="md:hidden text-white hover:bg-white/10 min-h-[48px] min-w-[48px] p-3 relative z-50 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-white/50 mobile-menu-button"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle mobile menu"
-              aria-expanded={isMenuOpen}
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="mobile-menu-button"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-white/20 py-6 bg-white/10 backdrop-blur-md rounded-lg mb-4 relative z-40 mobile-menu-dropdown">
-            <nav className="flex flex-col space-y-4">
-              {/* Mobile Search */}
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+        {/* Search Bar */}
+        {isSearchVisible && (
+          <div className="mt-4 animate-in slide-in-from-top-2 duration-200">
+            <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
+              <div className="relative">
                 <Input
-                  placeholder="Search jewelry..."
-                  className="pl-10 glass-effect border-white/30 focus:border-floral-violet placeholder:text-gray-600 text-black"
+                  type="text"
+                  placeholder="Search products..."
                   value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pr-10"
+                  autoFocus
                 />
-              </form>
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full text-slate-500 hover:text-floral-violet"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
 
-              <Link
-                to="/shop"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden mt-4 mobile-menu-dropdown">
+            <nav className="flex flex-col space-y-2">
+              <Link 
+                to="/" 
+                className="mobile-menu-item"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/shop" 
+                className="mobile-menu-item"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Shop
               </Link>
-              <Link
-                to="/collections"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
+              <Link 
+                to="/collections" 
+                className="mobile-menu-item"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Collections
               </Link>
-              <Link
-                to="/about"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
+              <Link 
+                to="/about" 
+                className="mobile-menu-item"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
-              <Link
-                to="/contact"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
+              <Link 
+                to="/contact" 
+                className="mobile-menu-item"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
               </Link>
-              <Link
-                to="/cart"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Cart ({cartCount})
-              </Link>
-              <Link
-                to="/wishlist"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Wishlist ({wishlistCount})
-              </Link>
-              <Link
-                to="/account"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Account
-              </Link>
-              <Link
-                to="/sign-in"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign In
-              </Link>
-              {isSignedIn && (
-                <button
-                  className="text-floral-coral text-left py-3 px-4 hover:bg-white/10 rounded-lg transition-colors font-medium font-elegant min-h-[48px] flex items-center mobile-menu-item"
-                  onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
+              
+              <div className="border-t pt-2 mt-2">
+                {user ? (
+                  <>
+                    <Link 
+                      to="/account" 
+                      className="mobile-menu-item"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Account
+                    </Link>
+                    <button 
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="mobile-menu-item w-full text-left"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link 
+                    to="/sign-in" 
+                    className="mobile-menu-item"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                )}
+                <Link 
+                  to="/wishlist" 
+                  className="mobile-menu-item flex items-center justify-between"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Sign Out
-                </button>
-              )}
+                  <span>Wishlist</span>
+                  {wishlistItems.length > 0 && (
+                    <Badge className="bg-floral-violet text-white">
+                      {wishlistItems.length}
+                    </Badge>
+                  )}
+                </Link>
+                <Link 
+                  to="/cart" 
+                  className="mobile-menu-item flex items-center justify-between"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span>Cart</span>
+                  {totalItems > 0 && (
+                    <Badge className="bg-floral-violet text-white">
+                      {totalItems}
+                    </Badge>
+                  )}
+                </Link>
+              </div>
             </nav>
           </div>
         )}
       </div>
-
-      {/* Decorative floral accent */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/10 to-transparent rounded-full blur-xl"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-floral-deep-rose/20 to-transparent rounded-full blur-lg"></div>
     </header>
   );
 };
+
+export default Header;
