@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 @font-face {
@@ -309,8 +310,9 @@
   .mobile-menu-button {
     position: relative;
     z-index: 50;
-    background: transparent !important;
-    border: none !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
     outline: none !important;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
@@ -323,19 +325,20 @@
   }
 
   .mobile-menu-button:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
   }
 
   /* Mobile menu dropdown styles */
   .mobile-menu-dropdown {
     position: relative;
     z-index: 40;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     margin-top: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    color: hsl(260, 15%, 25%);
   }
 
   /* Ensure mobile menu items are easily tappable */
@@ -349,14 +352,17 @@
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    color: hsl(260, 15%, 25%);
   }
 
   .mobile-menu-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: hsl(350, 45%, 90%);
+    color: hsl(260, 15%, 25%);
   }
 
   .mobile-menu-item:active {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: hsl(350, 45%, 85%);
+    color: hsl(260, 15%, 25%);
     transform: scale(0.98);
   }
 }
