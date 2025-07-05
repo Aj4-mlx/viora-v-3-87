@@ -4,7 +4,7 @@ import { FeaturedCollections } from "@/components/FeaturedCollections";
 import { NewArrivals } from "@/components/NewArrivals";
 import { BrandStory } from "@/components/BrandStory";
 import { Newsletter } from "@/components/Newsletter";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {

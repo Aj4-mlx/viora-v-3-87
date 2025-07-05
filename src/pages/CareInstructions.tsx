@@ -1,5 +1,4 @@
-
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +8,7 @@ const CareInstructions = () => {
   const metalCare = {
     gold: [
       "Clean with warm soapy water and a soft brush",
-      "Dry thoroughly with a soft cloth",
+      "Dry thoroughly with a soft cloth", 
       "Store in a dry place away from humidity",
       "Avoid exposure to chlorine and harsh chemicals"
     ],

@@ -1,5 +1,4 @@
-
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
