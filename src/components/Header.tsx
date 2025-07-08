@@ -168,12 +168,12 @@ export const Header = () => {
 
             {/* Account and Sign Out (desktop) */}
             {isSignedIn && (
-              <>
+              <div className="flex items-center gap-2">
                 <Link to="/account">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
+                    className="bg-floral-coral border-floral-coral text-white hover:bg-floral-deep-violet hover:border-floral-deep-violet hover:text-white transition-colors hidden sm:inline-flex h-[44px] px-5 font-semibold shadow-md flex items-center justify-center"
                   >
                     Account
                   </Button>
@@ -181,12 +181,12 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-white/30 text-white hover:bg-white hover:text-black hover:border-white backdrop-blur-sm transition-colors hidden sm:inline-flex min-h-[44px]"
+                  className="bg-floral-coral border-floral-coral text-white hover:bg-floral-deep-violet hover:border-floral-deep-violet hover:text-white transition-colors hidden sm:inline-flex h-[44px] px-5 font-semibold shadow-md flex items-center justify-center"
                   onClick={handleSignOut}
                 >
                   Sign Out
                 </Button>
-              </>
+              </div>
             )}
             {/* Sign In (desktop, only if not signed in) */}
             {!isSignedIn && (
@@ -274,21 +274,14 @@ export const Header = () => {
               </Link>
               <Link
                 to="/account"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
+                className="bg-floral-coral text-white font-semibold py-3 px-4 rounded-lg hover:bg-floral-deep-violet transition-colors min-h-[48px] flex items-center justify-center mobile-menu-item shadow-md"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Account
               </Link>
-              <Link
-                to="/sign-in"
-                className="text-white hover:text-floral-cream transition-colors font-medium font-elegant py-3 px-4 rounded-lg hover:bg-white/10 min-h-[48px] flex items-center mobile-menu-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign In
-              </Link>
               {isSignedIn && (
                 <button
-                  className="text-floral-coral text-left py-3 px-4 hover:bg-white/10 rounded-lg transition-colors font-medium font-elegant min-h-[48px] flex items-center mobile-menu-item"
+                  className="bg-floral-coral text-white font-semibold py-3 px-4 rounded-lg hover:bg-floral-deep-violet transition-colors min-h-[48px] flex items-center justify-center mobile-menu-item shadow-md"
                   onClick={() => { setIsMenuOpen(false); handleSignOut(); }}
                 >
                   Sign Out

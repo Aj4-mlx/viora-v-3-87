@@ -21,6 +21,7 @@ interface CustomerInfo {
   address: string;
   city: string;
   governorate: string;
+  whatsapp?: string;
 }
 
 interface ShippingProvider {
@@ -49,7 +50,8 @@ export const CheckoutForm = () => {
     phone: "",
     address: "",
     city: "",
-    governorate: ""
+    governorate: "",
+    whatsapp: ""
   });
 
   const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -150,6 +152,10 @@ export const CheckoutForm = () => {
       toast.error('Please enter a valid Egyptian phone number (e.g. 01XXXXXXXXX).');
       return false;
     }
+    if (!customerInfo.whatsapp.trim() || !/^01[0-9]{9}$/.test(customerInfo.whatsapp)) {
+      toast.error('Please enter a valid Egyptian WhatsApp number (e.g. 01XXXXXXXXX).');
+      return false;
+    }
     if (!customerInfo.governorate.trim()) {
       toast.error('Please select your governorate.');
       return false;
@@ -180,7 +186,7 @@ export const CheckoutForm = () => {
 
     try {
       let userId = user?.id;
-
+      let orderId = ""; // You may need to generate or fetch this from your order logic
       // If user is not logged in, create a new account
       if (!user) {
         if (!showGuestCheckout) {
@@ -201,8 +207,34 @@ export const CheckoutForm = () => {
           setIsLoading(false);
           return;
         }
+      }
 
-        // Create new user account
+      // Call Python backend if Vodafone Cash is selected
+      if (paymentMethod === 'vodafone') {
+        try {
+          const response = await fetch('http://localhost:8000/api/vodafone-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              order_id: orderId,
+              user_id: userId,
+              amount: total,
+              phone: customerInfo.phone,
+            }),
+          });
+          const data = await response.json();
+          if (data.status === 'success') {
+            toast.success('Vodafone payment initiated!');
+          } else {
+            toast.error('Failed to initiate Vodafone payment.');
+          }
+        } catch (err) {
+          toast.error('Error connecting to payment server.');
+        }
+      }
+
+      // Create new user account
+      if (!user) {
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: customerInfo.email,
           password: guestPassword,
@@ -269,6 +301,8 @@ export const CheckoutForm = () => {
         .single();
 
       if (orderError) throw orderError;
+
+      orderId = order?.id || ""; // Assign orderId to the generated order ID
 
       clearCart();
       toast.success("Order placed successfully!");
@@ -395,6 +429,17 @@ export const CheckoutForm = () => {
               required
             />
           </div>
+          <div>
+            <Label htmlFor="whatsapp">WhatsApp Number *</Label>
+            <Input
+              id="whatsapp"
+              value={customerInfo.whatsapp || ''}
+              onChange={e => setCustomerInfo({ ...customerInfo, whatsapp: e.target.value })}
+              placeholder="Enter your WhatsApp number (e.g. 01XXXXXXXXX)"
+              required
+              pattern="01[0-9]{9}"
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -410,8 +455,8 @@ export const CheckoutForm = () => {
               <Label htmlFor="cod">Cash on Delivery</Label>
             </div> */}
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="card" id="card" />
-              <Label htmlFor="card">Credit/Debit Card</Label>
+              <RadioGroupItem value="card" id="card" disabled />
+              <Label htmlFor="card" className="text-gray-400">Credit/Debit Card (Coming Soon)</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="instapay" id="instapay" />
@@ -422,8 +467,8 @@ export const CheckoutForm = () => {
               <Label htmlFor="vodafone">Vodafone Cash</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="fawry" id="fawry" />
-              <Label htmlFor="fawry">Fawry</Label>
+              <RadioGroupItem value="fawry" id="fawry" disabled />
+              <Label htmlFor="fawry" className="text-gray-400">Fawry (Coming Soon)</Label>
             </div>
           </RadioGroup>
 
@@ -451,17 +496,7 @@ export const CheckoutForm = () => {
             </div>
           )}
 
-          {paymentMethod === 'fawry' && (
-            <div className="mt-4 p-3 bg-slate-50 rounded-md">
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>Fawry Instructions:</strong>
-              </p>
-              <p className="text-sm text-slate-600">
-                After placing your order, you'll receive a Fawry reference number.
-                Pay at any Fawry outlet or via the Fawry app within 24 hours.
-              </p>
-            </div>
-          )}
+          {/* Fawry instructions removed since it's not available yet */}
         </CardContent>
       </Card>
 
@@ -555,7 +590,7 @@ export const CheckoutForm = () => {
           >
             {isLoading ? 'Placing Order...' :
               showGuestCheckout && !user ? 'Create Account & Place Order' :
-                (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Proceed to Payment')}
+                (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Place Order')}
           </Button>
         </CardContent>
       </Card>
