@@ -443,63 +443,6 @@ export const CheckoutForm = () => {
         </CardContent>
       </Card>
 
-      {/* Payment Method */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-            {/* <div className="flex items-center space-x-2">
-              <RadioGroupItem value="cod" id="cod" />
-              <Label htmlFor="cod">Cash on Delivery</Label>
-            </div> */}
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="card" id="card" disabled />
-              <Label htmlFor="card" className="text-gray-400">Credit/Debit Card (Coming Soon)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="instapay" id="instapay" />
-              <Label htmlFor="instapay">Instapay</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="vodafone" id="vodafone" />
-              <Label htmlFor="vodafone">Vodafone Cash</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="fawry" id="fawry" disabled />
-              <Label htmlFor="fawry" className="text-gray-400">Fawry (Coming Soon)</Label>
-            </div>
-          </RadioGroup>
-
-          {paymentMethod === 'instapay' && (
-            <div className="mt-4 p-3 bg-slate-50 rounded-md">
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>Instapay Instructions:</strong>
-              </p>
-              <p className="text-sm text-slate-600">
-                After placing your order, you'll receive payment instructions via email.
-                Please complete the payment within 24 hours to avoid order cancellation.
-              </p>
-            </div>
-          )}
-
-          {paymentMethod === 'vodafone' && (
-            <div className="mt-4 p-3 bg-slate-50 rounded-md">
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>Vodafone Cash Instructions:</strong>
-              </p>
-              <p className="text-sm text-slate-600">
-                After placing your order, send the payment to 01XXXXXXXXX with your order number.
-                Please complete the payment within 24 hours to avoid order cancellation.
-              </p>
-            </div>
-          )}
-
-          {/* Fawry instructions removed since it's not available yet */}
-        </CardContent>
-      </Card>
-
       {/* Guest Checkout */}
       {showGuestCheckout && !user && (
         <Card>
@@ -585,12 +528,12 @@ export const CheckoutForm = () => {
 
           <Button
             type="submit"
-            className="w-full bg-coral-peach hover:bg-purple-600 hover:text-white mt-6 text-black border border-black"
+            className="w-full bg-floral-deep-violet border-floral-deep-violet text-white hover:bg-floral-violet hover:border-floral-violet hover:text-white transition-all duration-300 mt-6"
             disabled={isLoading || cartItems.length === 0}
           >
             {isLoading ? 'Placing Order...' :
               showGuestCheckout && !user ? 'Create Account & Place Order' :
-                (paymentMethod === 'cod' ? 'Place Order (COD)' : 'Place Order')}
+                'Place Order'}
           </Button>
         </CardContent>
       </Card>
