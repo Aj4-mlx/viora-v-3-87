@@ -48,7 +48,7 @@ const SignUp = () => {
     }
     
     setIsLoading(true);
-    const { error } = await signUp(data.email, data.password, {
+    const { error, user } = await signUp(data.email, data.password, {
       name: `${data.firstName} ${data.lastName}`,
       first_name: data.firstName,
       last_name: data.lastName
@@ -57,14 +57,29 @@ const SignUp = () => {
     setIsLoading(false);
     
     if (error) {
-      toast.error(error.message || "Failed to create account.");
+      if (error.message?.includes('User already registered')) {
+        toast.error("An account with this email already exists. Please sign in instead.");
+        setTimeout(() => {
+          navigate('/sign-in');
+        }, 1000);
+      } else {
+        toast.error(error.message || "Failed to create account.");
+      }
       return;
     }
     
-    toast.success("Account created! Please check your email to verify your account, then sign in.");
-    setTimeout(() => {
-      navigate('/sign-in?reason=signup-success');
-    }, 1000);
+    // Check if email confirmation is required
+    if (user && !user.email_confirmed_at) {
+      toast.success("Account created! Please check your email to verify your account before signing in.");
+      setTimeout(() => {
+        navigate('/sign-in?reason=signup-success&email-confirmation=required');
+      }, 1500);
+    } else {
+      toast.success("Account created successfully! You can now sign in.");
+      setTimeout(() => {
+        navigate('/sign-in?reason=signup-success');
+      }, 1000);
+    }
   };
 
   return (

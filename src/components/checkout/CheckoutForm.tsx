@@ -239,6 +239,7 @@ export const CheckoutForm = () => {
           email: customerInfo.email,
           password: guestPassword,
           options: {
+            emailRedirectTo: `${window.location.origin}/sign-in?confirmed=true`,
             data: {
               name: customerInfo.name,
               phone: customerInfo.phone
@@ -247,6 +248,11 @@ export const CheckoutForm = () => {
         });
 
         if (authError) {
+          if (authError.message?.includes('User already registered')) {
+            toast.error("An account with this email already exists. Please sign in instead.");
+            setIsLoading(false);
+            return;
+          }
           toast.error(authError.message || "Failed to create account");
           setIsLoading(false);
           return;
@@ -260,20 +266,31 @@ export const CheckoutForm = () => {
           return;
         }
 
-        // Create customer record
-        const { error: customerError } = await supabase
-          .from('customers')
-          .insert({
-            id: userId,
-            name: customerInfo.name,
-            email: customerInfo.email
-          });
+        // Create customer record only if user is immediately confirmed
+        if (authData.user?.email_confirmed_at) {
+          const { error: customerError } = await supabase
+            .from('customers')
+            .insert({
+              id: userId,
+              name: customerInfo.name,
+              email: customerInfo.email,
+              phone: customerInfo.phone,
+              address: customerInfo.address,
+              city: customerInfo.city,
+              governorate: customerInfo.governorate
+            });
 
-        if (customerError) {
-          console.error('Customer creation failed:', customerError);
+          if (customerError) {
+            console.error('Customer creation failed:', customerError);
+          }
         }
 
-        toast.success("Account created successfully! You can now log in with your email and password.");
+        // Show appropriate message based on confirmation status
+        if (authData.user?.email_confirmed_at) {
+          toast.success("Account created successfully! Your order has been placed.");
+        } else {
+          toast.success("Account created! Please check your email to verify your account. Your order has been saved.");
+        }
       }
 
       // Get shipping provider name

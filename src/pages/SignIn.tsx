@@ -36,11 +36,22 @@ const SignIn = () => {
       return;
     }
 
+    const emailConfirmation = params.get("email-confirmation");
+    
     if (reason === "signup-success") {
-      toast.success("Account created! Please sign in to continue.");
+      if (emailConfirmation === "required") {
+        toast.info("Account created! Please check your email and click the confirmation link before signing in.");
+      } else {
+        toast.success("Account created! Please sign in to continue.");
+      }
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [reason, user, navigate]);
+
+    if (params.get("confirmed") === "true") {
+      toast.success("Email confirmed successfully! You can now sign in.");
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [reason, user, navigate, params]);
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -48,7 +59,13 @@ const SignIn = () => {
     setIsLoading(false);
 
     if (error) {
-      toast.error(error.message || 'Incorrect email or password.');
+      if (error.message?.includes('Invalid login credentials')) {
+        toast.error('Invalid email or password. If you just signed up, please check your email and confirm your account first.');
+      } else if (error.message?.includes('Email not confirmed')) {
+        toast.error('Please check your email and click the confirmation link before signing in.');
+      } else {
+        toast.error(error.message || 'Sign in failed. Please try again.');
+      }
       return;
     }
 
@@ -69,6 +86,13 @@ const SignIn = () => {
           {reason === "auth-required" && (
             <div className="mt-4 text-center text-red-600 font-medium">
               You need to sign in or sign up to continue with your order.
+            </div>
+          )}
+          {params.get("email-confirmation") === "required" && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-sm text-blue-800">
+                Please check your email and click the confirmation link before signing in.
+              </p>
             </div>
           )}
         </CardHeader>

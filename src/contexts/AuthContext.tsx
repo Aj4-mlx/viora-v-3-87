@@ -9,7 +9,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any; user?: User }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signInWithFacebook: () => Promise<{ error: any }>;
 }
@@ -37,21 +37,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
 
-        // Create customer profile if user signs up
+        // Create customer profile when user signs in for the first time
         if (event === 'SIGNED_IN' && session?.user && !loading) {
-          const { data: existingCustomer } = await supabase
-            .from('customers')
-            .select('id')
-            .eq('id', session.user.id)
-            .single();
+          // Use setTimeout to avoid deadlock with auth state changes
+          setTimeout(async () => {
+            try {
+              const { data: existingCustomer } = await supabase
+                .from('customers')
+                .select('id')
+                .eq('id', session.user.id)
+                .maybeSingle();
 
-          if (!existingCustomer) {
-            await supabase.from('customers').insert({
-              id: session.user.id,
-              email: session.user.email!,
-              name: session.user.user_metadata?.name || session.user.email!.split('@')[0]
-            });
-          }
+              if (!existingCustomer) {
+                const { error: customerError } = await supabase
+                  .from('customers')
+                  .insert({
+                    id: session.user.id,
+                    email: session.user.email!,
+                    name: session.user.user_metadata?.name || session.user.email!.split('@')[0]
+                  });
+                  
+                if (customerError) {
+                  console.error('Customer creation failed:', customerError);
+                }
+              }
+            } catch (error) {
+              console.error('Error checking/creating customer profile:', error);
+            }
+          }, 0);
         }
       }
     );
@@ -75,15 +88,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string, metadata?: any) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: `${window.location.origin}/sign-in?confirmed=true`,
         data: metadata
       }
     });
-    return { error };
+    
+    // If user is already confirmed (email confirmation disabled), create customer profile
+    if (data.user && !error && data.user.email_confirmed_at) {
+      const { error: customerError } = await supabase
+        .from('customers')
+        .insert({
+          id: data.user.id,
+          email: data.user.email!,
+          name: metadata?.name || data.user.email!.split('@')[0]
+        })
+        .select()
+        .single();
+      
+      if (customerError) {
+        console.error('Customer creation failed:', customerError);
+      }
+    }
+    
+    return { error, user: data.user };
   };
 
   const signInWithGoogle = async () => {
