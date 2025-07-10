@@ -298,15 +298,7 @@ export const CheckoutForm = () => {
           return;
         }
 
-        // For new accounts, we'll handle customer creation through a trigger
-        // or we need to wait for email confirmation to create the customer record
-        if (!authData.user?.email_confirmed_at) {
-          toast.info("Please check your email to verify your account before placing the order.");
-          setIsLoading(false);
-          return;
-        }
-
-        // Create customer record for confirmed users
+        // Create customer record immediately for new users
         const { error: customerError } = await supabase
           .from('customers')
           .insert({
