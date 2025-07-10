@@ -233,8 +233,40 @@ export const CheckoutForm = () => {
         }
       }
 
-      // Create new user account
-      if (!user) {
+      // For existing users, ensure customer record exists
+      if (user) {
+        userId = user.id;
+        
+        // Check if customer record exists
+        const { data: existingCustomer } = await supabase
+          .from('customers')
+          .select('id')
+          .eq('id', userId)
+          .maybeSingle();
+
+        // Create customer record if it doesn't exist
+        if (!existingCustomer) {
+          const { error: customerError } = await supabase
+            .from('customers')
+            .insert({
+              id: userId,
+              name: customerInfo.name,
+              email: customerInfo.email,
+              phone: customerInfo.phone,
+              address: customerInfo.address,
+              city: customerInfo.city,
+              governorate: customerInfo.governorate
+            });
+
+          if (customerError) {
+            console.error('Customer creation failed:', customerError);
+            toast.error("Failed to create customer record. Please try again.");
+            setIsLoading(false);
+            return;
+          }
+        }
+      } else {
+        // Create new user account for guest checkout
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: customerInfo.email,
           password: guestPassword,
@@ -266,31 +298,35 @@ export const CheckoutForm = () => {
           return;
         }
 
-        // Create customer record only if user is immediately confirmed
-        if (authData.user?.email_confirmed_at) {
-          const { error: customerError } = await supabase
-            .from('customers')
-            .insert({
-              id: userId,
-              name: customerInfo.name,
-              email: customerInfo.email,
-              phone: customerInfo.phone,
-              address: customerInfo.address,
-              city: customerInfo.city,
-              governorate: customerInfo.governorate
-            });
-
-          if (customerError) {
-            console.error('Customer creation failed:', customerError);
-          }
+        // For new accounts, we'll handle customer creation through a trigger
+        // or we need to wait for email confirmation to create the customer record
+        if (!authData.user?.email_confirmed_at) {
+          toast.info("Please check your email to verify your account before placing the order.");
+          setIsLoading(false);
+          return;
         }
 
-        // Show appropriate message based on confirmation status
-        if (authData.user?.email_confirmed_at) {
-          toast.success("Account created successfully! Your order has been placed.");
-        } else {
-          toast.success("Account created! Please check your email to verify your account. Your order has been saved.");
+        // Create customer record for confirmed users
+        const { error: customerError } = await supabase
+          .from('customers')
+          .insert({
+            id: userId,
+            name: customerInfo.name,
+            email: customerInfo.email,
+            phone: customerInfo.phone,
+            address: customerInfo.address,
+            city: customerInfo.city,
+            governorate: customerInfo.governorate
+          });
+
+        if (customerError) {
+          console.error('Customer creation failed:', customerError);
+          toast.error("Failed to create customer record. Please try again.");
+          setIsLoading(false);
+          return;
         }
+
+        toast.success("Account created successfully!");
       }
 
       // Get shipping provider name
