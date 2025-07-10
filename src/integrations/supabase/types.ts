@@ -175,11 +175,6 @@ export type Database = {
           created_at: string
           customer_id: string
           id: string
-          notes: string | null
-          order_number: string | null
-          payment_method: string | null
-          product_ids: string[] | null
-          shipping_address: Json | null
           status: string
           total: number
         }
@@ -187,11 +182,6 @@ export type Database = {
           created_at?: string
           customer_id: string
           id?: string
-          notes?: string | null
-          order_number?: string | null
-          payment_method?: string | null
-          product_ids?: string[] | null
-          shipping_address?: Json | null
           status?: string
           total: number
         }
@@ -199,11 +189,6 @@ export type Database = {
           created_at?: string
           customer_id?: string
           id?: string
-          notes?: string | null
-          order_number?: string | null
-          payment_method?: string | null
-          product_ids?: string[] | null
-          shipping_address?: Json | null
           status?: string
           total?: number
         }
@@ -352,10 +337,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_order_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

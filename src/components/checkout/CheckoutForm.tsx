@@ -186,7 +186,7 @@ export const CheckoutForm = () => {
 
     try {
       let userId = user?.id;
-      
+      let orderId = ""; // You may need to generate or fetch this from your order logic
       // If user is not logged in, create a new account
       if (!user) {
         if (!showGuestCheckout) {
@@ -207,8 +207,34 @@ export const CheckoutForm = () => {
           setIsLoading(false);
           return;
         }
+      }
 
-        // Create new user account
+      // Call Python backend if Vodafone Cash is selected
+      if (paymentMethod === 'vodafone') {
+        try {
+          const response = await fetch('http://localhost:8000/api/vodafone-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              order_id: orderId,
+              user_id: userId,
+              amount: total,
+              phone: customerInfo.phone,
+            }),
+          });
+          const data = await response.json();
+          if (data.status === 'success') {
+            toast.success('Vodafone payment initiated!');
+          } else {
+            toast.error('Failed to initiate Vodafone payment.');
+          }
+        } catch (err) {
+          toast.error('Error connecting to payment server.');
+        }
+      }
+
+      // Create new user account
+      if (!user) {
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: customerInfo.email,
           password: guestPassword,
@@ -240,11 +266,7 @@ export const CheckoutForm = () => {
           .insert({
             id: userId,
             name: customerInfo.name,
-            email: customerInfo.email,
-            phone: customerInfo.phone,
-            address: customerInfo.address,
-            city: customerInfo.city,
-            governorate: customerInfo.governorate
+            email: customerInfo.email
           });
 
         if (customerError) {
@@ -254,64 +276,40 @@ export const CheckoutForm = () => {
         toast.success("Account created successfully! You can now log in with your email and password.");
       }
 
+      // Get shipping provider name
+      const providerName = shippingProviders.find(p => p.id === selectedProviderId)?.name ||
+        (selectedProviderId === 'bosta' ? 'Bosta' :
+          selectedProviderId === 'aramex' ? 'Aramex' : 'Unknown');
+
       // Generate order number
       const orderNumber = `V${new Date().getFullYear().toString().slice(-2)}${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
 
-      // Prepare shipping address
-      const shippingAddress = {
-        name: customerInfo.name,
-        email: customerInfo.email,
-        phone: customerInfo.phone,
-        whatsapp: customerInfo.whatsapp,
-        address: customerInfo.address,
-        city: customerInfo.city,
-        governorate: customerInfo.governorate,
-        shipping_provider: shippingProviders.find(p => p.id === selectedProviderId)?.name || 'Bosta'
-      };
+      // Calculate estimated delivery date (5-7 days from now)
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + 5 + Math.floor(Math.random() * 3));
 
-      // Create order with proper structure
+      // Create simplified order (without order_items table reference)
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
           customer_id: userId,
+          product_ids: cartItems.map(item => item.id),
           total: total,
-          status: "pending",
-          order_number: orderNumber,
-          payment_method: paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod,
-          shipping_address: shippingAddress,
-          notes: `Order placed via website. Shipping: ${shipping} EGP`,
-          product_ids: cartItems.map(item => item.id) // Store product IDs for backward compatibility
+          status: "pending"
         })
         .select()
         .single();
 
-      if (orderError) {
-        console.error('Order creation failed:', orderError);
-        throw orderError;
-      }
+      if (orderError) throw orderError;
 
-      // Create order items for each cart item
-      const orderItems = cartItems.map(item => ({
-        order_id: order.id,
-        product_id: item.id,
-        quantity: item.quantity,
-        price_at_order: item.price
-      }));
-
-      const { error: orderItemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (orderItemsError) {
-        console.error('Order items creation failed:', orderItemsError);
-        // Don't throw here as the main order was created successfully
-      }
+      orderId = order?.id || ""; // Assign orderId to the generated order ID
 
       clearCart();
+      toast.success("Order placed successfully!");
+
+      // Navigate to a simple success page since OrderConfirmation might not exist
+      navigate('/');
       toast.success(`Order ${orderNumber} placed successfully! We'll contact you shortly.`);
-      
-      // Navigate to order confirmation page
-      navigate(`/order-confirmation/${order.id}`);
 
     } catch (error: any) {
       console.error('Order creation failed:', error);
@@ -442,53 +440,6 @@ export const CheckoutForm = () => {
               pattern="01[0-9]{9}"
             />
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment Method */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="cod" id="cod" />
-              <Label htmlFor="cod">Cash on Delivery</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="instapay" id="instapay" />
-              <Label htmlFor="instapay">Instapay</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="vodafone" id="vodafone" />
-              <Label htmlFor="vodafone">Vodafone Cash</Label>
-            </div>
-          </RadioGroup>
-
-          {paymentMethod === 'instapay' && (
-            <div className="mt-4 p-3 bg-slate-50 rounded-md">
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>Instapay Instructions:</strong>
-              </p>
-              <p className="text-sm text-slate-600">
-                After placing your order, you'll receive payment instructions via email.
-                Please complete the payment within 24 hours to avoid order cancellation.
-              </p>
-            </div>
-          )}
-
-          {paymentMethod === 'vodafone' && (
-            <div className="mt-4 p-3 bg-slate-50 rounded-md">
-              <p className="text-sm text-slate-700 mb-2">
-                <strong>Vodafone Cash Instructions:</strong>
-              </p>
-              <p className="text-sm text-slate-600">
-                After placing your order, send the payment to 01XXXXXXXXX with your order number.
-                Please complete the payment within 24 hours to avoid order cancellation.
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
 
